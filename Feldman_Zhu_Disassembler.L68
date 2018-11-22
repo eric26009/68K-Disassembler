@@ -1,0 +1,65 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 11/22/2018 2:48:38 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : 68k Disassembler (Inverse Assembler)
+00000000                             3  * Written by : Zealous Zhu and Eric Feldman
+00000000                             4  * Date       : 11/21/18
+00000000                             5  * Description: This disassembler program takes the assembly language that was assembled
+00000000                             6  *              and decode them so that a user can understand.
+00000000                             7  *-----------------------------------------------------------
+00001000                             8                       ORG        $1000
+00001000                             9  START:                  
+00001000                            10  *------------------Program Starts with Instruction------------------
+00001000  43F9 00001034             11                       LEA        INTRO_MSG,A1         *Load and display the intro message
+00001006  103C 000E                 12                       MOVE.B     #14,D0
+0000100A  4E4F                      13                       TRAP       #15
+0000100C                            14                       
+0000100C                            15  *------------------Ask User for Starting Address--------------------                     
+0000100C  43F9 0000115B             16                       LEA        U_START_ADDRESS,A1   *Load and ask user for starting address
+00001012  103C 000E                 17                       MOVE.B     #14,D0
+00001016  4E4F                      18                       TRAP       #15
+00001018  103C 0004                 19                       MOVE.B     #4,D0                *TRAP task 4 reads a number from keyboard
+0000101C  4E4F                      20                       TRAP       #15                  *Execute above task
+0000101E  2641                      21                       MOVEA.L    D1,A3                *Move the user input (start address) into A3
+00001020                            22                       
+00001020                            23  *------------------Ask User for Ending Address----------------------   
+00001020  43F9 00001179             24                       LEA        U_END_ADDRESS,A1     *Load and ask user for ending address
+00001026  103C 000E                 25                       MOVE.B     #14,D0
+0000102A  4E4F                      26                       TRAP       #15
+0000102C  103C 0004                 27                       MOVE.B     #4,D0                *TRAP task 4 reads a number from keyboard
+00001030  4E4F                      28                       TRAP       #15                  *Execute above task
+00001032  2841                      29                       MOVEA.L    D1,A4                *Move user input(ending address) into A4
+00001034                            30  
+00001034                            31  
+00001034                            32  *------------------Variables and constants here----------------------
+00001034  =0000000D                 33  CR                   EQU        $0D                  * ASCII code for Carriage return
+00001034  =0000000A                 34  LF                   EQU        $0A                  * ASCII code for Line Feed
+00001034                            35  
+00001034                            36  *------------------Intro Message-------------------------------------  
+00001034= 57 65 20 61 72 65 ...     37  INTRO_MSG            DC.B       'We are the Inverse Assembler Team!',CR,LF
+00001058= 57 65 20 63 61 6E ...     38                       DC.B       'We can take the assembled machine code and convert it into readable human code',CR,LF
+000010A8= 54 6F 20 64 6F 20 ...     39                       DC.B       'To do so, we just need you to give us a Starting Address and Ending Address',CR,LF
+000010F5= 54 68 65 20 61 64 ...     40                       DC.B       'The addresses are in Hexidecimal only and we can take up to a byte address',CR,LF
+00001141= 4C 65 74 73 20 74 ...     41                       DC.B       'Lets try it shall we?',CR,LF,CR,LF,0
+0000115B                            42  *------------------Start and End Address Message-----------------------               
+0000115B= 45 6E 74 65 72 20 ...     43  U_START_ADDRESS      DC.B       'Enter a Starting Address: $',CR,LF,0  
+00001179= 45 6E 74 65 72 20 ...     44  U_END_ADDRESS        DC.B       'Enter an Ending Address: $',0
+00001194                            45  *------------------Tells user that their input is off------------------                     
+00001194                            46  *8Bit_CHECK           DC.B    'Sorry! Input Address must be a Byte long (8 Bits)! Try Again:',0                     
+00001194                            47                       END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CR                  D
+INTRO_MSG           1034
+LF                  A
+START               1000
+U_END_ADDRESS       1179
+U_START_ADDRESS     115B
