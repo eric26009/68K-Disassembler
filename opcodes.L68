@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/23/2018 5:28:46 PM
+Created On: 11/23/2018 6:23:24 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -26,22 +26,22 @@ Created On: 11/23/2018 5:28:46 PM
 00001016                            22      
 00001016  1E01                      23      MOVE.B   D1,D7                   * LINE FOR TESTING
 00001018                            24       
-00001018  14F9 0000111C             25      MOVE.B     I,(A2)+              * testing adding letters to string_store         
-0000101E  14F9 00001130             26      MOVE.B     S,(A2)+              * .. same as above
-00001024  14F9 0000115C             27      MOVE.B     SPACE,(A2)+
-0000102A  14F9 00001132             28      MOVE.B     T,(A2)+
-00001030  14F9 0000111A             29      MOVE.B     H,(A2)+
-00001036  14F9 0000111C             30      MOVE.B     I,(A2)+
-0000103C  14F9 00001130             31      MOVE.B     S,(A2)+
-00001042  14F9 0000115C             32      MOVE.B     SPACE,(A2)+
-00001048  14F9 00001138             33      MOVE.B     W,(A2)+
-0000104E  14F9 00001128             34      MOVE.B     O,(A2)+
-00001054  14F9 0000112E             35      MOVE.B     R,(A2)+
-0000105A  14F9 00001120             36      MOVE.B     K,(A2)+
-00001060  14F9 0000111C             37      MOVE.B     I,(A2)+
-00001066  14F9 00001126             38      MOVE.B     N,(A2)+
-0000106C  14F9 00001118             39      MOVE.B     G,(A2)+
-00001072  14F9 0000115E             40      MOVE.B     QUESTION,(A2)+
+00001018  14F9 00001136             25      MOVE.B     I,(A2)+              * testing adding letters to string_store         
+0000101E  14F9 0000114A             26      MOVE.B     S,(A2)+              * .. same as above
+00001024  14F9 0000116D             27      MOVE.B     SPACE,(A2)+
+0000102A  14F9 0000114C             28      MOVE.B     T,(A2)+
+00001030  14F9 00001134             29      MOVE.B     H,(A2)+
+00001036  14F9 00001136             30      MOVE.B     I,(A2)+
+0000103C  14F9 0000114A             31      MOVE.B     S,(A2)+
+00001042  14F9 0000116D             32      MOVE.B     SPACE,(A2)+
+00001048  14F9 00001152             33      MOVE.B     W,(A2)+
+0000104E  14F9 00001142             34      MOVE.B     O,(A2)+
+00001054  14F9 00001148             35      MOVE.B     R,(A2)+
+0000105A  14F9 0000113A             36      MOVE.B     K,(A2)+
+00001060  14F9 00001136             37      MOVE.B     I,(A2)+
+00001066  14F9 00001140             38      MOVE.B     N,(A2)+
+0000106C  14F9 00001132             39      MOVE.B     G,(A2)+
+00001072  14F9 0000116F             40      MOVE.B     QUESTION,(A2)+
 00001078  14FC 000A                 41      MOVE.B     #$A,(A2)+            * new line
 0000107C  14FC 000D                 42      MOVE.B     #$D,(A2)+            * carriage return
 00001080  0678 0012 0000            43      ADD.W      #18, BYTE_COUNTER    * need to say how many bytes are in the string.
@@ -50,108 +50,119 @@ Created On: 11/23/2018 5:28:46 PM
 00001086                            46  * work in progress, start of op-code debugging
 00001086                            47  FIRST4BITS:
 00001086  2438 1016                 48      MOVE.L  $1016,D2    * moving long of address $1000 into D2
-0000108A  E95A                      49      ROL.W   #4,D2
-0000108C                            50      
-0000108C  C43C 000F                 51      AND.B   #%00001111, D2
-00001090                            52      
-00001090  B43C 0001                 53      CMP.B   #%00000001, D2      * move.b
-00001094  6700 001A                 54      BEQ     _0001
-00001098  B43C 0003                 55      CMP.B   #%00000011, D2      * move.l
-0000109C  6700 003A                 56      BEQ     _0011
-000010A0  B43C 0002                 57      CMP.B   #%00000010, D2      * move.w
-000010A4  6700 0032                 58      BEQ     _0010
-000010A8  B43C 0000                 59      CMP.B   #%00000000, D2      * somthing tbd
-000010AC  6700 002A                 60      BEQ     _0000
-000010B0                            61      
-000010B0                            62      
-000010B0                            63  *move.b 
-000010B0                            64  _0001:
-000010B0  14F9 00001124             65      MOVE.B  M, (A2)+
-000010B6  14F9 00001128             66      MOVE.B  O, (A2)+
-000010BC  14F9 00001136             67      MOVE.B  V, (A2)+
-000010C2  14F9 00001114             68      MOVE.B  E, (A2)+
-000010C8  14F9 0000114D             69      MOVE.B  DOT, (A2)+
-000010CE  14F9 0000110E             70      MOVE.B  B, (A2)+
-000010D4  5C78 0000                 71      ADD.W      #6, BYTE_COUNTER
-000010D8                            72      
-000010D8                            73      
-000010D8                            74  * move.l
-000010D8                            75  _0011:
-000010D8                            76  
-000010D8                            77  *move.w
-000010D8                            78  _0010:
-000010D8                            79  
-000010D8                            80  * something that begins with 0000
-000010D8                            81  _0000:
-000010D8                            82  
-000010D8                            83  
-000010D8                            84  * unkown op-code type
-000010D8                            85  _UNKNOWN:
-000010D8  14F9 00001112             86      MOVE.B  D, (A2)+
-000010DE  14F9 0000110C             87      MOVE.B  A, (A2)+
-000010E4  14F9 00001132             88      MOVE.B  T, (A2)+
-000010EA  14F9 0000110C             89      MOVE.B  A, (A2)+
-000010F0  5878 0000                 90      ADD.W      #4, BYTE_COUNTER
-000010F4                            91  
-000010F4                            92  
-000010F4                            93  BUFFER_LOOP:
-000010F4  B6CA                      94      CMPA       A2,A3                * checking if start/end address match of string
-000010F6  6700 0006                 95      BEQ        PRINT_BUFFER         * finished if addresses match
-000010FA  12DB                      96      MOVE.B     (A3)+,(A1)+          * move byte letter from string_store to A1
-000010FC  60F6                      97      BRA        BUFFER_LOOP               * loop back untill start/end addresses match
-000010FE                            98  
-000010FE                            99  PRINT_BUFFER:
-000010FE  43F8 2000                100      LEA        BUFF_POINT,A1    
-00001102  3238 0000                101      MOVE.W     BYTE_COUNTER, D1
-00001106  4E4F                     102      TRAP #15
-00001108                           103  
-00001108                           104  
-00001108                           105  
-00001108                           106     
-00001108  FFFF FFFF                107      SIMHALT             ; halt simulator
-0000110C                           108  
-0000110C                           109  
-0000110C                           110  * Put variables and constants here
-0000110C= 41 00                    111  A           DC.B 'A',0
-0000110E= 42 00                    112  B           DC.B 'B',0
-00001110= 43 00                    113  C           DC.B 'C',0
-00001112= 44 00                    114  D           DC.B 'D',0
-00001114= 45 00                    115  E           DC.B 'E',0
-00001116= 46 00                    116  F           DC.B 'F',0
-00001118= 47 00                    117  G           DC.B 'G',0
-0000111A= 48 00                    118  H           DC.B 'H',0
-0000111C= 49 00                    119  I           DC.B 'I',0
-0000111E= 4A 00                    120  J           DC.B 'J',0
-00001120= 4B 00                    121  K           DC.B 'K',0
-00001122= 4C 00                    122  L           DC.B 'L',0
-00001124= 4D 00                    123  M           DC.B 'M',0
-00001126= 4E 00                    124  N           DC.B 'N',0
-00001128= 4F 00                    125  O           DC.B 'O',0
-0000112A= 50 00                    126  P           DC.B 'P',0
-0000112C= 51 00                    127  Q           DC.B 'Q',0
-0000112E= 52 00                    128  R           DC.B 'R',0
-00001130= 53 00                    129  S           DC.B 'S',0
-00001132= 54 00                    130  T           DC.B 'T',0
-00001134= 55 00                    131  U           DC.B 'U',0
-00001136= 56 00                    132  V           DC.B 'V',0
-00001138= 57 00                    133  W           DC.B 'W',0
-0000113A= 58 00                    134  X           DC.B 'X',0
-0000113C= 59 00                    135  Y           DC.B 'Y',0
-0000113E= 5A 00                    136  Z           DC.B 'Z',0
-00001140= 28 00                    137  OPEN_PARA   DC.B '(',0
-00001142= 29 00                    138  CLOSE_PARA  DC.B ')',0
-00001144= 20 20 20 20 20 20 ...    139  TAB         DC.B '        ',0
-0000114D= 2E 00                    140  DOT         DC.B '.',0
-0000114F= 2B 00                    141  PLUS        DC.B '+',0
-00001151= 2D 00                    142  MINUS       DC.B '-',0  
-00001153= 46 49 4E 49 53 48 ...    143  FINISHED    DC.B 'FINISHED',0
-0000115C= 20 00                    144  SPACE       DC.B ' ',0
-0000115E= 3F 00                    145  QUESTION    DC.B '?',0
-00001160                           146  
-00001160                           147  
-00001160                           148  
-00001160                           149  
-00001160                           150      END    START        ; last line of source
+0000108A  2602                      49      MOVE.L  D2,D3       * save a copy of of contents in D3
+0000108C  E95A                      50      ROL.W   #4,D2
+0000108E                            51      
+0000108E  C43C 000F                 52      AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
+00001092                            53      
+00001092                            54      
+00001092  B43C 0001                 55      CMP.B   #%00000001, D2      * move.b
+00001096  6700 001A                 56      BEQ     _0001
+0000109A  B43C 0003                 57      CMP.B   #%00000011, D2      * move.l
+0000109E  6700 003E                 58      BEQ     _0011
+000010A2  B43C 0002                 59      CMP.B   #%00000010, D2      * move.w
+000010A6  6700 0036                 60      BEQ     _0010
+000010AA  B43C 0000                 61      CMP.B   #%00000000, D2      * somthing tbd
+000010AE  6700 002E                 62      BEQ     _0000
+000010B2                            63      
+000010B2                            64      
+000010B2                            65  *move.b 
+000010B2                            66  _0001:
+000010B2  14F9 0000113E             67      MOVE.B  M, (A2)+
+000010B8  14F9 00001142             68      MOVE.B  O, (A2)+
+000010BE  14F9 00001150             69      MOVE.B  V, (A2)+
+000010C4  14F9 0000112E             70      MOVE.B  E, (A2)+
+000010CA  14F9 0000115E             71      MOVE.B  DOT, (A2)+
+000010D0  14F9 00001128             72      MOVE.B  B, (A2)+
+000010D6  14FC 0009                 73      MOVE.B  #$9, (A2)+          * TAB 
+000010DA  5E78 0000                 74      ADD.W      #7, BYTE_COUNTER
+000010DE                            75      
+000010DE                            76      
+000010DE                            77  * move.l
+000010DE                            78  _0011:
+000010DE                            79  
+000010DE                            80  *move.w
+000010DE                            81  _0010:
+000010DE                            82  
+000010DE                            83  * something that begins with 0000
+000010DE                            84  _0000:
+000010DE                            85  
+000010DE                            86  
+000010DE                            87  * unkown op-code type
+000010DE                            88  _UNKNOWN:
+000010DE  14F9 0000112C             89      MOVE.B  D, (A2)+
+000010E4  14F9 00001126             90      MOVE.B  A, (A2)+
+000010EA  14F9 0000114C             91      MOVE.B  T, (A2)+
+000010F0  14F9 00001126             92      MOVE.B  A, (A2)+
+000010F6  5878 0000                 93      ADD.W      #4, BYTE_COUNTER
+000010FA                            94  
+000010FA                            95  
+000010FA                            96  BUFFER_LOOP:
+000010FA  B6CA                      97      CMPA       A2,A3                * checking if start/end address match of string
+000010FC  6700 0006                 98      BEQ        PRINT_BUFFER         * finished if addresses match
+00001100  12DB                      99      MOVE.B     (A3)+,(A1)+          * move byte letter from string_store to A1
+00001102  60F6                     100      BRA        BUFFER_LOOP               * loop back untill start/end addresses match
+00001104                           101  
+00001104                           102  PRINT_BUFFER:
+00001104  43F8 2000                103      LEA        BUFF_POINT,A1    
+00001108  3238 0000                104      MOVE.W     BYTE_COUNTER, D1
+0000110C  4E4F                     105      TRAP #15
+0000110E                           106  
+0000110E                           107  
+0000110E                           108  
+0000110E                           109     
+0000110E  FFFF FFFF                110      SIMHALT             ; halt simulator
+00001112                           111  
+00001112                           112  
+00001112                           113  * Put variables and constants here
+00001112= 30 00                    114  _0          DC.B '0',0
+00001114= 31 00                    115  _1          DC.B '1',0
+00001116= 32 00                    116  _2          DC.B '2',0
+00001118= 33 00                    117  _3          DC.B '3',0
+0000111A= 34 00                    118  _4          DC.B '4',0
+0000111C= 35 00                    119  _5          DC.B '5',0
+0000111E= 36 00                    120  _6          DC.B '6',0
+00001120= 37 00                    121  _7          DC.B '7',0
+00001122= 38 00                    122  _8          DC.B '8',0
+00001124= 39 00                    123  _9          DC.B '9',0
+00001126= 41 00                    124  A           DC.B 'A',0
+00001128= 42 00                    125  B           DC.B 'B',0
+0000112A= 43 00                    126  C           DC.B 'C',0
+0000112C= 44 00                    127  D           DC.B 'D',0
+0000112E= 45 00                    128  E           DC.B 'E',0
+00001130= 46 00                    129  F           DC.B 'F',0
+00001132= 47 00                    130  G           DC.B 'G',0
+00001134= 48 00                    131  H           DC.B 'H',0
+00001136= 49 00                    132  I           DC.B 'I',0
+00001138= 4A 00                    133  J           DC.B 'J',0
+0000113A= 4B 00                    134  K           DC.B 'K',0
+0000113C= 4C 00                    135  L           DC.B 'L',0
+0000113E= 4D 00                    136  M           DC.B 'M',0
+00001140= 4E 00                    137  N           DC.B 'N',0
+00001142= 4F 00                    138  O           DC.B 'O',0
+00001144= 50 00                    139  P           DC.B 'P',0
+00001146= 51 00                    140  Q           DC.B 'Q',0
+00001148= 52 00                    141  R           DC.B 'R',0
+0000114A= 53 00                    142  S           DC.B 'S',0
+0000114C= 54 00                    143  T           DC.B 'T',0
+0000114E= 55 00                    144  U           DC.B 'U',0
+00001150= 56 00                    145  V           DC.B 'V',0
+00001152= 57 00                    146  W           DC.B 'W',0
+00001154= 58 00                    147  X           DC.B 'X',0
+00001156= 59 00                    148  Y           DC.B 'Y',0
+00001158= 5A 00                    149  Z           DC.B 'Z',0
+0000115A= 28 00                    150  OPEN_PARA   DC.B '(',0
+0000115C= 29 00                    151  CLOSE_PARA  DC.B ')',0
+0000115E= 2E 00                    152  DOT         DC.B '.',0
+00001160= 2B 00                    153  PLUS        DC.B '+',0
+00001162= 2D 00                    154  MINUS       DC.B '-',0  
+00001164= 46 49 4E 49 53 48 ...    155  FINISHED    DC.B 'FINISHED',0
+0000116D= 20 00                    156  SPACE       DC.B ' ',0
+0000116F= 3F 00                    157  QUESTION    DC.B '?',0
+00001171                           158  
+00001171                           159  
+00001171                           160  
+00001171                           161      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -160,50 +171,59 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-A                   110C
-B                   110E
-BUFFER_LOOP         10F4
+A                   1126
+B                   1128
+BUFFER_LOOP         10FA
 BUFF_POINT          2000
 BYTE_COUNTER        0
-C                   1110
-CLOSE_PARA          1142
-D                   1112
-DOT                 114D
-E                   1114
-F                   1116
-FINISHED            1153
+C                   112A
+CLOSE_PARA          115C
+D                   112C
+DOT                 115E
+E                   112E
+F                   1130
+FINISHED            1164
 FIRST4BITS          1086
-G                   1118
-H                   111A
-I                   111C
-J                   111E
-K                   1120
-L                   1122
-M                   1124
-MINUS               1151
-N                   1126
-O                   1128
-OPEN_PARA           1140
-P                   112A
-PLUS                114F
-PRINT_BUFFER        10FE
-Q                   112C
-QUESTION            115E
-R                   112E
-S                   1130
-SPACE               115C
+G                   1132
+H                   1134
+I                   1136
+J                   1138
+K                   113A
+L                   113C
+M                   113E
+MINUS               1162
+N                   1140
+O                   1142
+OPEN_PARA           115A
+P                   1144
+PLUS                1160
+PRINT_BUFFER        1104
+Q                   1146
+QUESTION            116F
+R                   1148
+S                   114A
+SPACE               116D
 START               1000
 STRING_STORE        3000
-T                   1132
-TAB                 1144
-U                   1134
-V                   1136
-W                   1138
-X                   113A
-Y                   113C
-Z                   113E
-_0000               10D8
-_0001               10B0
-_0010               10D8
-_0011               10D8
-_UNKNOWN            10D8
+T                   114C
+U                   114E
+V                   1150
+W                   1152
+X                   1154
+Y                   1156
+Z                   1158
+_0                  1112
+_0000               10DE
+_0001               10B2
+_0010               10DE
+_0011               10DE
+_1                  1114
+_2                  1116
+_3                  1118
+_4                  111A
+_5                  111C
+_6                  111E
+_7                  1120
+_8                  1122
+_9                  1124
+_UNKNOWN            10DE

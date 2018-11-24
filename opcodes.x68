@@ -46,6 +46,7 @@ START:                  ; first instruction of program
 * work in progress, start of op-code debugging
 FIRST4BITS:
     MOVE.L  $1016,D2    * moving long of address $1000 into D2
+    MOVE.L  D2,D3       * save a copy of of contents in D3
     ROL.W   #4,D2
     
     AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
@@ -69,7 +70,8 @@ _0001:
     MOVE.B  E, (A2)+
     MOVE.B  DOT, (A2)+
     MOVE.B  B, (A2)+
-    ADD.W      #6, BYTE_COUNTER
+    MOVE.B  #$9, (A2)+          * TAB 
+    ADD.W      #7, BYTE_COUNTER
     
     
 * move.l
@@ -109,6 +111,16 @@ PRINT_BUFFER:
 
 
 * Put variables and constants here
+_0          DC.B '0',0
+_1          DC.B '1',0
+_2          DC.B '2',0
+_3          DC.B '3',0
+_4          DC.B '4',0
+_5          DC.B '5',0
+_6          DC.B '6',0
+_7          DC.B '7',0
+_8          DC.B '8',0
+_9          DC.B '9',0
 A           DC.B 'A',0
 B           DC.B 'B',0
 C           DC.B 'C',0
@@ -137,14 +149,12 @@ Y           DC.B 'Y',0
 Z           DC.B 'Z',0
 OPEN_PARA   DC.B '(',0
 CLOSE_PARA  DC.B ')',0
-TAB         DC.B '        ',0
 DOT         DC.B '.',0
 PLUS        DC.B '+',0
 MINUS       DC.B '-',0  
 FINISHED    DC.B 'FINISHED',0
 SPACE       DC.B ' ',0
 QUESTION    DC.B '?',0
-
 
 
 
