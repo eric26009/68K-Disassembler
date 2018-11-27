@@ -19,7 +19,14 @@ OPCODE_BEGIN:
     LEA        STRING_STORE, A2     * A2 stores the pointer to end of string
     LEA        STRING_STORE, A3     * A3 stores the pointer to start of string
     MOVE.W     #0, BYTE_COUNTER     * starting byte counter with 0  
-  
+    
+    MOVE.B    #0, D5                * RESETTING HEX CONVERTER COUNTER
+    MOVE.L  A4,D6
+    MOVE.L  D6,D7
+    MOVE.B     MONEY, (A2)+         * adding a MONEY SYMBOL to the beginning
+    ADD.W      #1, BYTE_COUNTER
+    BRA        HEX_CHAR
+CONTINUE:
     MOVE.B     SPACE, (A2)+         * adding a space to the beginning
     ADD.W      #1, BYTE_COUNTER
     
@@ -42,7 +49,7 @@ FIRST4BITS:
     ROL.L   #4,D2       * rotate to the left by 4 to see first 4 bits
     AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
     
-    
+    MOVE.L  D3,D2
     CMP.B   #%00000001, D2      * move.b
     BEQ     MOVE
     CMP.B   #%00000011, D2      * move.l
@@ -241,10 +248,6 @@ BUFFER_LOOP:
     BRA        BUFFER_LOOP          * loop back untill start/end addresses match
 
 PRINT_BUFFER:
-    MOVE.B  #15,D0      * move task 15 into D0 
-    MOVE.L  D6, D1      * set temp address to D1
-    MOVE.L  #16, D2     * HEX conversion
-    TRAP    #15         * display address
     MOVE.B     #0, D0               * trap task 0 to print string in buffer A1
     LEA        BUFF_POINT,A1    
     MOVE.W     BYTE_COUNTER, D1     * need to say how many bytes to print in D1
@@ -257,6 +260,34 @@ TEST:
 
 TEST2:
     RTS
+    
+HEX_CHAR:
+    CMP.B   #4,D5
+    BEQ     CONTINUE
+    MOVE.L  D6,D7
+    AND.W   #%1111000000000000, D6
+    ROR.W   #8,D6
+    ROR.W   #4,D6
+    ADD.B   #1,D5
+    CMP.L   #9, D6
+    BLE     NUMBER
+    BGE     LETTER   
+    
+NUMBER:
+    ADD.B   #$30, D6
+    MOVE.B  D6, (A2)+
+    ADD.W      #1, BYTE_COUNTER
+    ROL.W   #4,D7
+    MOVE.L  D7,D6
+    BRA     HEX_CHAR
+
+LETTER:
+    ADD.B   #$37, D6
+    MOVE.B  D6, (A2)+
+    ADD.W      #1, BYTE_COUNTER
+    ROL.W   #4,D7
+    MOVE.L  D7,D6
+    BRA     HEX_CHAR
 
    
     SIMHALT             ; halt simulator
@@ -312,6 +343,7 @@ MONEY       DC.B '$',0
 
 
     *END    START        ; last line of source
+
 
 
 

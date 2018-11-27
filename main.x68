@@ -6,13 +6,12 @@
 *-----------------------------------------------------------
     ORG    $1000
     
-START_ADDRESS   EQU     $1038       * hard coded start address
-END_ADDRESS     EQU     $1280       * hard coded end address
+START_ADDRESS   EQU     $1000       * hard coded start address
+END_ADDRESS     EQU     $1308       * hard coded end address
     
    
     
 START:                  
-    
     LEA     START_ADDRESS, A4       * loading start address into A4
     LEA     END_ADDRESS, A5         * load ing end address into A5
     
@@ -25,7 +24,6 @@ MAIN:
 NEXT_ADDRESS:
     ADD.L   #$2, A4                 * incrementing address here by 2, needs to be changed
     BRA     MAIN                    * go back to check addresses in MAIN
-   
     
 COMPLETED:
     LEA FINISHED, A1                * load finished message
@@ -40,6 +38,7 @@ COMPLETED:
  INCLUDE "/Users/Eric/Google Drive/Fall 2018/422/68k_git/68K-Disassembler/opcodes.x68"
 
     END    START        ; last line of source
+
 
 *~Font name~Courier New~
 *~Font size~10~
