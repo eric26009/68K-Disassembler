@@ -4,7 +4,7 @@
 * Date       :
 * Description:  OP-CODE and string buffer
 *-----------------------------------------------------------
-    ORG    $1000
+    *ORG    $1000
     
 BUFF_POINT      EQU     $2000   * where the string buffer lives
 BYTE_COUNTER    EQU     0       * counter for the number of bytes the string has
@@ -12,26 +12,34 @@ STRING_STORE    EQU     $3000   * where the beginning of the temp string storage
 TAB             EQU     $9      * ASCII hex for tab
 
 
-START:                  ; first instruction of program
+*START:                  ; first instruction of program
 
-* Put program code here
+OPCODE_BEGIN:
     LEA        BUFF_POINT,A1        * pointer to string buffer
     LEA        STRING_STORE, A2     * A2 stores the pointer to end of string
     LEA        STRING_STORE, A3     * A3 stores the pointer to start of string
-    MOVE.W     #0, BYTE_COUNTER     * starting byte counter with 0    
- 
-    MOVE.L   D1,A5                   * LINE FOR TESTING
-    MOVE.B   D3,D4
-    MOVE.B   D4,D5
+    MOVE.W     #0, BYTE_COUNTER     * starting byte counter with 0  
+  
+    MOVE.B     SPACE, (A2)+         * adding a space to the beginning
+    ADD.W      #1, BYTE_COUNTER
+    
+*    MOVE.L   (A6),A5                     * LINE FOR TESTING
+*    MOVE.B   #5,D4
+*    MOVE.B   D4,D5
 
     
         
 * work in progress, start of op-code debugging
 FIRST4BITS:
-    MOVE.L  $1012,D2    * moving long of address $1000 into D2
+    MOVE.L  (A4),D2    * moving long of address $1000 into D2
+    MOVE.W  A4,D6   * ******temp holds the address, needs to be changed************
     MOVE.L  D2,D3       * save a copy of of contents in D3
-    ROL.L   #4,D2       * rotate to the left by 4 to see first 4 bits
     
+    CMP.L   #$4E75FFFF, D2
+    BEQ     OP_RTS
+    
+    MOVE.L  D3,D2
+    ROL.L   #4,D2       * rotate to the left by 4 to see first 4 bits
     AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
     
     
@@ -41,11 +49,22 @@ FIRST4BITS:
     BEQ     MOVE
     CMP.B   #%00000010, D2      * move.w
     BEQ     MOVE
+    CMP.B   #%00001101, D2      * ADD
+    BEQ     ADD
     *CMP.B   #%00000000, D2      * somthing tbd
     *BEQ     _0000
     BRA UNKNOWN
     
+ADD:
+
     
+OP_RTS:
+    MOVE.B  R, (A2)+
+    MOVE.B  T, (A2)+
+    MOVE.B  S, (A2)+
+    ADD.W   #3, BYTE_COUNTER
+    BRA     BUFFER_LOOP
+        
 MOVE:
     MOVE.L  D3, D2      * reset address contents to before bitmask
     ROL.L   #8, D2     * now checking the destination mode set by rotating left by 10
@@ -77,6 +96,8 @@ MOVE_AN:
     MOVE.B  DOT, (A2)+
     ADD.W      #6, BYTE_COUNTER
     BRA MOVE_SIZE
+
+
     
 MOVE_SIZE:
     MOVE.L  D3, D2      * reset address contents to before bitmask
@@ -118,6 +139,9 @@ MOVE_SOURCE:
     BEQ     MOVE_SOURCE_DN
     CMP.B   #%00000001, D2
     BEQ     MOVE_SOURCE_AN
+    CMP.B   #%00000010, D2
+    BEQ     MOVE_SOURCE_AN_010
+  
     
 MOVE_SOURCE_DN:
     MOVE.L  D3, D2      * reset address contents to before bitmask
@@ -133,13 +157,27 @@ MOVE_SOURCE_DN:
 MOVE_SOURCE_AN:
     MOVE.L  D3, D2      * reset address contents to before bitmask
     SWAP    D2
-    AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+    AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
     ADD.B   #$30, D2
     MOVE.B  A, (A2)+
     MOVE.B  D2, (A2)+
     MOVE.B  COMMA, (A2)+  
     ADD.W      #3, BYTE_COUNTER
     BRA     MOVE_DEST
+    
+MOVE_SOURCE_AN_010:
+    MOVE.L  D3, D2      * reset address contents to before bitmask
+    SWAP    D2
+    AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
+    ADD.B   #$30, D2
+    MOVE.B  OPEN_PARA, (A2)+
+    MOVE.B  A, (A2)+
+    MOVE.B  D2, (A2)+
+    MOVE.B  CLOSE_PARA, (A2)+
+    MOVE.B  COMMA, (A2)+  
+    ADD.W      #5, BYTE_COUNTER
+    BRA     MOVE_DEST
+
     
         
 MOVE_DEST:
@@ -151,6 +189,8 @@ MOVE_DEST:
     BEQ     MOVE_DEST_DN
     CMP.B   #%00000001, D2
     BEQ     MOVE_DEST_AN
+    CMP.B   #%00000010, D2
+    BEQ     MOVE_DEST_AN_010
     
 MOVE_DEST_DN:
     MOVE.L  D3, D2      * reset address contents to before bitmask
@@ -164,7 +204,17 @@ MOVE_DEST_DN:
     
 MOVE_DEST_AN:
     MOVE.L  D3, D2      * reset address contents to before bitmask
-    ROL.L   #7,D2
+    ROL.L   #7, D2
+    AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+    ADD.B   #$30, D2
+    MOVE.B  A, (A2)+
+    MOVE.B  D2, (A2)+
+    ADD.W      #2, BYTE_COUNTER
+    BRA     BUFFER_LOOP
+    
+MOVE_DEST_AN_010:
+    MOVE.L  D3, D2      * reset address contents to before bitmask
+    ROL.L   #7, D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     ADD.B   #$30, D2
     MOVE.B  A, (A2)+
@@ -191,12 +241,22 @@ BUFFER_LOOP:
     BRA        BUFFER_LOOP          * loop back untill start/end addresses match
 
 PRINT_BUFFER:
+    MOVE.B  #15,D0      * move task 15 into D0 
+    MOVE.L  D6, D1      * set temp address to D1
+    MOVE.L  #16, D2     * HEX conversion
+    TRAP    #15         * display address
     MOVE.B     #0, D0               * trap task 0 to print string in buffer A1
     LEA        BUFF_POINT,A1    
-    MOVE.W     BYTE_COUNTER, D1
+    MOVE.W     BYTE_COUNTER, D1     * need to say how many bytes to print in D1
     TRAP #15
 
+    JMP     NEXT_ADDRESS
 
+TEST:
+    JSR TEST2
+
+TEST2:
+    RTS
 
    
     SIMHALT             ; halt simulator
@@ -244,13 +304,18 @@ CLOSE_PARA  DC.B ')',0
 DOT         DC.B '.',0
 PLUS        DC.B '+',0
 MINUS       DC.B '-',0  
-FINISHED    DC.B 'FINISHED',0
+FINISHED    DC.L 'FINISHED',0
 SPACE       DC.B ' ',0
 QUESTION    DC.B '?',0
 COMMA       DC.B ',',0
+MONEY       DC.B '$',0
 
 
-    END    START        ; last line of source
+    *END    START        ; last line of source
+
+
+
+
 
 
 
