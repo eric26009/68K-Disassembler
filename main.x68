@@ -6,7 +6,7 @@
 *-----------------------------------------------------------
     ORG    $1000
     
-START_ADDRESS   EQU     $1000       * hard coded start address
+START_ADDRESS   EQU     $1024       * hard coded start address
 END_ADDRESS     EQU     $1308       * hard coded end address
     
    
@@ -30,6 +30,9 @@ COMPLETED:
     MOVE.B  #13, D0                 * displaying message
     TRAP #15
 
+    MOVEA.L   (A6),A5                     * LINE FOR TESTING
+    MOVE.B   #5,D4
+    MOVE.B   D4,D5
     
     
     SIMHALT             ; halt simulator
@@ -38,6 +41,9 @@ COMPLETED:
  INCLUDE "/Users/Eric/Google Drive/Fall 2018/422/68k_git/68K-Disassembler/opcodes.x68"
 
     END    START        ; last line of source
+
+
+
 
 
 *~Font name~Courier New~

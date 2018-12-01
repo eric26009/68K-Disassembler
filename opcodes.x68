@@ -29,27 +29,24 @@ OPCODE_BEGIN:
 CONTINUE:
     MOVE.B     SPACE, (A2)+         * adding a space to the beginning
     ADD.W      #1, BYTE_COUNTER
-    
-*    MOVE.L   (A6),A5                     * LINE FOR TESTING
-*    MOVE.B   #5,D4
-*    MOVE.B   D4,D5
+   
 
     
         
 * work in progress, start of op-code debugging
 FIRST4BITS:
-    MOVE.L  (A4),D2    * moving long of address $1000 into D2
+    MOVE.W  (A4),D2    * moving long of address $1000 into D2
     MOVE.W  A4,D6   * ******temp holds the address, needs to be changed************
-    MOVE.L  D2,D3       * save a copy of of contents in D3
+    MOVE.W  D2,D3       * save a copy of of contents in D3
     
     CMP.L   #$4E75FFFF, D2
     BEQ     OP_RTS
     
     MOVE.L  D3,D2
-    ROL.L   #4,D2       * rotate to the left by 4 to see first 4 bits
+    ROL.W   #4,D2       * rotate to the left by 4 to see first 4 bits
     AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
     
-    MOVE.L  D3,D2
+    *MOVE.L  D3,D2
     CMP.B   #%00000001, D2      * move.b
     BEQ     MOVE
     CMP.B   #%00000011, D2      * move.l
@@ -73,9 +70,9 @@ OP_RTS:
     BRA     BUFFER_LOOP
         
 MOVE:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    ROL.L   #8, D2     * now checking the destination mode set by rotating left by 10
-    ROL.L   #2, D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #8, D2     * now checking the destination mode set by rotating left by 10
+    ROL.W   #2, D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     CMP.B   #%00000000, D2      * move.b
     BEQ     MOVE_DN
@@ -107,8 +104,8 @@ MOVE_AN:
 
     
 MOVE_SIZE:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    ROL.L   #4,D2       * rotate to the left by 4 to see first 4 bits
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #4,D2       * rotate to the left by 4 to see first 4 bits
     AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
     CMP.B   #%00000001, D2      * move.b
     BEQ     BYTE
@@ -138,9 +135,9 @@ LONG:
     
     
 MOVE_SOURCE:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    ROL.L   #8, D2      * rotate to the left by 4 to see first 4 bits
-    ROL.L   #5, D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #8, D2      * rotate to the left by 4 to see first 4 bits
+    ROL.W   #5, D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     CMP.B   #%00000000, D2      * move.b
     BEQ     MOVE_SOURCE_DN
@@ -151,8 +148,8 @@ MOVE_SOURCE:
   
     
 MOVE_SOURCE_DN:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    SWAP    D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+ *   SWAP    D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     ADD.B   #$30, D2
     MOVE.B  D, (A2)+
@@ -162,8 +159,8 @@ MOVE_SOURCE_DN:
     BRA     MOVE_DEST
     
 MOVE_SOURCE_AN:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    SWAP    D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    *SWAP    D2          * ***** NOT SURE THIS WORKS>> CHECK
     AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
     ADD.B   #$30, D2
     MOVE.B  A, (A2)+
@@ -173,8 +170,8 @@ MOVE_SOURCE_AN:
     BRA     MOVE_DEST
     
 MOVE_SOURCE_AN_010:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    SWAP    D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+  *  SWAP    D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
     ADD.B   #$30, D2
     MOVE.B  OPEN_PARA, (A2)+
@@ -188,9 +185,9 @@ MOVE_SOURCE_AN_010:
     
         
 MOVE_DEST:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    ROL.L   #8, D2      * rotate to the left by 4 to see first 4 bits
-    ROL.L   #2, D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #8, D2      * rotate to the left by 4 to see first 4 bits
+    ROL.W   #2, D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     CMP.B   #%00000000, D2      * move.b
     BEQ     MOVE_DEST_DN
@@ -200,8 +197,8 @@ MOVE_DEST:
     BEQ     MOVE_DEST_AN_010
     
 MOVE_DEST_DN:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    ROL.L   #7,D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #7,D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     ADD.B   #$30, D2
     MOVE.B  D, (A2)+
@@ -210,8 +207,8 @@ MOVE_DEST_DN:
     BRA     BUFFER_LOOP
     
 MOVE_DEST_AN:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    ROL.L   #7, D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #7, D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     ADD.B   #$30, D2
     MOVE.B  A, (A2)+
@@ -220,8 +217,8 @@ MOVE_DEST_AN:
     BRA     BUFFER_LOOP
     
 MOVE_DEST_AN_010:
-    MOVE.L  D3, D2      * reset address contents to before bitmask
-    ROL.L   #7, D2
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #7, D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     ADD.B   #$30, D2
     MOVE.B  A, (A2)+
@@ -343,6 +340,11 @@ MONEY       DC.B '$',0
 
 
     *END    START        ; last line of source
+
+
+
+
+
 
 
 
