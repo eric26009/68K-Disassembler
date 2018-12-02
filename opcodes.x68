@@ -186,11 +186,11 @@ MOVE_SIZE:
     MOVE.W  D3, D2      * reset address contents to before bitmask
     ROL.W   #4,D2       * rotate to the left by 4 to see first 4 bits
     AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
-    CMP.B   #%00000000, D2      * move.b
+    CMP.B   #%00000001, D2      * move.b
     BEQ     BYTE
-    CMP.B   #%00000001, D2      * move.l
+    CMP.B   #%00000011, D2      * move.W
     BEQ     WORD
-    CMP.B   #%00000010, D2      * move.w
+    CMP.B   #%00000010, D2      * move.L
     BEQ     LONG
 
     
@@ -419,6 +419,7 @@ MONEY       DC.B '$',0
 
 
     *END    START        ; last line of source
+
 
 
 

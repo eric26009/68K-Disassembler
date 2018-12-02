@@ -7,7 +7,7 @@
     ORG    $1000
     
 START_ADDRESS   EQU     $1024       * hard coded start address
-END_ADDRESS     EQU     $1028       * hard coded end address
+END_ADDRESS     EQU     $1030       * hard coded end address
     
    
     
@@ -30,9 +30,9 @@ COMPLETED:
     MOVE.B  #13, D0                 * displaying message
     TRAP #15
 
-*    MULS      D6,D7                     * LINE FOR TESTING
-*    MOVE.B   D6,D4
-*    MOVE.B   D4,D5
+    MULS      D6,D7                     * LINE FOR TESTING
+    MOVE.B   D6,D4
+    MOVE.B   D4,D5
     
     
     SIMHALT             ; halt simulator
@@ -41,6 +41,8 @@ COMPLETED:
  INCLUDE "opcodes.x68"
 
     END    START        ; last line of source
+
+
 
 
 
