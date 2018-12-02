@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/1/2018 1:24:24 PM
+Created On: 12/1/2018 1:57:14 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -30,11 +30,11 @@ Created On: 12/1/2018 1:24:24 PM
 00001016  60F0                      26      BRA     MAIN                    * go back to check addresses in MAIN
 00001018                            27      
 00001018                            28  COMPLETED:
-00001018  43F9 00001360             29      LEA FINISHED, A1                * load finished message
+00001018  43F9 000013C4             29      LEA FINISHED, A1                * load finished message
 0000101E  103C 000D                 30      MOVE.B  #13, D0                 * displaying message
 00001022  4E4F                      31      TRAP #15
 00001024                            32  
-00001024  2A56                      33      MOVEA.L   (A6),A5                     * LINE FOR TESTING
+00001024  DE46                      33      ADD      D6,D7                     * LINE FOR TESTING
 00001026  183C 0005                 34      MOVE.B   #5,D4
 0000102A  1A04                      35      MOVE.B   D4,D5
 0000102C                            36      
@@ -42,7 +42,7 @@ Created On: 12/1/2018 1:24:24 PM
 0000102C  FFFF FFFF                 38      SIMHALT             ; halt simulator
 00001030                            39  
 00001030                            40  * Put variables and constants here
-00001030                            41   INCLUDE "/Users/Eric/Google Drive/Fall 2018/422/68k_git/68K-Disassembler/opcodes.x68"
+00001030                            41   INCLUDE "opcodes.x68"
 00001030                            42      *ORG    $1000
 00001030                            43      
 00001030  =00002000                 44  BUFF_POINT      EQU     $2000   * where the string buffer lives
@@ -61,11 +61,11 @@ Created On: 12/1/2018 1:24:24 PM
 00001042  1A3C 0000                 57      MOVE.B    #0, D5                * RESETTING HEX CONVERTER COUNTER
 00001046  2C0C                      58      MOVE.L  A4,D6
 00001048  2E06                      59      MOVE.L  D6,D7
-0000104A  14F9 00001372             60      MOVE.B     MONEY, (A2)+         * adding a MONEY SYMBOL to the beginning
+0000104A  14F9 000013D6             60      MOVE.B     MONEY, (A2)+         * adding a MONEY SYMBOL to the beginning
 00001050  5278 0000                 61      ADD.W      #1, BYTE_COUNTER
-00001054  6000 0272                 62      BRA        HEX_CHAR
+00001054  6000 02D6                 62      BRA        HEX_CHAR
 00001058                            63  CONTINUE:
-00001058  14F9 0000136C             64      MOVE.B     SPACE, (A2)+         * adding a space to the beginning
+00001058  14F9 000013D0             64      MOVE.B     SPACE, (A2)+         * adding a space to the beginning
 0000105E  5278 0000                 65      ADD.W      #1, BYTE_COUNTER
 00001062                            66     
 00001062                            67  
@@ -77,7 +77,7 @@ Created On: 12/1/2018 1:24:24 PM
 00001066  3602                      73      MOVE.W  D2,D3       * save a copy of of contents in D3
 00001068                            74      
 00001068  B4BC 4E75FFFF             75      CMP.L   #$4E75FFFF, D2
-0000106E  6700 002E                 76      BEQ     OP_RTS
+0000106E  6700 0092                 76      BEQ     OP_RTS
 00001072                            77      
 00001072  2403                      78      MOVE.L  D3,D2
 00001074  E95A                      79      ROL.W   #4,D2       * rotate to the left by 4 to see first 4 bits
@@ -85,313 +85,343 @@ Created On: 12/1/2018 1:24:24 PM
 0000107A                            81      
 0000107A                            82      *MOVE.L  D3,D2
 0000107A  B43C 0001                 83      CMP.B   #%00000001, D2      * move.b
-0000107E  6700 0038                 84      BEQ     MOVE
+0000107E  6700 009C                 84      BEQ     MOVE
 00001082  B43C 0003                 85      CMP.B   #%00000011, D2      * move.l
-00001086  6700 0030                 86      BEQ     MOVE
+00001086  6700 0094                 86      BEQ     MOVE
 0000108A  B43C 0002                 87      CMP.B   #%00000010, D2      * move.w
-0000108E  6700 0028                 88      BEQ     MOVE
+0000108E  6700 008C                 88      BEQ     MOVE
 00001092  B43C 000D                 89      CMP.B   #%00001101, D2      * ADD
 00001096  6700 0006                 90      BEQ     ADD
 0000109A                            91      *CMP.B   #%00000000, D2      * somthing tbd
 0000109A                            92      *BEQ     _0000
-0000109A  6000 01EC                 93      BRA UNKNOWN
+0000109A  6000 0250                 93      BRA UNKNOWN
 0000109E                            94      
 0000109E                            95  ADD:
-0000109E                            96  
-0000109E                            97      
-0000109E                            98  OP_RTS:
-0000109E  14F9 00001344             99      MOVE.B  R, (A2)+
-000010A4  14F9 00001348            100      MOVE.B  T, (A2)+
-000010AA  14F9 00001346            101      MOVE.B  S, (A2)+
-000010B0  5678 0000                102      ADD.W   #3, BYTE_COUNTER
-000010B4  6000 01EE                103      BRA     BUFFER_LOOP
-000010B8                           104          
-000010B8                           105  MOVE:
-000010B8  3403                     106      MOVE.W  D3, D2      * reset address contents to before bitmask
-000010BA  E15A                     107      ROL.W   #8, D2     * now checking the destination mode set by rotating left by 10
-000010BC  E55A                     108      ROL.W   #2, D2
-000010BE  C43C 0007                109      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-000010C2  B43C 0000                110      CMP.B   #%00000000, D2      * move.b
-000010C6  6700 000E                111      BEQ     MOVE_DN
-000010CA  B43C 0001                112      CMP.B   #%00000001, D2
-000010CE  6700 002C                113      BEQ     MOVE_AN
-000010D2  6000 01B4                114      BRA     UNKNOWN
-000010D6                           115      
-000010D6                           116  MOVE_DN:
-000010D6  14F9 0000133A            117      MOVE.B  M, (A2)+
-000010DC  14F9 0000133E            118      MOVE.B  O, (A2)+
-000010E2  14F9 0000134C            119      MOVE.B  V, (A2)+
-000010E8  14F9 0000132A            120      MOVE.B  E, (A2)+
-000010EE  14F9 0000135A            121      MOVE.B  DOT, (A2)+
-000010F4  5A78 0000                122      ADD.W      #5, BYTE_COUNTER
-000010F8  6000 002E                123      BRA MOVE_SIZE
-000010FC                           124      
-000010FC                           125      
-000010FC                           126  MOVE_AN:
-000010FC  14F9 0000133A            127      MOVE.B  M, (A2)+
-00001102  14F9 0000133E            128      MOVE.B  O, (A2)+
-00001108  14F9 0000134C            129      MOVE.B  V, (A2)+
-0000110E  14F9 0000132A            130      MOVE.B  E, (A2)+
-00001114  14F9 00001322            131      MOVE.B  A, (A2)+
-0000111A  14F9 0000135A            132      MOVE.B  DOT, (A2)+
-00001120  5C78 0000                133      ADD.W      #6, BYTE_COUNTER
-00001124  6000 0002                134      BRA MOVE_SIZE
-00001128                           135  
-00001128                           136  
-00001128                           137      
-00001128                           138  MOVE_SIZE:
-00001128  3403                     139      MOVE.W  D3, D2      * reset address contents to before bitmask
-0000112A  E95A                     140      ROL.W   #4,D2       * rotate to the left by 4 to see first 4 bits
-0000112C  C43C 000F                141      AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
-00001130  B43C 0001                142      CMP.B   #%00000001, D2      * move.b
-00001134  6700 0012                143      BEQ     BYTE
-00001138  B43C 0003                144      CMP.B   #%00000011, D2      * move.l
-0000113C  6700 001E                145      BEQ     WORD
-00001140  B43C 0002                146      CMP.B   #%00000010, D2      * move.w
-00001144  6700 002A                147      BEQ     LONG
-00001148                           148  
-00001148                           149      
-00001148                           150  BYTE:
-00001148  14F9 00001324            151      MOVE.B  B, (A2)+
-0000114E  14F9 0000136C            152      MOVE.B  SPACE,(A2)+
-00001154  5478 0000                153      ADD.W      #2, BYTE_COUNTER
-00001158  6000 002A                154      BRA     MOVE_SOURCE
-0000115C                           155  
-0000115C                           156  WORD:
-0000115C  14F9 0000134E            157      MOVE.B  W, (A2)+
-00001162  14F9 0000136C            158      MOVE.B  SPACE, (A2)+
-00001168  5478 0000                159      ADD.W      #2, BYTE_COUNTER
-0000116C  6000 0016                160      BRA     MOVE_SOURCE
-00001170                           161      
-00001170                           162  LONG:
-00001170  14F9 00001338            163      MOVE.B  L, (A2)+
-00001176  14F9 0000136C            164      MOVE.B  SPACE,(A2)+
-0000117C  5478 0000                165      ADD.W      #2, BYTE_COUNTER
-00001180  6000 0002                166      BRA     MOVE_SOURCE
-00001184                           167      
-00001184                           168      
-00001184                           169  MOVE_SOURCE:
-00001184  3403                     170      MOVE.W  D3, D2      * reset address contents to before bitmask
-00001186  E15A                     171      ROL.W   #8, D2      * rotate to the left by 4 to see first 4 bits
-00001188  EB5A                     172      ROL.W   #5, D2
-0000118A  C43C 0007                173      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-0000118E  B43C 0000                174      CMP.B   #%00000000, D2      * move.b
-00001192  6700 0012                175      BEQ     MOVE_SOURCE_DN
-00001196  B43C 0001                176      CMP.B   #%00000001, D2
-0000119A  6700 002A                177      BEQ     MOVE_SOURCE_AN
-0000119E  B43C 0002                178      CMP.B   #%00000010, D2
-000011A2  6700 0042                179      BEQ     MOVE_SOURCE_AN_010
-000011A6                           180    
-000011A6                           181      
-000011A6                           182  MOVE_SOURCE_DN:
-000011A6  3403                     183      MOVE.W  D3, D2      * reset address contents to before bitmask
-000011A8                           184   *   SWAP    D2
-000011A8  C43C 0007                185      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-000011AC  0602 0030                186      ADD.B   #$30, D2
-000011B0  14F9 00001328            187      MOVE.B  D, (A2)+
-000011B6  14C2                     188      MOVE.B  D2, (A2)+
-000011B8  14F9 00001370            189      MOVE.B  COMMA, (A2)+  
-000011BE  5678 0000                190      ADD.W      #3, BYTE_COUNTER
-000011C2  6000 004E                191      BRA     MOVE_DEST
-000011C6                           192      
-000011C6                           193  MOVE_SOURCE_AN:
-000011C6  3403                     194      MOVE.W  D3, D2      * reset address contents to before bitmask
-000011C8                           195      *SWAP    D2          * ***** NOT SURE THIS WORKS>> CHECK
-000011C8  C43C 0007                196      AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
-000011CC  0602 0030                197      ADD.B   #$30, D2
-000011D0  14F9 00001322            198      MOVE.B  A, (A2)+
-000011D6  14C2                     199      MOVE.B  D2, (A2)+
-000011D8  14F9 00001370            200      MOVE.B  COMMA, (A2)+  
-000011DE  5678 0000                201      ADD.W      #3, BYTE_COUNTER
-000011E2  6000 002E                202      BRA     MOVE_DEST
-000011E6                           203      
-000011E6                           204  MOVE_SOURCE_AN_010:
-000011E6  3403                     205      MOVE.W  D3, D2      * reset address contents to before bitmask
-000011E8                           206    *  SWAP    D2
-000011E8  C43C 0007                207      AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
-000011EC  0602 0030                208      ADD.B   #$30, D2
-000011F0  14F9 00001356            209      MOVE.B  OPEN_PARA, (A2)+
-000011F6  14F9 00001322            210      MOVE.B  A, (A2)+
-000011FC  14C2                     211      MOVE.B  D2, (A2)+
-000011FE  14F9 00001358            212      MOVE.B  CLOSE_PARA, (A2)+
-00001204  14F9 00001370            213      MOVE.B  COMMA, (A2)+  
-0000120A  5A78 0000                214      ADD.W      #5, BYTE_COUNTER
-0000120E  6000 0002                215      BRA     MOVE_DEST
-00001212                           216  
-00001212                           217      
-00001212                           218          
-00001212                           219  MOVE_DEST:
-00001212  3403                     220      MOVE.W  D3, D2      * reset address contents to before bitmask
-00001214  E15A                     221      ROL.W   #8, D2      * rotate to the left by 4 to see first 4 bits
-00001216  E55A                     222      ROL.W   #2, D2
-00001218  C43C 0007                223      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-0000121C  B43C 0000                224      CMP.B   #%00000000, D2      * move.b
-00001220  6700 0012                225      BEQ     MOVE_DEST_DN
-00001224  B43C 0001                226      CMP.B   #%00000001, D2
-00001228  6700 0026                227      BEQ     MOVE_DEST_AN
-0000122C  B43C 0002                228      CMP.B   #%00000010, D2
-00001230  6700 003A                229      BEQ     MOVE_DEST_AN_010
-00001234                           230      
-00001234                           231  MOVE_DEST_DN:
-00001234  3403                     232      MOVE.W  D3, D2      * reset address contents to before bitmask
-00001236  EF5A                     233      ROL.W   #7,D2
-00001238  C43C 0007                234      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-0000123C  0602 0030                235      ADD.B   #$30, D2
-00001240  14F9 00001328            236      MOVE.B  D, (A2)+
-00001246  14C2                     237      MOVE.B  D2, (A2)+
-00001248  5478 0000                238      ADD.W      #2, BYTE_COUNTER
-0000124C  6000 0056                239      BRA     BUFFER_LOOP
-00001250                           240      
-00001250                           241  MOVE_DEST_AN:
-00001250  3403                     242      MOVE.W  D3, D2      * reset address contents to before bitmask
-00001252  EF5A                     243      ROL.W   #7, D2
-00001254  C43C 0007                244      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-00001258  0602 0030                245      ADD.B   #$30, D2
-0000125C  14F9 00001322            246      MOVE.B  A, (A2)+
-00001262  14C2                     247      MOVE.B  D2, (A2)+
-00001264  5478 0000                248      ADD.W      #2, BYTE_COUNTER
-00001268  6000 003A                249      BRA     BUFFER_LOOP
-0000126C                           250      
-0000126C                           251  MOVE_DEST_AN_010:
-0000126C  3403                     252      MOVE.W  D3, D2      * reset address contents to before bitmask
-0000126E  EF5A                     253      ROL.W   #7, D2
-00001270  C43C 0007                254      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-00001274  0602 0030                255      ADD.B   #$30, D2
-00001278  14F9 00001322            256      MOVE.B  A, (A2)+
-0000127E  14C2                     257      MOVE.B  D2, (A2)+
-00001280  5478 0000                258      ADD.W      #2, BYTE_COUNTER
-00001284  6000 001E                259      BRA     BUFFER_LOOP
-00001288                           260  
-00001288                           261  
-00001288                           262  
-00001288                           263  
-00001288                           264  UNKNOWN:
-00001288  14F9 00001328            265      MOVE.B  D, (A2)+
-0000128E  14F9 00001322            266      MOVE.B  A, (A2)+
-00001294  14F9 00001348            267      MOVE.B  T, (A2)+
-0000129A  14F9 00001322            268      MOVE.B  A, (A2)+
-000012A0  5878 0000                269      ADD.W      #4, BYTE_COUNTER
-000012A4                           270  
-000012A4                           271  
-000012A4                           272  BUFFER_LOOP:
-000012A4  B6CA                     273      CMPA       A2,A3                * checking if start/end address match of string
-000012A6  6700 0006                274      BEQ        PRINT_BUFFER         * finished if addresses match
-000012AA  12DB                     275      MOVE.B     (A3)+,(A1)+          * move byte letter from string_store to A1
-000012AC  60F6                     276      BRA        BUFFER_LOOP          * loop back untill start/end addresses match
-000012AE                           277  
-000012AE                           278  PRINT_BUFFER:
-000012AE  103C 0000                279      MOVE.B     #0, D0               * trap task 0 to print string in buffer A1
-000012B2  43F8 2000                280      LEA        BUFF_POINT,A1    
-000012B6  3238 0000                281      MOVE.W     BYTE_COUNTER, D1     * need to say how many bytes to print in D1
-000012BA  4E4F                     282      TRAP #15
-000012BC                           283  
-000012BC  4EF8 1014                284      JMP     NEXT_ADDRESS
-000012C0                           285  
-000012C0                           286  TEST:
-000012C0  4EB9 000012C6            287      JSR TEST2
-000012C6                           288  
-000012C6                           289  TEST2:
-000012C6  4E75                     290      RTS
-000012C8                           291      
-000012C8                           292  HEX_CHAR:
-000012C8  BA3C 0004                293      CMP.B   #4,D5
-000012CC  6700 FD8A                294      BEQ     CONTINUE
-000012D0  2E06                     295      MOVE.L  D6,D7
-000012D2  CC7C F000                296      AND.W   #%1111000000000000, D6
-000012D6  E05E                     297      ROR.W   #8,D6
-000012D8  E85E                     298      ROR.W   #4,D6
-000012DA  5205                     299      ADD.B   #1,D5
-000012DC  BCBC 00000009            300      CMP.L   #9, D6
-000012E2  6F00 0006                301      BLE     NUMBER
-000012E6  6C00 0012                302      BGE     LETTER   
-000012EA                           303      
-000012EA                           304  NUMBER:
-000012EA  0606 0030                305      ADD.B   #$30, D6
-000012EE  14C6                     306      MOVE.B  D6, (A2)+
-000012F0  5278 0000                307      ADD.W      #1, BYTE_COUNTER
-000012F4  E95F                     308      ROL.W   #4,D7
-000012F6  2C07                     309      MOVE.L  D7,D6
-000012F8  60CE                     310      BRA     HEX_CHAR
-000012FA                           311  
-000012FA                           312  LETTER:
-000012FA  0606 0037                313      ADD.B   #$37, D6
-000012FE  14C6                     314      MOVE.B  D6, (A2)+
-00001300  5278 0000                315      ADD.W      #1, BYTE_COUNTER
-00001304  E95F                     316      ROL.W   #4,D7
-00001306  2C07                     317      MOVE.L  D7,D6
-00001308  60BE                     318      BRA     HEX_CHAR
-0000130A                           319  
-0000130A                           320     
-0000130A  FFFF FFFF                321      SIMHALT             ; halt simulator
-0000130E                           322  
-0000130E                           323  
-0000130E= 30 00                    324  _0          DC.B '0',0
-00001310= 31 00                    325  _1          DC.B '1',0
-00001312= 32 00                    326  _2          DC.B '2',0
-00001314= 33 00                    327  _3          DC.B '3',0
-00001316= 34 00                    328  _4          DC.B '4',0
-00001318= 35 00                    329  _5          DC.B '5',0
-0000131A= 36 00                    330  _6          DC.B '6',0
-0000131C= 37 00                    331  _7          DC.B '7',0
-0000131E= 38 00                    332  _8          DC.B '8',0
-00001320= 39 00                    333  _9          DC.B '9',0
-00001322= 41 00                    334  A           DC.B 'A',0
-00001324= 42 00                    335  B           DC.B 'B',0
-00001326= 43 00                    336  C           DC.B 'C',0
-00001328= 44 00                    337  D           DC.B 'D',0
-0000132A= 45 00                    338  E           DC.B 'E',0
-0000132C= 46 00                    339  F           DC.B 'F',0
-0000132E= 47 00                    340  G           DC.B 'G',0
-00001330= 48 00                    341  H           DC.B 'H',0
-00001332= 49 00                    342  I           DC.B 'I',0
-00001334= 4A 00                    343  J           DC.B 'J',0
-00001336= 4B 00                    344  K           DC.B 'K',0
-00001338= 4C 00                    345  L           DC.B 'L',0
-0000133A= 4D 00                    346  M           DC.B 'M',0
-0000133C= 4E 00                    347  N           DC.B 'N',0
-0000133E= 4F 00                    348  O           DC.B 'O',0
-00001340= 50 00                    349  P           DC.B 'P',0
-00001342= 51 00                    350  Q           DC.B 'Q',0
-00001344= 52 00                    351  R           DC.B 'R',0
-00001346= 53 00                    352  S           DC.B 'S',0
-00001348= 54 00                    353  T           DC.B 'T',0
-0000134A= 55 00                    354  U           DC.B 'U',0
-0000134C= 56 00                    355  V           DC.B 'V',0
-0000134E= 57 00                    356  W           DC.B 'W',0
-00001350= 58 00                    357  X           DC.B 'X',0
-00001352= 59 00                    358  Y           DC.B 'Y',0
-00001354= 5A 00                    359  Z           DC.B 'Z',0
-00001356= 28 00                    360  OPEN_PARA   DC.B '(',0
-00001358= 29 00                    361  CLOSE_PARA  DC.B ')',0
-0000135A= 2E 00                    362  DOT         DC.B '.',0
-0000135C= 2B 00                    363  PLUS        DC.B '+',0
-0000135E= 2D 00                    364  MINUS       DC.B '-',0  
-00001360= 46494E49 53484544 ...    365  FINISHED    DC.L 'FINISHED',0
-0000136C= 20 00                    366  SPACE       DC.B ' ',0
-0000136E= 3F 00                    367  QUESTION    DC.B '?',0
-00001370= 2C 00                    368  COMMA       DC.B ',',0
-00001372= 24 00                    369  MONEY       DC.B '$',0
-00001374                           370  
-00001374                           371  
-00001374                           372      *END    START        ; last line of source
-00001374                           373  
-00001374                           374  
-00001374                           375  
-00001374                           376  
-00001374                           377  
-00001374                           378  
-00001374                           379  
-00001374                           380  
-00001374                           381  
-00001374                           382  
-00001374                           383  
-00001374                           384  
-00001374                           385  
-00001374                           386  
-00001374                           387  
-00001374                           388  -------------------- end include --------------------
-00001374                           389  
-00001374                           390      END    START        ; last line of source
+0000109E  3403                      96       MOVE.W  D3, D2      * reset address contents to before bitmask
+000010A0  E15A                      97       ROL.W   #8, D2     * now checking the destination mode set by rotating left by 10
+000010A2  E55A                      98       ROL.W   #2, D2
+000010A4  C43C 0007                 99       AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+000010A8  B43C 0000                100       CMP.B   #%00000000, D2      * move Dn
+000010AC  6700 000E                101       BEQ     ADD_DN        
+000010B0  B43C 0001                102       CMP.B   #%00000001, D2      * move An
+000010B4  6700 0026                103       BEQ     ADD_AN
+000010B8  6000 0232                104       BRA     UNKNOWN      
+000010BC                           105       
+000010BC                           106  ADD_DN:
+000010BC  14F9 00001386            107      MOVE.B  A, (A2)+
+000010C2  14F9 0000138C            108      MOVE.B  D, (A2)+
+000010C8  14F9 0000138C            109      MOVE.B  D, (A2)+
+000010CE  14F9 000013BE            110      MOVE.B  DOT, (A2)+
+000010D4  5878 0000                111      ADD.W      #4, BYTE_COUNTER
+000010D8  6000 022E                112      BRA     BUFFER_LOOP
+000010DC                           113  
+000010DC                           114   
+000010DC                           115  ADD_AN:
+000010DC  14F9 00001386            116      MOVE.B  A, (A2)+
+000010E2  14F9 0000138C            117      MOVE.B  D, (A2)+
+000010E8  14F9 0000138C            118      MOVE.B  D, (A2)+
+000010EE  14F9 00001386            119      MOVE.B  A, (A2)+
+000010F4  14F9 000013BE            120      MOVE.B  DOT, (A2)+
+000010FA  5A78 0000                121      ADD.W      #5, BYTE_COUNTER
+000010FE  6000 0208                122      BRA     BUFFER_LOOP
+00001102                           123  
+00001102                           124  
+00001102                           125  
+00001102                           126      
+00001102                           127  OP_RTS:
+00001102  14F9 000013A8            128      MOVE.B  R, (A2)+
+00001108  14F9 000013AC            129      MOVE.B  T, (A2)+
+0000110E  14F9 000013AA            130      MOVE.B  S, (A2)+
+00001114  5678 0000                131      ADD.W   #3, BYTE_COUNTER
+00001118  6000 01EE                132      BRA     BUFFER_LOOP
+0000111C                           133          
+0000111C                           134  MOVE:
+0000111C  3403                     135      MOVE.W  D3, D2      * reset address contents to before bitmask
+0000111E  E15A                     136      ROL.W   #8, D2     * now checking the destination mode set by rotating left by 10
+00001120  E55A                     137      ROL.W   #2, D2
+00001122  C43C 0007                138      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+00001126  B43C 0000                139      CMP.B   #%00000000, D2      * move Dn
+0000112A  6700 000E                140      BEQ     MOVE_DN
+0000112E  B43C 0001                141      CMP.B   #%00000001, D2      * move An
+00001132  6700 002C                142      BEQ     MOVE_AN
+00001136  6000 01B4                143      BRA     UNKNOWN
+0000113A                           144      
+0000113A                           145  MOVE_DN:
+0000113A  14F9 0000139E            146      MOVE.B  M, (A2)+
+00001140  14F9 000013A2            147      MOVE.B  O, (A2)+
+00001146  14F9 000013B0            148      MOVE.B  V, (A2)+
+0000114C  14F9 0000138E            149      MOVE.B  E, (A2)+
+00001152  14F9 000013BE            150      MOVE.B  DOT, (A2)+
+00001158  5A78 0000                151      ADD.W      #5, BYTE_COUNTER
+0000115C  6000 002E                152      BRA MOVE_SIZE
+00001160                           153      
+00001160                           154      
+00001160                           155  MOVE_AN:
+00001160  14F9 0000139E            156      MOVE.B  M, (A2)+
+00001166  14F9 000013A2            157      MOVE.B  O, (A2)+
+0000116C  14F9 000013B0            158      MOVE.B  V, (A2)+
+00001172  14F9 0000138E            159      MOVE.B  E, (A2)+
+00001178  14F9 00001386            160      MOVE.B  A, (A2)+
+0000117E  14F9 000013BE            161      MOVE.B  DOT, (A2)+
+00001184  5C78 0000                162      ADD.W      #6, BYTE_COUNTER
+00001188  6000 0002                163      BRA MOVE_SIZE
+0000118C                           164  
+0000118C                           165  
+0000118C                           166      
+0000118C                           167  MOVE_SIZE:
+0000118C  3403                     168      MOVE.W  D3, D2      * reset address contents to before bitmask
+0000118E  E95A                     169      ROL.W   #4,D2       * rotate to the left by 4 to see first 4 bits
+00001190  C43C 000F                170      AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
+00001194  B43C 0001                171      CMP.B   #%00000001, D2      * move.b
+00001198  6700 0012                172      BEQ     BYTE
+0000119C  B43C 0003                173      CMP.B   #%00000011, D2      * move.l
+000011A0  6700 001E                174      BEQ     WORD
+000011A4  B43C 0002                175      CMP.B   #%00000010, D2      * move.w
+000011A8  6700 002A                176      BEQ     LONG
+000011AC                           177  
+000011AC                           178      
+000011AC                           179  BYTE:
+000011AC  14F9 00001388            180      MOVE.B  B, (A2)+
+000011B2  14F9 000013D0            181      MOVE.B  SPACE,(A2)+
+000011B8  5478 0000                182      ADD.W      #2, BYTE_COUNTER
+000011BC  6000 002A                183      BRA     MOVE_SOURCE
+000011C0                           184  
+000011C0                           185  WORD:
+000011C0  14F9 000013B2            186      MOVE.B  W, (A2)+
+000011C6  14F9 000013D0            187      MOVE.B  SPACE, (A2)+
+000011CC  5478 0000                188      ADD.W      #2, BYTE_COUNTER
+000011D0  6000 0016                189      BRA     MOVE_SOURCE
+000011D4                           190      
+000011D4                           191  LONG:
+000011D4  14F9 0000139C            192      MOVE.B  L, (A2)+
+000011DA  14F9 000013D0            193      MOVE.B  SPACE,(A2)+
+000011E0  5478 0000                194      ADD.W      #2, BYTE_COUNTER
+000011E4  6000 0002                195      BRA     MOVE_SOURCE
+000011E8                           196      
+000011E8                           197      
+000011E8                           198  MOVE_SOURCE:
+000011E8  3403                     199      MOVE.W  D3, D2      * reset address contents to before bitmask
+000011EA  E15A                     200      ROL.W   #8, D2      * rotate to the left by 4 to see first 4 bits
+000011EC  EB5A                     201      ROL.W   #5, D2
+000011EE  C43C 0007                202      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+000011F2  B43C 0000                203      CMP.B   #%00000000, D2      * move.b
+000011F6  6700 0012                204      BEQ     MOVE_SOURCE_DN
+000011FA  B43C 0001                205      CMP.B   #%00000001, D2
+000011FE  6700 002A                206      BEQ     MOVE_SOURCE_AN
+00001202  B43C 0002                207      CMP.B   #%00000010, D2
+00001206  6700 0042                208      BEQ     MOVE_SOURCE_AN_010
+0000120A                           209    
+0000120A                           210      
+0000120A                           211  MOVE_SOURCE_DN:
+0000120A  3403                     212      MOVE.W  D3, D2      * reset address contents to before bitmask
+0000120C                           213   *   SWAP    D2
+0000120C  C43C 0007                214      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+00001210  0602 0030                215      ADD.B   #$30, D2
+00001214  14F9 0000138C            216      MOVE.B  D, (A2)+
+0000121A  14C2                     217      MOVE.B  D2, (A2)+
+0000121C  14F9 000013D4            218      MOVE.B  COMMA, (A2)+  
+00001222  5678 0000                219      ADD.W      #3, BYTE_COUNTER
+00001226  6000 004E                220      BRA     MOVE_DEST
+0000122A                           221      
+0000122A                           222  MOVE_SOURCE_AN:
+0000122A  3403                     223      MOVE.W  D3, D2      * reset address contents to before bitmask
+0000122C                           224      *SWAP    D2          * ***** NOT SURE THIS WORKS>> CHECK
+0000122C  C43C 0007                225      AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
+00001230  0602 0030                226      ADD.B   #$30, D2
+00001234  14F9 00001386            227      MOVE.B  A, (A2)+
+0000123A  14C2                     228      MOVE.B  D2, (A2)+
+0000123C  14F9 000013D4            229      MOVE.B  COMMA, (A2)+  
+00001242  5678 0000                230      ADD.W      #3, BYTE_COUNTER
+00001246  6000 002E                231      BRA     MOVE_DEST
+0000124A                           232      
+0000124A                           233  MOVE_SOURCE_AN_010:
+0000124A  3403                     234      MOVE.W  D3, D2      * reset address contents to before bitmask
+0000124C                           235    *  SWAP    D2
+0000124C  C43C 0007                236      AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
+00001250  0602 0030                237      ADD.B   #$30, D2
+00001254  14F9 000013BA            238      MOVE.B  OPEN_PARA, (A2)+
+0000125A  14F9 00001386            239      MOVE.B  A, (A2)+
+00001260  14C2                     240      MOVE.B  D2, (A2)+
+00001262  14F9 000013BC            241      MOVE.B  CLOSE_PARA, (A2)+
+00001268  14F9 000013D4            242      MOVE.B  COMMA, (A2)+  
+0000126E  5A78 0000                243      ADD.W      #5, BYTE_COUNTER
+00001272  6000 0002                244      BRA     MOVE_DEST
+00001276                           245  
+00001276                           246      
+00001276                           247          
+00001276                           248  MOVE_DEST:
+00001276  3403                     249      MOVE.W  D3, D2      * reset address contents to before bitmask
+00001278  E15A                     250      ROL.W   #8, D2      * rotate to the left by 4 to see first 4 bits
+0000127A  E55A                     251      ROL.W   #2, D2
+0000127C  C43C 0007                252      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+00001280  B43C 0000                253      CMP.B   #%00000000, D2      * move.b
+00001284  6700 0012                254      BEQ     MOVE_DEST_DN
+00001288  B43C 0001                255      CMP.B   #%00000001, D2
+0000128C  6700 0026                256      BEQ     MOVE_DEST_AN
+00001290  B43C 0002                257      CMP.B   #%00000010, D2
+00001294  6700 003A                258      BEQ     MOVE_DEST_AN_010
+00001298                           259      
+00001298                           260  MOVE_DEST_DN:
+00001298  3403                     261      MOVE.W  D3, D2      * reset address contents to before bitmask
+0000129A  EF5A                     262      ROL.W   #7,D2
+0000129C  C43C 0007                263      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+000012A0  0602 0030                264      ADD.B   #$30, D2
+000012A4  14F9 0000138C            265      MOVE.B  D, (A2)+
+000012AA  14C2                     266      MOVE.B  D2, (A2)+
+000012AC  5478 0000                267      ADD.W      #2, BYTE_COUNTER
+000012B0  6000 0056                268      BRA     BUFFER_LOOP
+000012B4                           269      
+000012B4                           270  MOVE_DEST_AN:
+000012B4  3403                     271      MOVE.W  D3, D2      * reset address contents to before bitmask
+000012B6  EF5A                     272      ROL.W   #7, D2
+000012B8  C43C 0007                273      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+000012BC  0602 0030                274      ADD.B   #$30, D2
+000012C0  14F9 00001386            275      MOVE.B  A, (A2)+
+000012C6  14C2                     276      MOVE.B  D2, (A2)+
+000012C8  5478 0000                277      ADD.W      #2, BYTE_COUNTER
+000012CC  6000 003A                278      BRA     BUFFER_LOOP
+000012D0                           279      
+000012D0                           280  MOVE_DEST_AN_010:
+000012D0  3403                     281      MOVE.W  D3, D2      * reset address contents to before bitmask
+000012D2  EF5A                     282      ROL.W   #7, D2
+000012D4  C43C 0007                283      AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+000012D8  0602 0030                284      ADD.B   #$30, D2
+000012DC  14F9 00001386            285      MOVE.B  A, (A2)+
+000012E2  14C2                     286      MOVE.B  D2, (A2)+
+000012E4  5478 0000                287      ADD.W      #2, BYTE_COUNTER
+000012E8  6000 001E                288      BRA     BUFFER_LOOP
+000012EC                           289  
+000012EC                           290  
+000012EC                           291  
+000012EC                           292  
+000012EC                           293  UNKNOWN:
+000012EC  14F9 0000138C            294      MOVE.B  D, (A2)+
+000012F2  14F9 00001386            295      MOVE.B  A, (A2)+
+000012F8  14F9 000013AC            296      MOVE.B  T, (A2)+
+000012FE  14F9 00001386            297      MOVE.B  A, (A2)+
+00001304  5878 0000                298      ADD.W      #4, BYTE_COUNTER
+00001308                           299  
+00001308                           300  
+00001308                           301  BUFFER_LOOP:
+00001308  B6CA                     302      CMPA       A2,A3                * checking if start/end address match of string
+0000130A  6700 0006                303      BEQ        PRINT_BUFFER         * finished if addresses match
+0000130E  12DB                     304      MOVE.B     (A3)+,(A1)+          * move byte letter from string_store to A1
+00001310  60F6                     305      BRA        BUFFER_LOOP          * loop back untill start/end addresses match
+00001312                           306  
+00001312                           307  PRINT_BUFFER:
+00001312  103C 0000                308      MOVE.B     #0, D0               * trap task 0 to print string in buffer A1
+00001316  43F8 2000                309      LEA        BUFF_POINT,A1    
+0000131A  3238 0000                310      MOVE.W     BYTE_COUNTER, D1     * need to say how many bytes to print in D1
+0000131E  4E4F                     311      TRAP #15
+00001320                           312  
+00001320  4EF8 1014                313      JMP     NEXT_ADDRESS
+00001324                           314  
+00001324                           315  TEST:
+00001324  4EB9 0000132A            316      JSR TEST2
+0000132A                           317  
+0000132A                           318  TEST2:
+0000132A  4E75                     319      RTS
+0000132C                           320      
+0000132C                           321  HEX_CHAR:
+0000132C  BA3C 0004                322      CMP.B   #4,D5
+00001330  6700 FD26                323      BEQ     CONTINUE
+00001334  2E06                     324      MOVE.L  D6,D7
+00001336  CC7C F000                325      AND.W   #%1111000000000000, D6
+0000133A  E05E                     326      ROR.W   #8,D6
+0000133C  E85E                     327      ROR.W   #4,D6
+0000133E  5205                     328      ADD.B   #1,D5
+00001340  BCBC 00000009            329      CMP.L   #9, D6
+00001346  6F00 0006                330      BLE     NUMBER
+0000134A  6C00 0012                331      BGE     LETTER   
+0000134E                           332      
+0000134E                           333  NUMBER:
+0000134E  0606 0030                334      ADD.B   #$30, D6
+00001352  14C6                     335      MOVE.B  D6, (A2)+
+00001354  5278 0000                336      ADD.W      #1, BYTE_COUNTER
+00001358  E95F                     337      ROL.W   #4,D7
+0000135A  2C07                     338      MOVE.L  D7,D6
+0000135C  60CE                     339      BRA     HEX_CHAR
+0000135E                           340  
+0000135E                           341  LETTER:
+0000135E  0606 0037                342      ADD.B   #$37, D6
+00001362  14C6                     343      MOVE.B  D6, (A2)+
+00001364  5278 0000                344      ADD.W      #1, BYTE_COUNTER
+00001368  E95F                     345      ROL.W   #4,D7
+0000136A  2C07                     346      MOVE.L  D7,D6
+0000136C  60BE                     347      BRA     HEX_CHAR
+0000136E                           348  
+0000136E                           349     
+0000136E  FFFF FFFF                350      SIMHALT             ; halt simulator
+00001372                           351  
+00001372                           352  
+00001372= 30 00                    353  _0          DC.B '0',0
+00001374= 31 00                    354  _1          DC.B '1',0
+00001376= 32 00                    355  _2          DC.B '2',0
+00001378= 33 00                    356  _3          DC.B '3',0
+0000137A= 34 00                    357  _4          DC.B '4',0
+0000137C= 35 00                    358  _5          DC.B '5',0
+0000137E= 36 00                    359  _6          DC.B '6',0
+00001380= 37 00                    360  _7          DC.B '7',0
+00001382= 38 00                    361  _8          DC.B '8',0
+00001384= 39 00                    362  _9          DC.B '9',0
+00001386= 41 00                    363  A           DC.B 'A',0
+00001388= 42 00                    364  B           DC.B 'B',0
+0000138A= 43 00                    365  C           DC.B 'C',0
+0000138C= 44 00                    366  D           DC.B 'D',0
+0000138E= 45 00                    367  E           DC.B 'E',0
+00001390= 46 00                    368  F           DC.B 'F',0
+00001392= 47 00                    369  G           DC.B 'G',0
+00001394= 48 00                    370  H           DC.B 'H',0
+00001396= 49 00                    371  I           DC.B 'I',0
+00001398= 4A 00                    372  J           DC.B 'J',0
+0000139A= 4B 00                    373  K           DC.B 'K',0
+0000139C= 4C 00                    374  L           DC.B 'L',0
+0000139E= 4D 00                    375  M           DC.B 'M',0
+000013A0= 4E 00                    376  N           DC.B 'N',0
+000013A2= 4F 00                    377  O           DC.B 'O',0
+000013A4= 50 00                    378  P           DC.B 'P',0
+000013A6= 51 00                    379  Q           DC.B 'Q',0
+000013A8= 52 00                    380  R           DC.B 'R',0
+000013AA= 53 00                    381  S           DC.B 'S',0
+000013AC= 54 00                    382  T           DC.B 'T',0
+000013AE= 55 00                    383  U           DC.B 'U',0
+000013B0= 56 00                    384  V           DC.B 'V',0
+000013B2= 57 00                    385  W           DC.B 'W',0
+000013B4= 58 00                    386  X           DC.B 'X',0
+000013B6= 59 00                    387  Y           DC.B 'Y',0
+000013B8= 5A 00                    388  Z           DC.B 'Z',0
+000013BA= 28 00                    389  OPEN_PARA   DC.B '(',0
+000013BC= 29 00                    390  CLOSE_PARA  DC.B ')',0
+000013BE= 2E 00                    391  DOT         DC.B '.',0
+000013C0= 2B 00                    392  PLUS        DC.B '+',0
+000013C2= 2D 00                    393  MINUS       DC.B '-',0  
+000013C4= 46494E49 53484544 ...    394  FINISHED    DC.L 'FINISHED',0
+000013D0= 20 00                    395  SPACE       DC.B ' ',0
+000013D2= 3F 00                    396  QUESTION    DC.B '?',0
+000013D4= 2C 00                    397  COMMA       DC.B ',',0
+000013D6= 24 00                    398  MONEY       DC.B '$',0
+000013D8                           399  
+000013D8                           400  
+000013D8                           401      *END    START        ; last line of source
+000013D8                           402  
+000013D8                           403  
+000013D8                           404  
+000013D8                           405  
+000013D8                           406  
+000013D8                           407  
+000013D8                           408  
+000013D8                           409  
+000013D8                           410  
+000013D8                           411  
+000013D8                           412  
+000013D8                           413  
+000013D8                           414  
+000013D8                           415  
+000013D8                           416  
+000013D8                           417  
+000013D8                           418  -------------------- end include --------------------
+000013D8                           419  
+000013D8                           420      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -400,87 +430,89 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-A                   1322
+A                   1386
 ADD                 109E
-B                   1324
-BUFFER_LOOP         12A4
+ADD_AN              10DC
+ADD_DN              10BC
+B                   1388
+BUFFER_LOOP         1308
 BUFF_POINT          2000
-BYTE                1148
+BYTE                11AC
 BYTE_COUNTER        0
-C                   1326
-CLOSE_PARA          1358
-COMMA               1370
+C                   138A
+CLOSE_PARA          13BC
+COMMA               13D4
 COMPLETED           1018
 CONTINUE            1058
-D                   1328
-DOT                 135A
-E                   132A
+D                   138C
+DOT                 13BE
+E                   138E
 END_ADDRESS         1308
-F                   132C
-FINISHED            1360
+F                   1390
+FINISHED            13C4
 FIRST4BITS          1062
-G                   132E
-H                   1330
-HEX_CHAR            12C8
-I                   1332
-J                   1334
-K                   1336
-L                   1338
-LETTER              12FA
-LONG                1170
-M                   133A
+G                   1392
+H                   1394
+HEX_CHAR            132C
+I                   1396
+J                   1398
+K                   139A
+L                   139C
+LETTER              135E
+LONG                11D4
+M                   139E
 MAIN                1008
-MINUS               135E
-MONEY               1372
-MOVE                10B8
-MOVE_AN             10FC
-MOVE_DEST           1212
-MOVE_DEST_AN        1250
-MOVE_DEST_AN_010    126C
-MOVE_DEST_DN        1234
-MOVE_DN             10D6
-MOVE_SIZE           1128
-MOVE_SOURCE         1184
-MOVE_SOURCE_AN      11C6
-MOVE_SOURCE_AN_010  11E6
-MOVE_SOURCE_DN      11A6
-N                   133C
+MINUS               13C2
+MONEY               13D6
+MOVE                111C
+MOVE_AN             1160
+MOVE_DEST           1276
+MOVE_DEST_AN        12B4
+MOVE_DEST_AN_010    12D0
+MOVE_DEST_DN        1298
+MOVE_DN             113A
+MOVE_SIZE           118C
+MOVE_SOURCE         11E8
+MOVE_SOURCE_AN      122A
+MOVE_SOURCE_AN_010  124A
+MOVE_SOURCE_DN      120A
+N                   13A0
 NEXT_ADDRESS        1014
-NUMBER              12EA
-O                   133E
+NUMBER              134E
+O                   13A2
 OPCODE_BEGIN        1030
-OPEN_PARA           1356
-OP_RTS              109E
-P                   1340
-PLUS                135C
-PRINT_BUFFER        12AE
-Q                   1342
-QUESTION            136E
-R                   1344
-S                   1346
-SPACE               136C
+OPEN_PARA           13BA
+OP_RTS              1102
+P                   13A4
+PLUS                13C0
+PRINT_BUFFER        1312
+Q                   13A6
+QUESTION            13D2
+R                   13A8
+S                   13AA
+SPACE               13D0
 START               1000
 START_ADDRESS       1024
 STRING_STORE        3000
-T                   1348
+T                   13AC
 TAB                 9
-TEST                12C0
-TEST2               12C6
-U                   134A
-UNKNOWN             1288
-V                   134C
-W                   134E
-WORD                115C
-X                   1350
-Y                   1352
-Z                   1354
-_0                  130E
-_1                  1310
-_2                  1312
-_3                  1314
-_4                  1316
-_5                  1318
-_6                  131A
-_7                  131C
-_8                  131E
-_9                  1320
+TEST                1324
+TEST2               132A
+U                   13AE
+UNKNOWN             12EC
+V                   13B0
+W                   13B2
+WORD                11C0
+X                   13B4
+Y                   13B6
+Z                   13B8
+_0                  1372
+_1                  1374
+_2                  1376
+_3                  1378
+_4                  137A
+_5                  137C
+_6                  137E
+_7                  1380
+_8                  1382
+_9                  1384

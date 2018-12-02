@@ -8,6 +8,7 @@ opcodes.x86
 
 	- A2 stores pointer to the end of the string buffer
 	- A3 stores pointer to the start of the string buffer
+	- D3 stores word of instruction to be used by EA
 
 main.x86
 
