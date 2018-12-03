@@ -30,8 +30,9 @@ COMPLETED:
     MOVE.B  #13, D0                 * displaying message
     TRAP #15
 
-    MULS      D6,D7                     * LINE FOR TESTING
-    MOVE.B   D6,D4
+    MULS      #20,D2
+    LEA       C, A1                     * LINE FOR TESTING
+    MOVE.L   (A6)+,(A3)+
     MOVE.B   D4,D5
     
     
@@ -41,6 +42,7 @@ COMPLETED:
  INCLUDE "opcodes.x68"
 
     END    START        ; last line of source
+
 
 
 
