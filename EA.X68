@@ -13,7 +13,13 @@
                     * Divide the 6 bits into mode and register.
                     * The first 3 bits is the Mode and the last 3 bits is the register
                     * Store that in D4 and D5 respectively
-                    AND.B #%0000000000111111,D3                        
+                    MOVE.L      D3,D4
+                    AND.B       #%00111111,D4
+                    MOVE.B      D4,D5
+                    AND.B       #%00000111,D5 *Register in D5
+                    AND.B       #%00111000,D4 *Mode in D4
+                    ROL.B       #3,D4
+                                            
                     
                     
 
@@ -60,6 +66,8 @@ EA_Dn
                     JSR         Show_Number
                     MOVE.B      #6, D0
                     TRAP        #15
+                    
+                    MOVE.L      #$2,INCREMENT
                     RTS
 
 * This is the EA address register, D5 stores the register number :An                   
@@ -73,6 +81,7 @@ EA_An
                     MOVE.B      #6,D0
                     TRAP        #15
                     
+                    MOVE.L      #$2,INCREMENT
                     RTS
 *This is the EA address indirect :(An)                                      
 EA_An_Indirect      
@@ -88,9 +97,10 @@ EA_An_Indirect
                     MOVE.B      D_AnPlusEnd,(A2)+
                     ADD.W       #1,BYTE_COUNTER
                     
+                    MOVE.L      #$2,INCREMENT
                     RTS
 
-*This is the EA address indirect with post increment (A0)
+*This is the EA address indirect with post increment (A0)+
 EA_An_Plus
                     MOVE.B      D_AnPlus,(A2)+
                     ADD.W       #2,BYTE_COUNTER 
@@ -104,6 +114,7 @@ EA_An_Plus
                     MOVE.B      D_AnPlusP,(A2)+
                     ADD.W       #2,BYTE_COUNTER
                     
+                    MOVE.L      #$2,INCREMENT
                     RTS                    
                     
 *This is the EA address indirect with pre decrement -(SP)
@@ -120,6 +131,7 @@ EA_An_Minus
                     MOVE.B      D_AnPlusEnd,(A2)+
                     ADD.W       #1,BYTE_COUNTER
                     
+                    MOVE.L      #$2,INCREMENT
                     RTS 
 *This will handle the EA absolute addressing and immediate data
 EA_Absolute_Immediate
@@ -141,16 +153,21 @@ EA_Absolute_WORD
                     MOVE.W      (A5)+,D2
                     JSR         Show_FFFF
                     
+                    MOVE.L      #$4,INCREMENT
+                    RTS
+                    
 *****************To be continued for EA absolute WORD, LONG, Immediate
                  
 
 *This is the EA for absolute addressing LONG    
 EA_Absolute_LONG                    
-
+                    MOVE.L      #$6,INCREMENT
+                    RTS
 
 *This is the EA for Immediate
 EA_Immediate
-
+                    MOVE.L      #$4,INCREMENT
+                    RTS
 
 
 
@@ -185,6 +202,7 @@ D_FFFF               DC.B        'FFFF',0
 D_Address            DC.B        '$',0
 D_Immediate          DC.B        '#$',0
 D_Comma              DC.B        ',',0
+
 
 
 
