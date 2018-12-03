@@ -1,10 +1,10 @@
 *-----------------------------------------------------------
-* Title      : 
+* Title      :
 * Written by :
 * Date       :
 * Description: This file takes in the instructions from op-code,
-* and divide them into the last 6 bits for EA. Then break them down 
-* further into modes and register that will be used for specifying the 
+* and divide them into the last 6 bits for EA. Then break them down
+* further into modes and register that will be used for specifying the
 * different addressing mode
 *-----------------------------------------------------------
 
@@ -19,12 +19,12 @@
                     AND.B       #%00000111,D5 *Register in D5
                     AND.B       #%00111000,D4 *Mode in D4
                     ROL.B       #3,D4
-                                            
-                    
-                    
 
-*------------------EA-Codes----------------------------------------   
-*       
+
+
+
+*------------------EA-Codes----------------------------------------
+*
 *                 EA mode store in D4 and EA register stored in D5
 *                ---EA MODES---
 *                   0)Dn
@@ -38,79 +38,73 @@
 EA_MAIN
                     CMPI.W      #0,D4
                     BEQ         EA_Dn
-                    
+
                     CMPI.W      #1,D4
                     BEQ         EA_An
-                    
+
                     CMPI.W      #2,D4
                     BEQ         EA_An_Indirect
-                    
+
                     CMPI.W      #3,D4
                     BEQ         EA_An_Plus
-                    
+
                     CMPI.W      #4,D4
                     BEQ         EA_An_Minus
-                    
+
                     CMPI.W      #7,D4
                     BEQ         EA_Absolute_Immediate
-                    
+
                     RTS
 
 * This is the EA data register, D5 stores register number : Dn
-EA_Dn    
+EA_Dn
                     CLR.L       D1
                     MOVE.B      D5, D1
                     MOVE.B      D_Dn,(A2)+
-                    ADD.W       #2,BYTE_COUNTER *-----
                     JSR         Show_Number
-                    MOVE.B      D1,(A2)+                    
+                    MOVE.B      D1,(A2)+
                     ADD.W       #2,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
                     RTS
 
-* This is the EA address register, D5 stores the register number :An                   
+* This is the EA address register, D5 stores the register number :An
 EA_An
-                                        
+
                     CLR.L       D1
                     MOVE.B      D5, D1
                     MOVE.B      D_An,(A2)+
-                    ADD.W       #2,BYTE_COUNTER *-----
                     JSR         Show_Number
-                    MOVE.B      D1,(A2)+                    
+                    MOVE.B      D1,(A2)+
                     ADD.W       #2,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
                     RTS
 
-*This is the EA address indirect :(An)                                      
-EA_An_Indirect      
+*This is the EA address indirect :(An)
+EA_An_Indirect
                     CLR.L       D1
                     MOVE.B      D5, D1
                     MOVE.B      D_AnPlus,(A2)+
-                    ADD.W       #2,BYTE_COUNTER *-----
                     JSR         Show_Number
-                    MOVE.B      D1,(A2)+                    
-                    ADD.W       #2,BYTE_COUNTER
-                    
+                    MOVE.B      D1,(A2)+
+
                     MOVE.B      D_AnPlusEnd,(A2)+
-                    ADD.W       #1,BYTE_COUNTER
+                    ADD.W       #3,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
                     RTS
 *This is the EA address indirect with post increment (A0)+
-EA_An_Plus                                             
+EA_An_Plus
                     CLR.L       D1
                     MOVE.B      D5, D1
                     MOVE.B      D_AnPlus,(A2)+
-                    ADD.W       #2,BYTE_COUNTER *-----
-                    
+
                     JSR         Show_Number
-                    MOVE.B      D1,(A2)+                    
-                    ADD.W       #2,BYTE_COUNTER
-                    
+                    MOVE.B      D1,(A2)+
+
                     MOVE.B      D_AnPlusP,(A2)+
-                    ADD.W       #2,BYTE_COUNTER
+                    ADD.W       #3,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
                     RTS
@@ -119,14 +113,12 @@ EA_An_Minus
                     CLR.L       D1
                     MOVE.B      D5, D1
                     MOVE.B      D_minusAn,(A2)+
-                    ADD.W       #3,BYTE_COUNTER *-----
-                    
+
                     JSR         Show_Number
-                    MOVE.B      D1,(A2)+                    
-                    ADD.W       #2,BYTE_COUNTER
-                    
+                    MOVE.B      D1,(A2)+
+
                     MOVE.B      D_AnPlusEnd,(A2)+
-                    ADD.W       #2,BYTE_COUNTER
+                    ADD.W       #3,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
                     RTS
@@ -134,30 +126,30 @@ EA_An_Minus
 EA_Absolute_Immediate
                     CMPI.B      #0,D5
                     BEQ         EA_Absolute_WORD
-                    
+
                     CMPI.B      #1,D5
                     BEQ         EA_Absolute_LONG
-                    
+
                     CMPI.B      #4,D5
                     BEQ         EA_Immediate
-                    
-*This is the EA for absolute addressing WORD, 
+
+*This is the EA for absolute addressing WORD,
 EA_Absolute_WORD
                     MOVE.B      D_Address,(A2)+
-                    ADD.W       #1,BYTE_COUNTER                     
-                    
+                    ADD.W       #1,BYTE_COUNTER
+
                     CLR.L       D2 *clear D2 to show next word data
                     MOVE.W      (A5)+,D2
                     JSR         Show_FFFF
-                    
+
                     MOVE.L      #$4,INCREMENT
                     RTS
-                    
-*****************To be continued for EA absolute WORD, LONG, Immediate
-                 
 
-*This is the EA for absolute addressing LONG    
-EA_Absolute_LONG                    
+*****************To be continued for EA absolute WORD, LONG, Immediate
+
+
+*This is the EA for absolute addressing LONG
+EA_Absolute_LONG
                     MOVE.L      #$6,INCREMENT
                     RTS
 
@@ -171,16 +163,16 @@ EA_Immediate
 Show_Number
                     ADD.B       #48,D1
                     RTS
-                    
+
 Show_FFFF
                     CMPI.L      #$8000,D2
                     BGE         FFFF
                     RTS
-                    
-FFFF                
+
+FFFF
                     MOVE.B      D_FFFF,(A2)+
                     ADD.W       #4,BYTE_COUNTER
-                    RTS   
+                    RTS
 
     SIMHALT             ; halt simulator
 
@@ -193,7 +185,7 @@ D_Dn                 DC.B        'D',0
 D_An                 DC.B        'A',0
 D_AnPlus             DC.B        '(A',0
 D_AnPlusEnd          DC.B        ')',0
-D_AnPlusP            DC.B        ')+',0   
+D_AnPlusP            DC.B        ')+',0
 D_minusAn            DC.B        '-(A',0
 D_FFFF               DC.B        'FFFF',0
 D_Address            DC.B        '$',0

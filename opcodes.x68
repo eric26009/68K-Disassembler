@@ -123,7 +123,7 @@ JSR:
     MOVE.B  R, (A2)+
     JSR     TAB
     ADD.W   #3, BYTE_COUNTER
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     BRA     BUFFER_LOOP
 
 BRA:
@@ -144,13 +144,13 @@ BRA_SIZE:
 BRA_WORD:
     JSR     ADD_WORD
     JSR     TAB
-    *JSR    EA_MAIN     *for 16 bit displacemnt
+    JSR    EA_MAIN     *for 16 bit displacemnt
     BRA     BUFFER_LOOP
 
 BRA_LONG:
     JSR     ADD_LONG
     JSR     TAB
-    *JSR    EA_MAIN     *for 32 bit displacemnt
+    JSR    EA_MAIN     *for 32 bit displacemnt
     BRA     BUFFER_LOOP
 
 CMPI:
@@ -172,7 +172,7 @@ CMP:
     MOVE.B  DOT, (A2)+
     ADD.W   #4, BYTE_COUNTER
     JSR     ADD_SIZE
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     JSR     MOVE_DEST_DN
 
 EOR:
@@ -183,7 +183,7 @@ EOR:
     ADD.W   #4, BYTE_COUNTER
     JSR     ADD_SIZE
     JSR     MOVE_DEST_DN_RTS    *actually grabbing the source here, but it lives in the same place as source for most
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     BRA     BUFFER_LOOP
 
 MOVEM:
@@ -207,13 +207,13 @@ MOVEM_SIZE:
 MOVEM_WORD:
     JSR     ADD_WORD
     JSR     TAB
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     BRA     BUFFER_LOOP
 
 MOVEM_LONG:
     JSR     ADD_LONG
     JSR     TAB
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     BRA     BUFFER_LOOP
 
 
@@ -226,7 +226,7 @@ NEG:
     ADD.W   #4, BYTE_COUNTER
     JSR     ADD_SIZE
     JSR     TAB
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     BRA     BUFFER_LOOP
 
 ORI:
@@ -238,7 +238,7 @@ ORI:
     JSR     ADD_SIZE
     JSR     TAB
     *MOVE.L  #$4, INCREMENT     * this line needs to be implemented in EA to know by how much to increment
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     BRA     BUFFER_LOOP
 
 OR:
@@ -253,13 +253,13 @@ OR:
     BEQ     OR_DEST_DN
     BNE     OR_DEST_EA
 OR_DEST_DN:                     * <EA> OR DN direction
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     JSR     MOVE_DEST_DN_RTS
     BRA     BUFFER_LOOP
 
 OR_DEST_EA:                      * DN OR <EA> direction
     JSR     MOVE_DEST_DN_RTS
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     BRA     BUFFER_LOOP
 
 
@@ -271,7 +271,7 @@ DIVS:
     MOVE.B  S, (A2)+
     JSR     TAB
     ADD.W   #4, BYTE_COUNTER
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     BRA     MOVE_DEST_DN
 
 LEA_MODE:
@@ -290,7 +290,7 @@ MULS:
     MOVE.B  S, (A2)+
     JSR         TAB
     ADD.W      #4, BYTE_COUNTER
-    *JSR     EA_MAIN
+    JSR     EA_MAIN
     BRA     MOVE_DEST_DN
 
 
@@ -309,7 +309,7 @@ ADD:
      AND.B   #%00000011, D2  * bitmask to see 3 bits for mode
      CMP.B   #%00000011, D2      * move Dn
      BEQ     ADDA
-     BNE     ADD_NORAML
+     BNE     ADD_NORMAL
      BRA     UNKNOWN
 
 ADD_NORMAL:
@@ -329,12 +329,12 @@ ADD_NORMAL:
 ADD_DEST_DN:
     *JSR    MAIN_EA
     JSR     MOVE_DEST_DN_RTS
-    BRA     BUFF_LOOP
+    BRA     BUFFER_LOOP
 
-ADD_DEST_DN:
+ADD_DEST_EA:
     JSR     MOVE_DEST_DN_RTS
     *JSR    MAIN_EA
-    BRA     BUFF_LOOP
+    BRA     BUFFER_LOOP
 
 
 ADDA:
@@ -711,6 +711,9 @@ COMMA       DC.B ',',0
 MONEY       DC.B '$',0
 
     *END    START        ; last line of source
+
+
+
 
 
 
