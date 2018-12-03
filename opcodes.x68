@@ -180,10 +180,11 @@ EOR:
     MOVE.B  O, (A2)+
     MOVE.B  R, (A2)+
     MOVE.B  DOT, (A2)+
-    ADD.W   #4, BYTE_COUNTER
     JSR     ADD_SIZE
     JSR     MOVE_DEST_DN_RTS    *actually grabbing the source here, but it lives in the same place as source for most
-    JSR    EA_MAIN
+    MOVE.B  COMMA, (A2)+
+    JSR     EA_MAIN
+        ADD.W   #5, BYTE_COUNTER
     BRA     BUFFER_LOOP
 
 MOVEM:

@@ -13,12 +13,13 @@
                     * Divide the 6 bits into mode and register.
                     * The first 3 bits is the Mode and the last 3 bits is the register
                     * Store that in D4 and D5 respectively
+EA_MAIN
                     MOVE.L      D3,D4
                     AND.B       #%00111111,D4
                     MOVE.B      D4,D5
                     AND.B       #%00000111,D5 *Register in D5
                     AND.B       #%00111000,D4 *Mode in D4
-                    ROL.B       #3,D4
+                    ROR.B       #3,D4
 
 
 
@@ -35,23 +36,23 @@
 *                   5)absolute word, long and immediate
 *
 *------------------------------------------------------------------
-EA_MAIN
-                    CMPI.W      #0,D4
+
+                    CMPI.B      #0,D4
                     BEQ         EA_Dn
 
-                    CMPI.W      #1,D4
+                    CMPI.B      #1,D4
                     BEQ         EA_An
 
-                    CMPI.W      #2,D4
+                    CMPI.B      #2,D4
                     BEQ         EA_An_Indirect
 
-                    CMPI.W      #3,D4
+                    CMPI.B      #3,D4
                     BEQ         EA_An_Plus
 
-                    CMPI.W      #4,D4
+                    CMPI.B      #4,D4
                     BEQ         EA_An_Minus
 
-                    CMPI.W      #7,D4
+                    CMPI.B      #7,D4
                     BEQ         EA_Absolute_Immediate
 
                     RTS
@@ -85,12 +86,12 @@ EA_An
 EA_An_Indirect
                     CLR.L       D1
                     MOVE.B      D5, D1
-                    MOVE.B      D_AnPlus,(A2)+
+                    MOVE.B  OPEN_PARA, (A2)+
+                    MOVE.B  A, (A2)+
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
-
-                    MOVE.B      D_AnPlusEnd,(A2)+
-                    ADD.W       #3,BYTE_COUNTER
+                    MOVE.B  CLOSE_PARA, (A2)+
+                    ADD.W       #4,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
                     RTS
