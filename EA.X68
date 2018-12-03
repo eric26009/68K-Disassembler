@@ -57,82 +57,79 @@ EA_MAIN
                     RTS
 
 * This is the EA data register, D5 stores register number : Dn
-EA_Dn
-                    MOVE.B      D_Dn,(A2)+
-                    ADD.W       #1,BYTE_COUNTER
-    
+EA_Dn    
                     CLR.L       D1
                     MOVE.B      D5, D1
+                    MOVE.B      D_Dn,(A2)+
+                    ADD.W       #2,BYTE_COUNTER *-----
                     JSR         Show_Number
-                    MOVE.B      #6, D0
-                    TRAP        #15
-                    
+                    MOVE.B      D1,(A2)+                    
+                    ADD.W       #2,BYTE_COUNTER
+
                     MOVE.L      #$2,INCREMENT
                     RTS
 
 * This is the EA address register, D5 stores the register number :An                   
 EA_An
+                                        
+                    CLR.L       D1
+                    MOVE.B      D5, D1
                     MOVE.B      D_An,(A2)+
-                    ADD.W       #1,BYTE_COUNTER
-                    
-                    CLR.L       D1
-                    MOVE.B      D5,D1
+                    ADD.W       #2,BYTE_COUNTER *-----
                     JSR         Show_Number
-                    MOVE.B      #6,D0
-                    TRAP        #15
-                    
-                    MOVE.L      #$2,INCREMENT
-                    RTS
-*This is the EA address indirect :(An)                                      
-EA_An_Indirect      
-                    MOVE.B      D_AnPlus,(A2)+
-                    ADD.W       #2,BYTE_COUNTER 
-                    
-                    CLR.L       D1
-                    MOVE.B      D5,D1
-                    JSR         Show_Number
-                    MOVE.B      #6,D0
-                    TRAP        #15
-                    
-                    MOVE.B      D_AnPlusEnd,(A2)+
-                    ADD.W       #1,BYTE_COUNTER
-                    
+                    MOVE.B      D1,(A2)+                    
+                    ADD.W       #2,BYTE_COUNTER
+
                     MOVE.L      #$2,INCREMENT
                     RTS
 
-*This is the EA address indirect with post increment (A0)+
-EA_An_Plus
+*This is the EA address indirect :(An)                                      
+EA_An_Indirect      
+                    CLR.L       D1
+                    MOVE.B      D5, D1
                     MOVE.B      D_AnPlus,(A2)+
-                    ADD.W       #2,BYTE_COUNTER 
-                    
-                    CLR.L       D1
-                    MOVE.B      D5,D1
+                    ADD.W       #2,BYTE_COUNTER *-----
                     JSR         Show_Number
-                    MOVE.B      #6,D0
-                    TRAP        #15
-                    
-                    MOVE.B      D_AnPlusP,(A2)+
+                    MOVE.B      D1,(A2)+                    
                     ADD.W       #2,BYTE_COUNTER
-                    
-                    MOVE.L      #$2,INCREMENT
-                    RTS                    
-                    
-*This is the EA address indirect with pre decrement -(SP)
-EA_An_Minus
-                    MOVE.B      D_minusAn,(A2)+
-                    ADD.W       #3,BYTE_COUNTER 
-                    
-                    CLR.L       D1
-                    MOVE.B      D5,D1
-                    JSR         Show_Number
-                    MOVE.B      #6,D0
-                    TRAP        #15
                     
                     MOVE.B      D_AnPlusEnd,(A2)+
                     ADD.W       #1,BYTE_COUNTER
-                    
+
                     MOVE.L      #$2,INCREMENT
-                    RTS 
+                    RTS
+*This is the EA address indirect with post increment (A0)+
+EA_An_Plus                                             
+                    CLR.L       D1
+                    MOVE.B      D5, D1
+                    MOVE.B      D_AnPlus,(A2)+
+                    ADD.W       #2,BYTE_COUNTER *-----
+                    
+                    JSR         Show_Number
+                    MOVE.B      D1,(A2)+                    
+                    ADD.W       #2,BYTE_COUNTER
+                    
+                    MOVE.B      D_AnPlusP,(A2)+
+                    ADD.W       #2,BYTE_COUNTER
+
+                    MOVE.L      #$2,INCREMENT
+                    RTS
+*This is the EA address indirect with pre decrement -(SP)
+EA_An_Minus
+                    CLR.L       D1
+                    MOVE.B      D5, D1
+                    MOVE.B      D_minusAn,(A2)+
+                    ADD.W       #3,BYTE_COUNTER *-----
+                    
+                    JSR         Show_Number
+                    MOVE.B      D1,(A2)+                    
+                    ADD.W       #2,BYTE_COUNTER
+                    
+                    MOVE.B      D_AnPlusEnd,(A2)+
+                    ADD.W       #2,BYTE_COUNTER
+
+                    MOVE.L      #$2,INCREMENT
+                    RTS
 *This will handle the EA absolute addressing and immediate data
 EA_Absolute_Immediate
                     CMPI.B      #0,D5
@@ -202,6 +199,7 @@ D_FFFF               DC.B        'FFFF',0
 D_Address            DC.B        '$',0
 D_Immediate          DC.B        '#$',0
 D_Comma              DC.B        ',',0
+
 
 
 
