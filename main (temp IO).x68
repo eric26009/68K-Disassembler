@@ -32,6 +32,7 @@ COMPLETED:
     MOVE.B  #13, D0                 * displaying message
     TRAP #15
 
+    JSR     TEST_LABEL
     BRA     TEST_LABEL
     CMPI.W  #44, (A1)
     CMP.L   #23, D7
@@ -54,6 +55,7 @@ TEST_LABEL:
  INCLUDE "EA.x68"
 
     END    START        ; last line of source
+
 
 
 

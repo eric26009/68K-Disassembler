@@ -6,9 +6,9 @@
 *-----------------------------------------------------------
     *ORG    $1000
 
-BUFF_POINT      EQU     $2000   * where the string buffer lives
+BUFF_POINT      EQU     $3000   * where the string buffer lives
 BYTE_COUNTER    EQU     0       * counter for the number of bytes the string has
-STRING_STORE    EQU     $3000   * where the beginning of the temp string storage lives
+STRING_STORE    EQU     $4000   * where the beginning of the temp string storage lives
 
 
 *START:                  ; first instruction of program
@@ -92,6 +92,11 @@ FIRST4BITS:
     BEQ     BRA
 
     MOVE.L  D3,D2
+    AND.W   #%1111111111000000, D2  * checking for JSR mode
+    CMP.W   #%0100111010000000, D2
+    BEQ     JSR
+
+    MOVE.L  D3,D2
     ROL.W   #4,D2               * rotate to the left by 4 to see first 4 bits
     AND.B   #%00001111, D2      * bitmask to check the first 4 bits for opcode type
 
@@ -111,6 +116,15 @@ FIRST4BITS:
     CMP.B   #%00001000, D2      * OR
     BEQ     OR
     BRA UNKNOWN                 * if unknown opcode, print 'DATA' out
+
+JSR:
+    MOVE.B  J, (A2)+
+    MOVE.B  S, (A2)+
+    MOVE.B  R, (A2)+
+    JSR     TAB
+    ADD.W   #3, BYTE_COUNTER
+    *JSR    EA_MAIN
+    BRA     BUFFER_LOOP
 
 BRA:
     MOVE.B  B, (A2)+
@@ -291,24 +305,39 @@ SUB:
 ADD:
      MOVE.W  D3, D2      * reset address contents to before bitmask
      ROL.W   #8, D2     * now checking the destination mode set by rotating left by 10
-     AND.B   #%00000001, D2  * bitmask to see 3 bits for mode
-     CMP.B   #%00000000, D2      * move Dn
-     BEQ     ADD_DN
-     CMP.B   #%00000001, D2      * move An
-     BEQ     ADD_AN
+     ROL.W   #2, D2
+     AND.B   #%00000011, D2  * bitmask to see 3 bits for mode
+     CMP.B   #%00000011, D2      * move Dn
+     BEQ     ADDA
+     BNE     ADD_NORAML
      BRA     UNKNOWN
 
-ADD_DN:
+ADD_NORMAL:
     MOVE.B  A, (A2)+
     MOVE.B  D, (A2)+
     MOVE.B  D, (A2)+
     MOVE.B  DOT, (A2)+
     ADD.W      #4, BYTE_COUNTER
     JSR     ADD_SIZE
-    * get EA and more work here..
-    BRA     BUFFER_LOOP
+    MOVE.L  D3,D2
+    ROL.W   #8,D2               * rotate left 8 bits to get the direction
+    AND.B   #%00000001, D2      * bitmask to see direction
+    CMP.B   #%00000000, D2
+    BEQ     ADD_DEST_DN      * <EA>, DN -> DN
+    BNE     ADD_DEST_EA      * DN, <EA> -> <EA>
 
-ADD_AN:
+ADD_DEST_DN:
+    *JSR    MAIN_EA
+    JSR     MOVE_DEST_DN_RTS
+    BRA     BUFF_LOOP
+
+ADD_DEST_DN:
+    JSR     MOVE_DEST_DN_RTS
+    *JSR    MAIN_EA
+    BRA     BUFF_LOOP
+
+
+ADDA:
     MOVE.B  A, (A2)+
     MOVE.B  D, (A2)+
     MOVE.B  D, (A2)+
@@ -454,7 +483,6 @@ MOVE_SOURCE_DN:
 
 MOVE_SOURCE_AN:
     MOVE.W  D3, D2      * reset address contents to before bitmask
-    *SWAP    D2          * ***** NOT SURE THIS WORKS>> CHECK
     AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
     ADD.B   #$30, D2
     MOVE.B  A, (A2)+
