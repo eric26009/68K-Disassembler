@@ -6,8 +6,8 @@
 *-----------------------------------------------------------
     ORG    $1000
 
-START_ADDRESS   EQU     $104C       * hard coded start address
-END_ADDRESS     EQU     $1060      * hard coded end address
+START_ADDRESS   EQU     $1084       * hard coded start address
+END_ADDRESS     EQU     $108F      * hard coded end address
 INCREMENT       EQU     $8
 
 
@@ -48,7 +48,18 @@ COMPLETED:
     LEA       C, A1
     MOVE.L   (A6)+,(A3)+
     MOVE.B   D4,D5
-
+    ADD.B   #15, D3
+    ADD.W   #15, D3
+    ADD.L   #15,D3
+    ADD.L   #47474, D3
+    SUBQ.B  #1, D3
+    BCLR.B  #32, (A3)
+    ASR.W   (A3)
+    LSR.B   D2, D5
+    LSR.L   #7, D1
+    LSL.B   #3, D3
+    LSL.W   D2, D4
+    LSL.B   (A5)+
 TEST_LABEL:
 
     SIMHALT             ; halt simulator
