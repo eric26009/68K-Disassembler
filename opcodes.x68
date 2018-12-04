@@ -328,14 +328,14 @@ ADD_NORMAL:
     BNE     ADD_DEST_EA      * DN, <EA> -> <EA>
 
 ADD_DEST_DN:
-    *JSR    MAIN_EA
-    JSR     MOVE_DEST_DN_RTS
-    BRA     BUFFER_LOOP
+    JSR    EA_MAIN
+    JSR    MOVE_DEST_DN_RTS
+    BRA    BUFFER_LOOP
 
 ADD_DEST_EA:
-    JSR     MOVE_DEST_DN_RTS
-    *JSR    MAIN_EA
-    BRA     BUFFER_LOOP
+    JSR    MOVE_DEST_DN_RTS
+    JSR    EA_MAIN
+    BRA    BUFFER_LOOP
 
 
 ADDA:
@@ -345,9 +345,26 @@ ADDA:
     MOVE.B  A, (A2)+
     MOVE.B  DOT, (A2)+
     ADD.W      #5, BYTE_COUNTER
-    JSR     ADD_SIZE
-    * get EA and more work here..
+    MOVE.L  D3,D2
+    ROL.W   #8,D2               * rotate left 8 bits to get the direction
+    AND.B   #%00000001, D2      * bitmask to see direction
+    CMP.B   #%00000000, D2      * 0 is word, 1 is long
+    BEQ     ADDA_WORD
+    BNE     ADDA_LONG
+
+ADDA_WORD:
+    JSR     ADD_WORD
+    JSR     EA_MAIN
+    JSR     MOVE_DEST_AN_RTS
     BRA     BUFFER_LOOP
+
+ADDA_LONG:
+    JSR     ADD_LONG
+    JSR     EA_MAIN
+    JSR     MOVE_DEST_AN_RTS
+    BRA     BUFFER_LOOP
+
+
 
 
 ADD_SIZE:
@@ -563,6 +580,16 @@ MOVE_DEST_AN:
     ADD.W   #2, BYTE_COUNTER
     BRA     BUFFER_LOOP
 
+MOVE_DEST_AN_RTS:
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #7, D2
+    AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+    ADD.B   #$30, D2
+    MOVE.B  A, (A2)+
+    MOVE.B  D2, (A2)+
+    ADD.W   #2, BYTE_COUNTER
+    RTS
+
 MOVE_DEST_AN_010:
     MOVE.W  D3, D2      * reset address contents to before bitmask
     ROL.W   #7, D2
@@ -712,6 +739,7 @@ COMMA       DC.B ',',0
 MONEY       DC.B '$',0
 
     *END    START        ; last line of source
+
 
 
 
