@@ -20,14 +20,24 @@
 *                   5)absolute word, long and immediate
 *
 *------------------------------------------------------------------
-EA_MAIN
-                    MOVE.L      D3,D4  *Takes in the 16 bit instruction from D3
-                    AND.B       #%00111111,D4 * Take the last 6 bit by doing a bit mask
-                    MOVE.B      D4,D5 * Copy the last 6 bits into D5 also
-                    AND.B       #%00000111,D5 *Take the last 3 bits into Register in D5
-                    AND.B       #%00111000,D4 *Take the first 3 bits into Mode in D4
-                    ROR.B       #3,D4 *Rotate to correct position
 
+*Check for valid and convert frmo ASCII to HEX
+
+EA_MAIN
+                    MOVE.L      D3,D4               *Takes in the 16 bit instruction from D3
+                    AND.B       #%00111111,D4       * Take the last 6 bit by doing a bit mask
+                    MOVE.B      D4,D5               * Copy the last 6 bits into D5 also
+                    AND.B       #%00000111,D5       *Take the last 3 bits into Register in D5
+                    AND.B       #%00111000,D4       *Take the first 3 bits into Mode in D4
+                    ROR.B       #3,D4               *Rotate to correct position
+                    
+                    *Case to handle Absolute/Immediate at D7
+                    *Special Cases to handle MOVEM and COMPI, MOVE
+                    
+                    *D6 will be the register to store the size for immediate
+                    *0 is a byte
+                    *1 is a word
+                    *2 is a long
 
                     CMPI.B      #0,D4
                     BEQ         EA_Dn
@@ -144,20 +154,20 @@ EA_Absolute_Immediate
                     CMPI.B      #4,D5
                     BEQ         EA_Immediate
 
-*This is the EA for absolute addressing WORD,
+*This is the EA for absolute addressing WORD
 EA_Absolute_WORD
-                    MOVE.B      D_Address,(A2)+
+                    MOVE.B      MONEY,(A2)+
                     ADD.W       #1,BYTE_COUNTER
 
-                    CLR.L       D2 *clear D2 to show next word data
+                    CLR.L       D2               *clear D2 to show next word data
                     MOVE.W      (A5)+,D2
                     JSR         Show_FFFF
+                    
+                    MOVE.B      #4, $400
+                    JSR         Display_Address
 
                     MOVE.L      #$4,INCREMENT
                     RTS
-
-*****************To be continued for EA absolute WORD, LONG, Immediate
-
 
 *This is the EA for absolute addressing LONG
 EA_Absolute_LONG
@@ -177,12 +187,15 @@ Show_Number
 
 Show_FFFF
                     CMPI.L      #$8000,D2
-                    BGE         FFFF
+                    BGE         PRINT_FFFF
                     RTS
 
-FFFF
-                    MOVE.B      D_FFFF,(A2)+
-                    ADD.W       #4,BYTE_COUNTER
+PRINT_FFFF:
+                    MOVE.B      F,(A2)+
+                    MOVE.B      F,(A2)+
+                    MOVE.B      F,(A2)+
+                    MOVE.B      F,(A2)+
+                    ADD.W       #4, BYTE_COUNTER
                     RTS
 
     SIMHALT             ; halt simulator
@@ -190,18 +203,6 @@ FFFF
 *--------------------------------------------------------------------
 *                  Variables and constants here
 *--------------------------------------------------------------------
-
-*------------------Display and show the EA mode----------------------
-D_Dn                 DC.B        'D',0
-D_An                 DC.B        'A',0
-D_AnPlus             DC.B        '(A',0
-D_AnPlusEnd          DC.B        ')',0
-D_AnPlusP            DC.B        ')+',0
-D_minusAn            DC.B        '-(A',0
-D_FFFF               DC.B        'FFFF',0
-D_Address            DC.B        '$',0
-D_Immediate          DC.B        '#$',0
-D_Comma              DC.B        ',',0
 
 
 
