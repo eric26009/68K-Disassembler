@@ -8,22 +8,6 @@
 * different addressing mode
 *-----------------------------------------------------------
 
-                    * ToDo - Takes in the 16 bit instruction from D3
-                    * Take the last 6 bit by doing a bit mask
-                    * Divide the 6 bits into mode and register.
-                    * The first 3 bits is the Mode and the last 3 bits is the register
-                    * Store that in D4 and D5 respectively
-EA_MAIN
-                    MOVE.L      D3,D4
-                    AND.B       #%00111111,D4
-                    MOVE.B      D4,D5
-                    AND.B       #%00000111,D5 *Register in D5
-                    AND.B       #%00111000,D4 *Mode in D4
-                    ROR.B       #3,D4
-
-
-
-
 *------------------EA-Codes----------------------------------------
 *
 *                 EA mode store in D4 and EA register stored in D5
@@ -36,6 +20,14 @@ EA_MAIN
 *                   5)absolute word, long and immediate
 *
 *------------------------------------------------------------------
+EA_MAIN
+                    MOVE.L      D3,D4  *Takes in the 16 bit instruction from D3
+                    AND.B       #%00111111,D4 * Take the last 6 bit by doing a bit mask
+                    MOVE.B      D4,D5 * Copy the last 6 bits into D5 also
+                    AND.B       #%00000111,D5 *Take the last 3 bits into Register in D5
+                    AND.B       #%00111000,D4 *Take the first 3 bits into Mode in D4
+                    ROR.B       #3,D4 *Rotate to correct position
+
 
                     CMPI.B      #0,D4
                     BEQ         EA_Dn
@@ -61,11 +53,14 @@ EA_MAIN
 EA_Dn
                     CLR.L       D1
                     MOVE.B      D5, D1
-                    MOVE.B      D_Dn,(A2)+
+                    *-------------------------- Prints Dn
+                    MOVE.B      D,(A2)+
+                    
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
+                    *--------------------------
                     ADD.W       #2,BYTE_COUNTER
-
+                    
                     MOVE.L      #$2,INCREMENT
                     RTS
 
@@ -74,9 +69,12 @@ EA_An
 
                     CLR.L       D1
                     MOVE.B      D5, D1
-                    MOVE.B      D_An,(A2)+
+                    *-------------------------- Prints An
+                    MOVE.B      A,(A2)+
+                    
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
+                    *--------------------------
                     ADD.W       #2,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
@@ -85,12 +83,16 @@ EA_An
 *This is the EA address indirect :(An)
 EA_An_Indirect
                     CLR.L       D1
-                    MOVE.B      D5, D1
-                    MOVE.B  OPEN_PARA, (A2)+
-                    MOVE.B  A, (A2)+
+                    MOVE.B      D5,D1
+                    *-------------------------- Prints (An)
+                    MOVE.B      OPEN_PARA,(A2)+
+                    MOVE.B      A,(A2)+
+                    
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
-                    MOVE.B  CLOSE_PARA, (A2)+
+                    
+                    MOVE.B      CLOSE_PARA,(A2)+
+                    *--------------------------
                     ADD.W       #4,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
@@ -99,13 +101,17 @@ EA_An_Indirect
 EA_An_Plus
                     CLR.L       D1
                     MOVE.B      D5, D1
-                    MOVE.B      D_AnPlus,(A2)+
-
+                    *-------------------------- Prints (A0)+
+                    MOVE.B      OPEN_PARA,(A2)+
+                    MOVE.B      A,(A2)+
+                    
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
-
-                    MOVE.B      D_AnPlusP,(A2)+
-                    ADD.W       #3,BYTE_COUNTER
+                    
+                    MOVE.B      CLOSE_PARA,(A2)+
+                    MOVE.B      PLUS,(A2)+
+                    *--------------------------
+                    ADD.W       #5,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
                     RTS
@@ -113,13 +119,17 @@ EA_An_Plus
 EA_An_Minus
                     CLR.L       D1
                     MOVE.B      D5, D1
-                    MOVE.B      D_minusAn,(A2)+
-
+                    *-------------------------- Prints -(SP)
+                    MOVE.B      MINUS,(A2)+
+                    MOVE.B      OPEN_PARA,(A2)+
+                    MOVE.B      A,(A2)+
+                    
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
-
-                    MOVE.B      D_AnPlusEnd,(A2)+
-                    ADD.W       #3,BYTE_COUNTER
+                    
+                    MOVE.B      CLOSE_PARA,(A2)+
+                    *--------------------------
+                    ADD.W       #5,BYTE_COUNTER
 
                     MOVE.L      #$2,INCREMENT
                     RTS
@@ -192,6 +202,7 @@ D_FFFF               DC.B        'FFFF',0
 D_Address            DC.B        '$',0
 D_Immediate          DC.B        '#$',0
 D_Comma              DC.B        ',',0
+
 
 
 
