@@ -56,6 +56,40 @@ FIRST4BITS:
     BEQ     MOVEM
 
     MOVE.L  D3,D2
+    AND.W   #%1111111111000000, D2  * checking for BLCR mode, source is #value
+    CMP.W   #%0000100010000000, D2
+    BEQ     BCLR_FROM_IMMEDIATE_DATA
+    MOVE.L  D3,D2
+    AND.W   #%1111000110000000, D2  * checking for BCLR mode, source is DN
+    CMP.W   #%0000000110000000, D2
+    BEQ     BCLR_FROM_DN
+
+    MOVE.L  D3,D2
+    AND.W   #%1111111011000000, D2  * checking for ASR/ASL mode, <EA only>
+    CMP.W   #%1110000011000000, D2
+    BEQ     ASD_MEM
+    MOVE.L  D3,D2
+    AND.W   #%1111111011000000, D2  * checking for LSR/LSL mode, <EA only>
+    CMP.W   #%1110011011000000, D2
+    BEQ     ROD_MEM
+    MOVE.L  D3,D2
+    AND.W   #%1111111011000000, D2  * checking for ROR/ROL mode, <EA only>
+    CMP.W   #%1110001011000000, D2
+    BEQ     LSD_MEM
+
+    MOVE.L  D3,D2
+    AND.W   #%1111000000011000, D2  * checking for ASR/ASL mode, #data or DN source
+    CMP.W   #%1110000000000000, D2
+    BEQ     ASD_REG
+    MOVE.L  D3,D2
+    AND.W   #%1111000000011000, D2  * checking for LSR/LSL mode, #data or DN source
+    CMP.W   #%1110000000001000, D2
+    BEQ     LSD_REG
+    AND.W   #%1111000000011000, D2  * checking for LSR/LSL mode, #data or DN source
+    CMP.W   #%1110000000011000, D2
+    BEQ     ROD_REG
+
+    MOVE.L  D3,D2
     ROL.W   #8,D2
     AND.B   #%11111111, D2  * checking for ORI mode
     CMP.B   #%00000000, D2
@@ -118,6 +152,165 @@ FIRST4BITS:
     CMP.B   #%00000101, D2      * OR
     BEQ     SUBQ
     BRA UNKNOWN                 * if unknown opcode, print 'DATA' out
+
+ASD_REG:
+    MOVE.B  A, (A2)+
+    MOVE.B  S, (A2)+
+    JSR     DIRECTION
+    JSR     ADD_SIZE
+    JSR     COUNT_REG
+    ADD.W   #2, BYTE_COUNTER
+    JSR     MOVE_SOURCE_DN_RTS      * gets register in the last 3 bits
+    BRA     BUFFER_LOOP
+
+ASD_MEM:
+    MOVE.B  A, (A2)+
+    MOVE.B  S, (A2)+
+    JSR     DIRECTION
+    MOVE.B  W, (A2)+
+    ADD.W   #3, BYTE_COUNTER
+    JSR     TAB
+    JSR     EA_MAIN
+    BRA     BUFFER_LOOP
+
+LSD_REG:
+    MOVE.B  L, (A2)+
+    MOVE.B  S, (A2)+
+    JSR     DIRECTION
+    JSR     ADD_SIZE
+    JSR     COUNT_REG
+    ADD.W   #2, BYTE_COUNTER
+    JSR     MOVE_SOURCE_DN_RTS      * gets register in the last 3 bits
+    BRA     BUFFER_LOOP
+
+LSD_MEM:
+    MOVE.B  L, (A2)+
+    MOVE.B  S, (A2)+
+    JSR     DIRECTION
+    MOVE.B  W, (A2)+
+    ADD.W   #3, BYTE_COUNTER
+    JSR     TAB
+    JSR     EA_MAIN
+    BRA     BUFFER_LOOP
+
+ROD_REG:
+    MOVE.B  R, (A2)+
+    MOVE.B  O, (A2)+
+    JSR     DIRECTION
+    JSR     ADD_SIZE
+    JSR     COUNT_REG
+    ADD.W   #2, BYTE_COUNTER
+    JSR     MOVE_SOURCE_DN_RTS      * gets register in the last 3 bits
+    BRA     BUFFER_LOOP
+
+ROD_MEM:
+    MOVE.B  R, (A2)+
+    MOVE.B  O, (A2)+
+    JSR     DIRECTION
+    MOVE.B  W, (A2)+
+    ADD.W   #3, BYTE_COUNTER
+    JSR     TAB
+    JSR     EA_MAIN
+    BRA     BUFFER_LOOP
+
+COUNT_REG:
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROR.W   #5,D2
+    AND.B   #%00000001, D2  * bitmask to see 3 bits for mode
+    CMP.B   #%00000000, D2
+    BEQ     COUNT
+    BNE     REG
+
+COUNT:
+    MOVE.L  D3, D2      * reset address contents to before bitmask
+    ROL.W   #7,D2
+    AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+    CMP.B   #%00000000, D2
+    BEQ     ZERO_IS_EIGHT
+    BNE     NOT_EIGHT
+ZERO_IS_EIGHT:
+    MOVE.W  #8, D2
+NOT_EIGHT:
+    ADD.B   #$30, D2
+    MOVE.B  POUND, (A2)+
+    MOVE.B  D2, (A2)+
+    MOVE.B  COMMA, (A2)+
+    ADD.W   #3, BYTE_COUNTER
+    RTS
+
+REG:
+    JSR MOVE_DEST_DN_RTS
+    MOVE.B  COMMA, (A2)+
+    ADD.W   #1, BYTE_COUNTER
+    RTS
+
+
+DIRECTION:
+    MOVE.L  D3, D2
+    ROL.W   #8, D2
+    AND.B   #%00000001, D2
+    CMP.B   #0, D2
+    BEQ     RIGHT
+    BNE     LEFT
+    RTS
+
+RIGHT:
+    MOVE.B  R, (A2)+
+    MOVE.B  DOT, (A2)+
+    ADD.W   #2, BYTE_COUNTER
+    RTS
+
+LEFT:
+    MOVE.B  L, (A2)+
+    MOVE.B  DOT, (A2)+
+    ADD.W   #2, BYTE_COUNTER
+    RTS
+
+
+
+BCLR_FROM_IMMEDIATE_DATA:
+    MOVE.B  B, (A2)+
+    MOVE.B  C, (A2)+
+    MOVE.B  L, (A2)+
+    MOVE.B  R, (A2)+
+    MOVE.B  DOT, (A2)+
+    JSR     BCLR_SIZE
+    ADD.W   #6, BYTE_COUNTER
+    *JSR     SPECIAL_EA             * this will be a special case
+    MOVE.B  COMMA, (A2)+
+    JSR     EA_MAIN                 * destination EA is normal
+    BRA     BUFFER_LOOP
+
+
+BCLR_FROM_DN:
+    MOVE.B  B, (A2)+
+    MOVE.B  C, (A2)+
+    MOVE.B  L, (A2)+
+    MOVE.B  R, (A2)+
+    MOVE.B  DOT, (A2)+
+    JSR     BCLR_SIZE
+    ADD.W   #6, BYTE_COUNTER
+    JSR     MOVE_DEST_DN_RTS
+    MOVE.B  COMMA, (A2)+
+    JSR     EA_MAIN
+    BRA     BUFFER_LOOP
+
+
+BCLR_SIZE:
+    MOVE.L  D3, D2
+    AND.B   #%00111000, D2      * bitmask to check the mode for size
+    CMP.B   #%00000000, D2      * if DN that means the size is Long
+    BEQ     BCLR_PRINT_LONG
+    BNE     BCLR_PRINT_BYTE
+
+BCLR_PRINT_LONG:
+    JSR     ADD_LONG
+    RTS
+
+BCLR_PRINT_BYTE:
+    JSR     ADD_BYTE
+    RTS
+
 
 JSR:
     MOVE.B  J, (A2)+
@@ -319,7 +512,7 @@ SUBQ:
     MOVE.B  DOT, (A2)+
     ADD.W      #5, BYTE_COUNTER
     JSR     ADD_SIZE        *ADD_SIZE also works for SUBQ size
-    MOVE.W  D3, D2      * reset address contents to before bitmask
+    MOVE.L  D3, D2      * reset address contents to before bitmask
     ROL.W   #7,D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     CMP.B   #%00000000, D2
@@ -532,6 +725,15 @@ MOVE_SOURCE_DN:
     MOVE.B  COMMA, (A2)+
     ADD.W      #3, BYTE_COUNTER
     BRA     MOVE_DEST
+
+MOVE_SOURCE_DN_RTS:
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+    ADD.B   #$30, D2
+    MOVE.B  D, (A2)+
+    MOVE.B  D2, (A2)+
+    ADD.W      #2, BYTE_COUNTER
+    RTS
 
 MOVE_SOURCE_AN:
     MOVE.W  D3, D2      * reset address contents to before bitmask
