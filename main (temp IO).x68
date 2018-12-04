@@ -6,7 +6,7 @@
 *-----------------------------------------------------------
     ORG    $1000
 
-START_ADDRESS   EQU     $1050       * hard coded start address
+START_ADDRESS   EQU     $104C       * hard coded start address
 END_ADDRESS     EQU     $1060      * hard coded end address
 INCREMENT       EQU     $8
 
@@ -40,6 +40,7 @@ COMPLETED:
     EOR.B     D2, (A4)
     MOVEM.W D0-D7/A0-A6, (A2)
     NEG.B       D3
+    SUB.L     D2, D5
     ORI.L     #23, D3
     ADD.L       D3, D5
     DIVS      #20,D2
@@ -57,6 +58,7 @@ TEST_LABEL:
  INCLUDE "EA.x68"
 
     END    START        ; last line of source
+
 
 
 

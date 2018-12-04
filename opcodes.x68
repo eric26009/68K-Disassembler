@@ -115,6 +115,8 @@ FIRST4BITS:
     BEQ     MULS
     CMP.B   #%00001000, D2      * OR
     BEQ     OR
+    CMP.B   #%00000101, D2      * OR
+    BEQ     SUBQ
     BRA UNKNOWN                 * if unknown opcode, print 'DATA' out
 
 JSR:
@@ -301,7 +303,39 @@ SUB:
     MOVE.B  B, (A2)+
     MOVE.B  DOT, (A2)+
     ADD.W      #4, BYTE_COUNTER
-    BRA     ADD_SIZE        *ADD_SIZE also works for SUB size
+    JSR     ADD_SIZE        *ADD_SIZE also works for SUB size
+    MOVE.L  D3,D2
+    ROL.W   #8,D2               * rotate left 8 bits to get the direction
+    AND.B   #%00000001, D2      * bitmask to see direction
+    CMP.B   #%00000000, D2
+    BEQ     ADD_DEST_DN      * <EA>, DN -> DN
+    BNE     ADD_DEST_EA      * DN, <EA> -> <EA>
+
+SUBQ:
+    MOVE.B  S, (A2)+
+    MOVE.B  U, (A2)+
+    MOVE.B  B, (A2)+
+    MOVE.B  Q, (A2)+
+    MOVE.B  DOT, (A2)+
+    ADD.W      #5, BYTE_COUNTER
+    JSR     ADD_SIZE        *ADD_SIZE also works for SUBQ size
+    MOVE.W  D3, D2      * reset address contents to before bitmask
+    ROL.W   #7,D2
+    AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+    CMP.B   #%00000000, D2
+    BEQ     POUND_8
+    BNE     NORMAL_SUBQ
+POUND_8:
+    MOVE.W  #8, D2
+NORMAL_SUBQ:
+    ADD.B   #$30, D2
+    MOVE.B  POUND, (A2)+
+    MOVE.B  D2, (A2)+
+    MOVE.B  COMMA, (A2)+
+    ADD.W   #3, BYTE_COUNTER
+    JSR     EA_MAIN
+    BRA     BUFFER_LOOP
+
 
 ADD:
      MOVE.W  D3, D2      * reset address contents to before bitmask
@@ -737,6 +771,7 @@ SPACE       DC.B ' ',0
 QUESTION    DC.B '?',0
 COMMA       DC.B ',',0
 MONEY       DC.B '$',0
+POUND       DC.B '#',0
 
     *END    START        ; last line of source
 
