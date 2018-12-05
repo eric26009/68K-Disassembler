@@ -21,6 +21,7 @@ main.x86
 	- INCREMENT is hard coded at location $8 (stores the increment to next memory location).
 
 ea.x86
+
 	- D6 stores the size for immediate value (0=Byte, 1=Word, 2=Long).
 	- D4 stores 3 bits for the mode.
 	- D5 stores 3 bits for the register.
