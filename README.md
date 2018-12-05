@@ -18,13 +18,9 @@ main.x86
 	- A4 - stores starting/current address that is being decoded.
 	- A5 - stores ending address of memory that needs to be decoded.
 	- A6 - LINE_COUNTER, stores the number of lines printed so far.
-	- INCREMENT is hard coded at location $8 (stores the increment to next memory location)
+	- INCREMENT is hard coded at location $8 (stores the increment to next memory location).
 
-EA.x86
-	- D6 stores the size for immediate value (0=Byte, 1=Word, 2=Long)
-	- D4 stores 3 bits for the mode
-	- D5 stores 3 bits for the register
-
-
-
-** need to dedicate a register to keep track of number of lines printed so we 	  can implement the feature where it prints 10 lines at a time, until user presses 	  a button. **
+ea.x86
+	- D6 stores the size for immediate value (0=Byte, 1=Word, 2=Long).
+	- D4 stores 3 bits for the mode.
+	- D5 stores 3 bits for the register.
