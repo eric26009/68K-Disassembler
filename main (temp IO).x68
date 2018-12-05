@@ -6,8 +6,8 @@
 *-----------------------------------------------------------
     ORG    $1000
 
-START_ADDRESS   EQU     $00001082       * hard coded start address
-END_ADDRESS     EQU     $00001092      * hard coded end address
+START_ADDRESS   EQU     $00001054       * hard coded start address
+END_ADDRESS     EQU     $000010B8      * hard coded end address
 INCREMENT       EQU     $8
 LINE_COUNTER    EQU     $2000
 
@@ -18,13 +18,21 @@ START:
     LEA     START_ADDRESS, A4       * loading start address into A4
     LEA     END_ADDRESS, A5         * load ing end address into A5
     LEA     LINE_COUNTER, A6         * load ing end address into A5
+    MOVE.L  #0, (A6)                 * initalize the line counter to 0
 
 MAIN:
-    MOVE.L  #0, (A6)
     CMP.L   A5,A4                   * comparing start/end addresses
     BGE.L   COMPLETED               * greater than or equal means done
+    CMP.L   #10, (A6)
+    BEQ     PAUSE
     CMP.L   A4,A5
     BNE     OPCODE_BEGIN            * not done yet, so fetch next opcode
+
+PAUSE:
+    MOVE.B  #5, D0
+    TRAP    #15
+    MOVE.L  #0, (A6)
+    BRA     NEXT_ADDRESS
 
 NEXT_ADDRESS:
     ADD.L   INCREMENT, A4           * incrementing address here by INCREMNET amount, needs to be changed
@@ -36,6 +44,11 @@ COMPLETED:
     MOVE.B  #13, D0                 * displaying message
     TRAP #15
 
+*****
+***** THESE LINES BELOW ARE FOR TESTING ONLY *****
+TESTING_CODES:
+    NOP
+    ADD.W   D3, $1020
     JSR     TEST_LABEL
     BRA     TEST_LABEL
     CMPI.W  #44, (A1)
@@ -74,6 +87,7 @@ TEST_LABEL:
  INCLUDE "demo_test.X68"
 
     END    START        ; last line of source
+
 
 
 

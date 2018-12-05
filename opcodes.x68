@@ -2,7 +2,7 @@
 * Title      :
 * Written by :
 * Date       :
-* Description:  OP-CODE and string buffer
+* Description:  Opcodes, string buffer, DC table, hex conversion
 *-----------------------------------------------------------
     *ORG    $1000
 
@@ -11,8 +11,6 @@ BYTE_COUNTER    EQU     $0       * counter for the number of bytes the string ha
 STRING_STORE    EQU     $4000   * where the beginning of the temp string storage lives
 
 
-*START:                  ; first instruction of program
-
 OPCODE_BEGIN:
     LEA        BUFF_POINT,A1        * pointer to string buffer
     LEA        STRING_STORE, A2     * A2 stores the pointer to end of string
@@ -20,10 +18,10 @@ OPCODE_BEGIN:
     MOVE.W     #0, BYTE_COUNTER     * starting byte counter with 0
 
     MOVE.B      #0, D5                * RESETTING HEX CONVERTER COUNTER
-    MOVE.L      A4,D6
-    MOVE.L      D6,D7
+    MOVE.L      A4,D6                 * moving current address into D6
+    MOVE.L      D6,D7                 * making a copy of D6 into D7
     MOVE.B      MONEY, (A2)+         * adding a MONEY SYMBOL to the beginning
-    ADD.W       #1, BYTE_COUNTER
+    ADD.W       #1, BYTE_COUNTER      * increment byte counter
     BRA         HEX_CHAR
 
 CONTINUE:
@@ -37,8 +35,11 @@ FIRST4BITS:
     MOVE.W  A4,D6   * ******temp holds the address, needs to be changed************
     MOVE.W  D2,D3       * save a copy of of contents in D3
 
-    CMP.L   #$4E75FFFF, D2
+    CMP.L   #$4E75FFFF, D2      * RTS code
     BEQ     OP_RTS
+
+    CMP.W   #$4E71, D2      * NOP code
+    BEQ     OP_NOP
 
     MOVE.L  D3,D2                   * checking for LEA mode
     AND.W   #%1111000111000000, D2
@@ -152,6 +153,15 @@ FIRST4BITS:
     CMP.B   #%00000101, D2      * OR
     BEQ     SUBQ
     BRA UNKNOWN                 * if unknown opcode, print 'DATA' out
+
+
+OP_NOP:
+    MOVE.B  N, (A2)+
+    MOVE.B  O, (A2)+
+    MOVE.B  P, (A2)+
+    ADD.W   #3, BYTE_COUNTER
+    BRA     BUFFER_LOOP
+
 
 ASD_REG:
     MOVE.B  A, (A2)+
@@ -356,7 +366,7 @@ CMPI:
     MOVE.B  DOT, (A2)+
     ADD.W   #5, BYTE_COUNTER
     JSR     ADD_SIZE
-    *JSR    EA_MAIN
+    JSR    EA_MAIN
     *JSR    EA for special EA
     BRA     BUFFER_LOOP
 
@@ -885,7 +895,7 @@ TEST2:
     RTS
 
 HEX_CHAR:
-    CMP.B   #8,D5
+    CMP.B   #8,D5   * D5 is counter, must loop 8 times for full LONG address
     BEQ     CONTINUE
     MOVE.L  D6,D7
     AND.L   #%11110000000000000000000000000000, D6
