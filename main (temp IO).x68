@@ -8,7 +8,7 @@
 
 START_ADDRESS   EQU     $000010A4       * hard coded start address
 END_ADDRESS     EQU     $000010D8      * hard coded end address
-INCREMENT       EQU     $8
+INCREMENT       EQU     $20
 LINE_COUNTER    EQU     $2000
 
 
