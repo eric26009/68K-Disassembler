@@ -47,46 +47,46 @@ COMPLETED:
 *****
 ***** THESE LINES BELOW ARE FOR TESTING ONLY *****
 TESTING_CODES:
-    ; NOP
-    ; BCC     TEST_LABEL
-    ; BCS     TEST_LABEL
-    ; BGE     TEST_LABEL
-    ; BLT     TEST_LABEL
-    ; BVC     TEST_LABEL
-    ; BEQ     TEST_LABEL
-    ; MOVE.L  D2, D3
-    ; MOVEA.W (A2), A6
-    ; MOVE.B  -(A3),D4
-    ; MOVE.B  (A5)+,(A6)
-    ; ADD.B   D3, $CB2F
-    ; JSR     TEST_LABEL
-    ; BRA     TEST_LABEL
-    ; CMPI.W  #44, (A1)
-    ; CMP.L   #23, D7
-    ; ADDA.L  D2, A3
-    ; EOR.B     D2, (A4)
-    ; MOVEM.W D0-D7/A0-A6, (A2)
-    ; NEG.B       D3
-    ; SUB.L     D2, D5
-    ; ORI.L     #23, D3
-    ; ADD.L       D3, D5
-    ; DIVS      (A2),D2
-    ; MULS      #15,D5                    * LINE FOR TESTING
-    ; LEA       C, A1
-    ; MOVE.L   (A6)+,(A3)+
-    ; MOVE.B   D4,D5
-    ; ADD.B   #15, D3
-    ; ADD.W   #15, D3
-    ; ADD.L   #15,D3
-    ; ADD.L   #203, D3
-    ; SUBQ.B  #1, D3
-    ; BCLR.B  #32, (A3)
-    ; ASR.W   (A3)
-    ; LSR.B   D2, D5
-    ; LSR.L   #7, D1
-    ; LSL.B   #3, D3
-    ; LSL.W   D2, D4
-    ; LSL.W   (A5)+
+    NOP
+    BCC     TEST_LABEL
+    BCS     TEST_LABEL
+    BGE     TEST_LABEL
+    BLT     TEST_LABEL
+    BVC     TEST_LABEL
+    BEQ     TEST_LABEL
+    MOVE.L  D2, D3
+    MOVEA.W (A2), A6
+    MOVE.B  -(A3),D4
+    MOVE.B  (A5)+,(A6)
+    ADD.B   D3, $CB2F
+    JSR     TEST_LABEL
+    BRA     TEST_LABEL
+    CMPI.W  #44, (A1)
+    CMP.L   #23, D7
+    ADDA.L  D2, A3
+    EOR.B     D2, (A4)
+    MOVEM.W D0-D7/A0-A6, (A2)
+    NEG.B       D3
+    SUB.L     D2, D5
+    ORI.L     #23, D3
+    ADD.L       D3, D5
+    DIVS      (A2),D2
+    MULS      #15,D5                    * LINE FOR TESTING
+    LEA       C, A1
+    MOVE.L   (A6)+,(A3)+
+    MOVE.B   D4,D5
+    ADD.B   #15, D3
+    ADD.W   #15, D3
+    ADD.L   #15,D3
+    ADD.L   #203, D3
+    SUBQ.B  #1, D3
+    BCLR.B  #32, (A3)
+    ASR.W   (A3)
+    LSR.B   D2, D5
+    LSR.L   #7, D1
+    LSL.B   #3, D3
+    LSL.W   D2, D4
+    LSL.W   (A5)+
 TEST_LABEL:
 
     SIMHALT             ; halt simulator
