@@ -160,12 +160,14 @@ EA_Absolute_WORD
                     ADD.W       #1,BYTE_COUNTER
 
                     CLR.L       D2                      *clear D2 to show next word data
-                    MOVE.W      (A5)+,D2
+                    MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
+                    MOVE.W      (A4),D2
                     JSR         Show_FFFF
                     
                     MOVE.B      #4, $400                *hardcoded counter in $400 (4 hex values for word)
                     JSR         Display_Address
-
+                    ADD.W       #4,BYTE_COUNTER
+                    
                     MOVE.L      #$4,INCREMENT
                     RTS
 
@@ -174,10 +176,12 @@ EA_Absolute_LONG
                     MOVE.B      MONEY,(A2)+
                     ADD.W       #1,BYTE_COUNTER
                     
-                    CLR.L       D2
-                    MOVE.L      (A5)+,D2
+                    CLR.L        D2
+                    MOVE.W      (A4)+,D2
+                    MOVE.L      (A4),D2
                     MOVE.B      #8,$400                 *hardcoded counter in $400 (8 hex values for long)
                     JSR         Display_Address_Long
+                    ADD.W       #8,BYTE_COUNTER
                     
                     MOVE.L      #$6,INCREMENT
                     RTS
