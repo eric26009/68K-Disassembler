@@ -188,8 +188,33 @@ EA_Absolute_LONG
 
 *This is the EA for Immediate
 EA_Immediate
+                    MOVE.B      POUND,(A2)+     *displays the # sign
+                    MOVE.B      MONEY,(A2)+     *displays the $ sign               
+                    ADD.W       #2,BYTE_COUNTER
+                    
+                    JSR         Immediate_Size
+                    
                     MOVE.L      #$4,INCREMENT
                     RTS
+                    
+Immediate_Size
+                    CMPI.B      #2,D6
+                    BEQ         Immediate_Long
+                    
+                    CLR.L       D2
+                    MOVE.W      (A4)+,D2
+                    MOVE.B      #4,$400
+                    JSR         Display_Address
+                    
+                    RTS
+                    
+Immediate_Long
+                    CLR.L       D2
+                    MOVE.L      (A4)+,D2
+                    MOVE.B      #8,$400
+                    JSR         Display_Address_Long
+                    
+                    RTS                    
 
 *Display hex. Hex stored in D2 and number of rotation in memory $400
 *This is a loop that will display the individual value one by one
@@ -253,9 +278,7 @@ PRINT_FFFF:
 
     SIMHALT             ; halt simulator
 
-*--------------------------------------------------------------------
-*                  Variables and constants here
-*--------------------------------------------------------------------
+
 
 
 
