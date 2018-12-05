@@ -7,7 +7,7 @@
     *ORG    $1000
 
 BUFF_POINT      EQU     $3000   * where the string buffer lives
-BYTE_COUNTER    EQU     $0       * counter for the number of bytes the string has
+BYTE_COUNTER    EQU     $30       * counter for the number of bytes the string has
 STRING_STORE    EQU     $4000   * where the beginning of the temp string storage lives
 
 
@@ -553,6 +553,7 @@ DIVS:
     MOVE.B  S, (A2)+
     JSR     TAB
     ADD.W   #5, BYTE_COUNTER
+    MOVE.B  #1, D6      * saving size for EA
     JSR     EA_MAIN
     MOVE.B  COMMA, (A2)+
     JSR     MOVE_DEST_DN_RTS
@@ -575,8 +576,10 @@ MULS:
     MOVE.B  L, (A2)+
     MOVE.B  S, (A2)+
     JSR         TAB
-    ADD.W      #4, BYTE_COUNTER
+    ADD.W      #5, BYTE_COUNTER
+    MOVE.B  #1, D6      * saving size for EA
     JSR     EA_MAIN
+    MOVE.B  COMMA, (A2)+
     JSR     MOVE_DEST_DN_RTS
     BRA     BUFFER_LOOP
 
