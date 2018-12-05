@@ -6,9 +6,10 @@
 *-----------------------------------------------------------
     ORG    $1000
 
-START_ADDRESS   EQU     $1084       * hard coded start address
-END_ADDRESS     EQU     $108F      * hard coded end address
+START_ADDRESS   EQU     $00001082       * hard coded start address
+END_ADDRESS     EQU     $00001092      * hard coded end address
 INCREMENT       EQU     $8
+LINE_COUNTER    EQU     $2000
 
 
 
@@ -16,15 +17,18 @@ START:
     MOVE.L  #$2, INCREMENT
     LEA     START_ADDRESS, A4       * loading start address into A4
     LEA     END_ADDRESS, A5         * load ing end address into A5
+    LEA     LINE_COUNTER, A6         * load ing end address into A5
 
 MAIN:
+    MOVE.L  #0, (A6)
     CMP.L   A5,A4                   * comparing start/end addresses
     BGE.L   COMPLETED               * greater than or equal means done
     CMP.L   A4,A5
     BNE     OPCODE_BEGIN            * not done yet, so fetch next opcode
 
 NEXT_ADDRESS:
-    ADD.L   INCREMENT, A4                 * incrementing address here by 2, needs to be changed
+    ADD.L   INCREMENT, A4           * incrementing address here by INCREMNET amount, needs to be changed
+    ADD.L   #1, (A6)                * adding 1 to the line counter
     BRA     MAIN                    * go back to check addresses in MAIN
 
 COMPLETED:
@@ -59,7 +63,7 @@ COMPLETED:
     LSR.L   #7, D1
     LSL.B   #3, D3
     LSL.W   D2, D4
-    LSL.B   (A5)+
+    LSL.W   (A5)+
 TEST_LABEL:
 
     SIMHALT             ; halt simulator
@@ -67,8 +71,10 @@ TEST_LABEL:
 * Put variables and constants here
  INCLUDE "opcodes.x68"
  INCLUDE "EA.x68"
+ INCLUDE "demo_test.X68"
 
     END    START        ; last line of source
+
 
 
 

@@ -7,7 +7,7 @@
     *ORG    $1000
 
 BUFF_POINT      EQU     $3000   * where the string buffer lives
-BYTE_COUNTER    EQU     0       * counter for the number of bytes the string has
+BYTE_COUNTER    EQU     $0       * counter for the number of bytes the string has
 STRING_STORE    EQU     $4000   * where the beginning of the temp string storage lives
 
 
@@ -82,10 +82,10 @@ FIRST4BITS:
     CMP.W   #%1110000000000000, D2
     BEQ     ASD_REG
     MOVE.L  D3,D2
-    AND.W   #%1111000000011000, D2  * checking for LSR/LSL mode, #data or DN source
+    AND.W   #%1111000000011000, D2  * checking for ROR/ROL mode, #data or DN source
     CMP.W   #%1110000000001000, D2
     BEQ     LSD_REG
-    AND.W   #%1111000000011000, D2  * checking for LSR/LSL mode, #data or DN source
+    AND.W   #%1111000000011000, D2  * checking for ROR/ROL mode, #data or DN source
     CMP.W   #%1110000000011000, D2
     BEQ     ROD_REG
 
@@ -885,30 +885,30 @@ TEST2:
     RTS
 
 HEX_CHAR:
-    CMP.B   #4,D5
+    CMP.B   #8,D5
     BEQ     CONTINUE
     MOVE.L  D6,D7
-    AND.W   #%1111000000000000, D6
-    ROR.W   #8,D6
-    ROR.W   #4,D6
+    AND.L   #%11110000000000000000000000000000, D6
+    ROL.L   #4,D6
+    *ROR.L   #4,D6
     ADD.B   #1,D5
     CMP.L   #9, D6
     BLE     NUMBER
     BGE     LETTER
 
 NUMBER:
-    ADD.B   #$30, D6
+    ADD.L   #$30, D6
     MOVE.B  D6, (A2)+
     ADD.W      #1, BYTE_COUNTER
-    ROL.W   #4,D7
+    ROL.L   #4,D7
     MOVE.L  D7,D6
     BRA     HEX_CHAR
 
 LETTER:
-    ADD.B   #$37, D6
+    ADD.L   #$37, D6
     MOVE.B  D6, (A2)+
     ADD.W      #1, BYTE_COUNTER
-    ROL.W   #4,D7
+    ROL.L   #4,D7
     MOVE.L  D7,D6
     BRA     HEX_CHAR
 
