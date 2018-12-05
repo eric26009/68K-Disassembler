@@ -22,6 +22,7 @@
 *------------------------------------------------------------------
 
 *Check for valid and convert frmo ASCII to HEX
+EA_COUNT    EQU     $200
 
 EA_MAIN
                     MOVE.L      D3,D4               *Takes in the 16 bit instruction from D3
@@ -30,7 +31,7 @@ EA_MAIN
                     AND.B       #%00000111,D5       *Take the last 3 bits into Register in D5
                     AND.B       #%00111000,D4       *Take the first 3 bits into Mode in D4
                     ROR.B       #3,D4               *Rotate to correct position
-                    
+
                     *TODOS:
                     *Case to handle Absolute/Immediate at D7
                     *Special Cases to handle MOVEM and COMPI, MOVE
@@ -65,12 +66,12 @@ EA_Dn
                     MOVE.B      D5, D1
                     *-------------------------- Prints Dn
                     MOVE.B      D,(A2)+
-                    
+
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
                     *--------------------------
                     ADD.W       #2,BYTE_COUNTER
-                    
+
                     MOVE.L      #$2,INCREMENT
                     RTS
 
@@ -81,7 +82,7 @@ EA_An
                     MOVE.B      D5, D1
                     *-------------------------- Prints An
                     MOVE.B      A,(A2)+
-                    
+
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
                     *--------------------------
@@ -97,10 +98,10 @@ EA_An_Indirect
                     *-------------------------- Prints (An)
                     MOVE.B      OPEN_PARA,(A2)+
                     MOVE.B      A,(A2)+
-                    
+
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
-                    
+
                     MOVE.B      CLOSE_PARA,(A2)+
                     *--------------------------
                     ADD.W       #4,BYTE_COUNTER
@@ -114,10 +115,10 @@ EA_An_Plus
                     *-------------------------- Prints (A0)+
                     MOVE.B      OPEN_PARA,(A2)+
                     MOVE.B      A,(A2)+
-                    
+
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
-                    
+
                     MOVE.B      CLOSE_PARA,(A2)+
                     MOVE.B      PLUS,(A2)+
                     *--------------------------
@@ -133,10 +134,10 @@ EA_An_Minus
                     MOVE.B      MINUS,(A2)+
                     MOVE.B      OPEN_PARA,(A2)+
                     MOVE.B      A,(A2)+
-                    
+
                     JSR         Show_Number
                     MOVE.B      D1,(A2)+
-                    
+
                     MOVE.B      CLOSE_PARA,(A2)+
                     *--------------------------
                     ADD.W       #5,BYTE_COUNTER
@@ -163,11 +164,12 @@ EA_Absolute_WORD
                     MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
                     MOVE.W      (A4),D2
                     JSR         Show_FFFF
-                    
-                    MOVE.B      #4, $400                *hardcoded counter in $400 (4 hex values for word)
+
+                    ; CLR.L       EA_COUNT
+                    MOVE.B      #4, EA_COUNT                *hardcoded counter in $400 (4 hex values for word)
                     JSR         Display_Address
                     ADD.W       #4,BYTE_COUNTER
-                    
+
                     MOVE.L      #$4,INCREMENT
                     RTS
 
@@ -175,46 +177,52 @@ EA_Absolute_WORD
 EA_Absolute_LONG
                     MOVE.B      MONEY,(A2)+
                     ADD.W       #1,BYTE_COUNTER
-                    
+
                     CLR.L        D2
                     MOVE.W      (A4)+,D2
                     MOVE.L      (A4),D2
-                    MOVE.B      #8,$400                 *hardcoded counter in $400 (8 hex values for long)
+                    MOVE.B      #8,EA_COUNT                 *hardcoded counter in $400 (8 hex values for long)
                     JSR         Display_Address_Long
                     ADD.W       #8,BYTE_COUNTER
-                    
+
                     MOVE.L      #$6,INCREMENT
                     RTS
 
 *This is the EA for Immediate
 EA_Immediate
                     MOVE.B      POUND,(A2)+     *displays the # sign
-                    MOVE.B      MONEY,(A2)+     *displays the $ sign               
+                    MOVE.B      MONEY,(A2)+     *displays the $ sign
                     ADD.W       #2,BYTE_COUNTER
-                    
+
                     JSR         Immediate_Size
-                    
-                    MOVE.L      #$4,INCREMENT
+
+
                     RTS
-                    
+
 Immediate_Size
                     CMPI.B      #2,D6
                     BEQ         Immediate_Long
-                    
-                    CLR.L       D2
-                    MOVE.W      (A4)+,D2
-                    MOVE.B      #4,$400
+
+                    CLR.L       D2                      *clear D2 to show next word data
+                    MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
+                    MOVE.W      (A4),D2
+                    MOVE.B      #4,EA_COUNT
+                    MOVE.L      #$4,INCREMENT
+                    ADD.W       #4,BYTE_COUNTER
                     JSR         Display_Address
-                    
+
                     RTS
-                    
+
 Immediate_Long
-                    CLR.L       D2
-                    MOVE.L      (A4)+,D2
-                    MOVE.B      #8,$400
+                    CLR.L        D2
+                    MOVE.W      (A4)+,D2
+                    MOVE.L      (A4),D2
+                    MOVE.B      #8,EA_COUNT
+                    MOVE.L      #$6,INCREMENT
+                    ADD.W       #8,BYTE_COUNTER
                     JSR         Display_Address_Long
-                    
-                    RTS                    
+
+                    RTS
 
 *Display hex. Hex stored in D2 and number of rotation in memory $400
 *This is a loop that will display the individual value one by one
@@ -222,16 +230,16 @@ Display_Address
                     ROL.W       #4,D2           *Rotate the first hex number to the back so we can read
                     MOVE.B      D2,D1           *D1 to store the byte data
                     ANDI.B      #$0F,D1         *AND the byte data so we can only see the first one
-                    
+
                     CMPI.b      #$A,D1          *Check if it is greater than A
                     JSR         Show_Char       *If yes jump to display (A-F)
-                    
+
                     CMPI.B      #$A,D1          *Check if it is less than A
                     BLT         Show_Number     *If yes jump to display (0-9)
                     MOVE.B      D1,(A2)+        *Add the character in stack to display later
-                    
-                    SUB.B       #1,$400
-                    CMPI.B      #0,$400         *Check if rotation done
+
+                    SUB.B       #1,EA_COUNT
+                    CMPI.B      #0,EA_COUNT        *Check if rotation done
                     BNE         Display_Address *call itself again-loop
                     RTS
 
@@ -240,17 +248,17 @@ Display_Address_Long
                     ROL.L       #4,D2           *Rotate the first hex number to the back so we can read
                     MOVE.B      D2,D1           *D1 to store the byte data
                     ANDI.B      #$0F,D1         *AND the byte data so we can only see the first one
-                    
+
                     CMPI.B      #$A,D1          *Check if it is greater than A
                     JSR         Show_Char       *If yes jump to display (A-F)
 
                     MOVE.B      D1,(A2)+        *Add the character in stack to display later
-                    
-                    SUB.B       #1,$400
-                    CMPI.B      #0,$400         *Check if rotation done
+
+                    SUB.B       #1,EA_COUNT
+                    CMPI.B      #0,EA_COUNT         *Check if rotation done
                     BNE         Display_Address_Long *call itself again-loop
-                    
-                    RTS                    
+
+                    RTS
 
 
 Show_Char
