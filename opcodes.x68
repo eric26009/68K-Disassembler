@@ -20,11 +20,10 @@ OPCODE_BEGIN:
     MOVE.B      #0, D5                * RESETTING HEX CONVERTER COUNTER
     MOVE.L      A4,D6                 * moving current address into D6
     MOVE.L      D6,D7                 * making a copy of D6 into D7
+    MOVE.L      #$2, INCREMENT         * resetting the increment counter back to $2, EA may change it.
     MOVE.B      MONEY, (A2)+         * adding a MONEY SYMBOL to the beginning
     ADD.W       #1, BYTE_COUNTER      * increment byte counter
-    BRA         HEX_CHAR
-
-CONTINUE:
+    JSR         HEX_CHAR
     JSR         TAB         * printing tab after HEX address is printed to screen
 
 
@@ -227,7 +226,7 @@ BEQ:
 
 BCC_CODES_FINISH:
     JSR     BRA_SIZE
-    *JSR    SPECAIL_EA
+    JSR     EA_MAIN     * needs to be special EA
     BRA     BUFFER_LOOP
 
 ASD_REG:
@@ -356,7 +355,7 @@ BCLR_FROM_IMMEDIATE_DATA:
     MOVE.B  DOT, (A2)+
     JSR     BCLR_SIZE
     ADD.W   #6, BYTE_COUNTER
-    *JSR     SPECIAL_EA             * this will be a special case
+    JSR     EA_MAIN             * this will be a special case
     MOVE.B  COMMA, (A2)+
     JSR     EA_MAIN                 * destination EA is normal
     BRA     BUFFER_LOOP
@@ -439,7 +438,7 @@ CMPI:
     JSR     ADD_SIZE
     JSR     EA_MAIN
     MOVE.B  COMMA, (A2)+
-    *JSR    EA for special EA
+    JSR    EA_MAIN          * special EA
     BRA     BUFFER_LOOP
 
 CMP:
@@ -474,7 +473,7 @@ MOVEM:
     MOVE.B  DOT, (A2)+
     ADD.W   #6, BYTE_COUNTER
     JSR     MOVEM_SIZE
-    *JSR    SPECIAL
+    JSR    EA_MAIN          * special EA
     BRA     BUFFER_LOOP
 
 MOVEM_SIZE:
@@ -514,7 +513,7 @@ ORI:
     MOVE.B  DOT, (A2)+
     ADD.W   #5, BYTE_COUNTER
     JSR     ADD_SIZE
-    *JSR    SPECIAL
+    JSR    EA_MAIN          * special EA
     MOVE.B  COMMA, (A2)+
     JSR     EA_MAIN
     BRA     BUFFER_LOOP
@@ -556,7 +555,8 @@ DIVS:
     ADD.W   #5, BYTE_COUNTER
     JSR     EA_MAIN
     MOVE.B  COMMA, (A2)+
-    BRA     MOVE_DEST_DN
+    JSR     MOVE_DEST_DN_RTS
+    BRA     BUFFER_LOOP
 
 LEA_MODE:
     MOVE.B  L, (A2)+
@@ -709,6 +709,7 @@ ADD_SIZE:
     BEQ     ADD_WORD
     CMP.B   #%00000010, D2      * move.w
     BEQ     ADD_LONG
+    BRA     UNKNOWN
 
 ADD_BYTE:
     MOVE.B  B, (A2)+
@@ -787,6 +788,7 @@ MOVE_SIZE:
     BEQ     WORD
     CMP.B   #%00000010, D2      * move.L
     BEQ     LONG
+    BRA     UNKNOWN
 
 
 BYTE:
@@ -901,6 +903,7 @@ MOVE_DEST:
     BEQ     MOVE_DEST_AN_011
     CMP.B   #%00000100, D2
     BEQ     MOVE_DEST_AN_100
+    BRA     UNKNOWN
 
 MOVE_DEST_DN:
     MOVE.W  D3, D2      * reset address contents to before bitmask
@@ -990,7 +993,16 @@ UNKNOWN:
     MOVE.B  A, (A2)+
     MOVE.B  T, (A2)+
     MOVE.B  A, (A2)+
-    ADD.W      #4, BYTE_COUNTER
+    JSR     TAB
+    MOVE.B  MONEY, (A2)+
+    ADD.W      #5, BYTE_COUNTER
+    MOVE.L  D3, D2      * moving clean copy of instruction into D2
+    MOVE.B  #4, D5      * resrtarting HEX counter
+    CLR.L   D6
+    MOVE.L  D2, D6      * moving word instruction into D6
+    SWAP  D6
+    JSR     HEX_CHAR
+    BRA     BUFFER_LOOP
 
 
 BUFFER_LOOP:
@@ -1004,18 +1016,12 @@ PRINT_BUFFER:
     LEA        BUFF_POINT,A1
     MOVE.W     BYTE_COUNTER, D1     * need to say how many bytes to print in D1
     TRAP #15
+    JMP         NEXT_ADDRESS
 
-    JMP     NEXT_ADDRESS
-
-TEST:
-    JSR TEST2
-
-TEST2:
-    RTS
 
 HEX_CHAR:
     CMP.B   #8,D5   * D5 is counter, must loop 8 times for full LONG address
-    BEQ     CONTINUE
+    BEQ     HEX_CHAR_DONE
     MOVE.L  D6,D7
     AND.L   #%11110000000000000000000000000000, D6
     ROL.L   #4,D6
@@ -1024,6 +1030,8 @@ HEX_CHAR:
     CMP.L   #9, D6
     BLE     NUMBER
     BGE     LETTER
+HEX_CHAR_DONE:
+    RTS
 
 NUMBER:
     ADD.L   #$30, D6
