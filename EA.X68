@@ -31,9 +31,9 @@ EA_MAIN
                     AND.B       #%00111000,D4       *Take the first 3 bits into Mode in D4
                     ROR.B       #3,D4               *Rotate to correct position
                     
+                    *TODOS:
                     *Case to handle Absolute/Immediate at D7
                     *Special Cases to handle MOVEM and COMPI, MOVE
-                    
                     *D6 will be the register to store the size for immediate
                     *0 is a byte
                     *1 is a word
@@ -159,11 +159,11 @@ EA_Absolute_WORD
                     MOVE.B      MONEY,(A2)+
                     ADD.W       #1,BYTE_COUNTER
 
-                    CLR.L       D2               *clear D2 to show next word data
+                    CLR.L       D2                      *clear D2 to show next word data
                     MOVE.W      (A5)+,D2
                     JSR         Show_FFFF
                     
-                    MOVE.B      #4, $400
+                    MOVE.B      #4, $400                *hardcoded counter in $400 (4 hex values for word)
                     JSR         Display_Address
 
                     MOVE.L      #$4,INCREMENT
@@ -171,6 +171,14 @@ EA_Absolute_WORD
 
 *This is the EA for absolute addressing LONG
 EA_Absolute_LONG
+                    MOVE.B      MONEY,(A2)+
+                    ADD.W       #1,BYTE_COUNTER
+                    
+                    CLR.L       D2
+                    MOVE.L      (A5)+,D2
+                    MOVE.B      #8,$400                 *hardcoded counter in $400 (8 hex values for long)
+                    JSR         Display_Address_Long
+                    
                     MOVE.L      #$6,INCREMENT
                     RTS
 
@@ -179,7 +187,48 @@ EA_Immediate
                     MOVE.L      #$4,INCREMENT
                     RTS
 
+*Display hex. Hex stored in D2 and number of rotation in memory $400
+*This is a loop that will display the individual value one by one
+Display_Address
+                    ROL.W       #4,D2           *Rotate the first hex number to the back so we can read
+                    MOVE.B      D2,D1           *D1 to store the byte data
+                    ANDI.B      #$0F,D1         *AND the byte data so we can only see the first one
+                    
+                    CMPI.b      #$A,D1          *Check if it is greater than A
+                    JSR         Show_Char       *If yes jump to display (A-F)
+                    
+                    CMPI.B      #$A,D1          *Check if it is less than A
+                    BLT         Show_Number     *If yes jump to display (0-9)
+                    MOVE.B      D1,(A2)+        *Add the character in stack to display later
+                    
+                    SUB.B       #1,$400
+                    CMPI.B      #0,$400         *Check if rotation done
+                    BNE         Display_Address *call itself again-loop
+                    RTS
 
+*Same as above but for LONG
+Display_Address_Long
+                    ROL.L       #4,D2           *Rotate the first hex number to the back so we can read
+                    MOVE.B      D2,D1           *D1 to store the byte data
+                    ANDI.B      #$0F,D1         *AND the byte data so we can only see the first one
+                    
+                    CMPI.B      #$A,D1          *Check if it is greater than A
+                    JSR         Show_Char       *If yes jump to display (A-F)
+
+                    MOVE.B      D1,(A2)+        *Add the character in stack to display later
+                    
+                    SUB.B       #1,$400
+                    CMPI.B      #0,$400         *Check if rotation done
+                    BNE         Display_Address_Long *call itself again-loop
+                    
+                    RTS                    
+
+
+Show_Char
+                    CMPI        #$A,D1
+                    BLT         Show_Number
+                    ADD.B       #55,D1
+                    RTS
 
 Show_Number
                     ADD.B       #48,D1
@@ -203,6 +252,7 @@ PRINT_FFFF:
 *--------------------------------------------------------------------
 *                  Variables and constants here
 *--------------------------------------------------------------------
+
 
 
 
