@@ -25,14 +25,14 @@ OPCODE_BEGIN:
     BRA         HEX_CHAR
 
 CONTINUE:
-    JSR         TAB
+    JSR         TAB         * printing tab after HEX address is printed to screen
 
 
 
-* work in progress, start of op-code debugging
+* op-code debugging
 FIRST4BITS:
-    MOVE.W  (A4),D2    * moving long of address $1000 into D2
-    MOVE.W  A4,D6   * ******temp holds the address, needs to be changed************
+    MOVE.W  (A4),D2    * moving current memory in address into D2
+    MOVE.W  A4,D6      * D6 holds current address to HEX conversion
     MOVE.W  D2,D3       * save a copy of of contents in D3
 
     CMP.L   #$4E75FFFF, D2      * RTS code
@@ -41,93 +41,93 @@ FIRST4BITS:
     CMP.W   #$4E71, D2      * NOP code
     BEQ     OP_NOP
 
-    MOVE.L  D3,D2                   * checking for LEA mode
+    MOVE.L  D3,D2                   * LEA mode
     AND.W   #%1111000111000000, D2
     CMP.W   #%0100000111000000, D2
     BEQ     LEA_MODE
 
     MOVE.L  D3,D2
-    AND.W   #%1111000111000000, D2  * checking for DIVS mode
+    AND.W   #%1111000111000000, D2  * DIVS mode
     CMP.W   #%1000000111000000, D2
     BEQ     DIVS
 
     MOVE.L  D3,D2
-    AND.W   #%1111101110000000, D2  * checking for MOVEM mode
+    AND.W   #%1111101110000000, D2  * MOVEM mode
     CMP.W   #%0100100010000000, D2
     BEQ     MOVEM
 
     MOVE.L  D3,D2
-    AND.W   #%1111111111000000, D2  * checking for BLCR mode, source is #value
+    AND.W   #%1111111111000000, D2  * BLCR mode, source is #value
     CMP.W   #%0000100010000000, D2
     BEQ     BCLR_FROM_IMMEDIATE_DATA
     MOVE.L  D3,D2
-    AND.W   #%1111000110000000, D2  * checking for BCLR mode, source is DN
+    AND.W   #%1111000110000000, D2  * BCLR mode, source is DN
     CMP.W   #%0000000110000000, D2
     BEQ     BCLR_FROM_DN
 
     MOVE.L  D3,D2
-    AND.W   #%1111111011000000, D2  * checking for ASR/ASL mode, <EA only>
+    AND.W   #%1111111011000000, D2  * ASR/ASL mode, <EA only>
     CMP.W   #%1110000011000000, D2
     BEQ     ASD_MEM
     MOVE.L  D3,D2
-    AND.W   #%1111111011000000, D2  * checking for LSR/LSL mode, <EA only>
+    AND.W   #%1111111011000000, D2  * LSR/LSL mode, <EA only>
     CMP.W   #%1110011011000000, D2
     BEQ     ROD_MEM
     MOVE.L  D3,D2
-    AND.W   #%1111111011000000, D2  * checking for ROR/ROL mode, <EA only>
+    AND.W   #%1111111011000000, D2  * ROR/ROL mode, <EA only>
     CMP.W   #%1110001011000000, D2
     BEQ     LSD_MEM
 
     MOVE.L  D3,D2
-    AND.W   #%1111000000011000, D2  * checking for ASR/ASL mode, #data or DN source
+    AND.W   #%1111000000011000, D2  * ASR/ASL mode, #data or DN source
     CMP.W   #%1110000000000000, D2
     BEQ     ASD_REG
     MOVE.L  D3,D2
-    AND.W   #%1111000000011000, D2  * checking for ROR/ROL mode, #data or DN source
+    AND.W   #%1111000000011000, D2  * ROR/ROL mode, #data or DN source
     CMP.W   #%1110000000001000, D2
     BEQ     LSD_REG
-    AND.W   #%1111000000011000, D2  * checking for ROR/ROL mode, #data or DN source
+    AND.W   #%1111000000011000, D2  * ROR/ROL mode, #data or DN source
     CMP.W   #%1110000000011000, D2
     BEQ     ROD_REG
 
-    MOVE.L  D3,D2
+    MOVE.L  D3,D2       * ORI mode
     ROL.W   #8,D2
-    AND.B   #%11111111, D2  * checking for ORI mode
+    AND.B   #%11111111, D2
     CMP.B   #%00000000, D2
     BEQ     ORI
 
-    MOVE.L  D3,D2
+    MOVE.L  D3,D2       * EOR mode
     ROL.W   #8,D2
-    AND.B   #%11110001, D2  * checking for EOR mode
+    AND.B   #%11110001, D2
     CMP.B   #%10110001, D2
     BEQ     EOR
 
-    MOVE.L  D3,D2
+    MOVE.L  D3,D2       * NEG mode
     ROL.W   #8,D2
-    AND.B   #%11111111, D2  * checking for NEG mode
+    AND.B   #%11111111, D2
     CMP.B   #%01000100, D2
     BEQ     NEG
 
-    MOVE.L  D3,D2
+    MOVE.L  D3,D2       * CMP mode
     ROL.W   #8,D2
-    AND.B   #%11110001, D2  * checking for CMP mode
+    AND.B   #%11110001, D2
     CMP.B   #%10110000, D2
     BEQ     CMP
 
-    MOVE.L  D3,D2
+    MOVE.L  D3,D2       * CMPI mode
     ROL.W   #8,D2
-    AND.B   #%11111111, D2  * checking for CMPI mode
+    AND.B   #%11111111, D2
     CMP.B   #%00001100, D2
     BEQ     CMPI
 
-    MOVE.L  D3,D2
+    MOVE.L  D3,D2       * BRA mode
     ROL.W   #8,D2
-    AND.B   #%11111111, D2  * checking for BRA mode
+    AND.B   #%11111111, D2
     CMP.B   #%01100000, D2
     BEQ     BRA
 
-    MOVE.L  D3,D2
-    AND.W   #%1111111111000000, D2  * checking for JSR mode
+    MOVE.L  D3,D2       * JSR mode
+    AND.W   #%1111111111000000, D2
     CMP.W   #%0100111010000000, D2
     BEQ     JSR
 
@@ -150,35 +150,36 @@ FIRST4BITS:
     BEQ     MULS
     CMP.B   #%00001000, D2      * OR
     BEQ     OR
-    CMP.B   #%00000101, D2      * OR
+    CMP.B   #%00000101, D2      * SUBQ
     BEQ     SUBQ
     BRA UNKNOWN                 * if unknown opcode, print 'DATA' out
 
 
 OP_NOP:
-    MOVE.B  N, (A2)+
+    MOVE.B  N, (A2)+            * appending letters
     MOVE.B  O, (A2)+
     MOVE.B  P, (A2)+
-    ADD.W   #3, BYTE_COUNTER
+    ADD.W   #3, BYTE_COUNTER    * increment byte counter
     BRA     BUFFER_LOOP
 
 
 ASD_REG:
-    MOVE.B  A, (A2)+
+    MOVE.B  A, (A2)+            * appending letters
     MOVE.B  S, (A2)+
     JSR     DIRECTION
     JSR     ADD_SIZE
     JSR     COUNT_REG
-    ADD.W   #2, BYTE_COUNTER
     JSR     MOVE_SOURCE_DN_RTS      * gets register in the last 3 bits
+    ADD.W   #2, BYTE_COUNTER    * increment byte counter
     BRA     BUFFER_LOOP
 
 ASD_MEM:
-    MOVE.B  A, (A2)+
+    MOVE.B  A, (A2)+            * appending letters
     MOVE.B  S, (A2)+
     JSR     DIRECTION
     MOVE.B  W, (A2)+
-    ADD.W   #3, BYTE_COUNTER
+    ADD.W   #3, BYTE_COUNTER    * increment byte counter
+    MOVE.B  #1, D6              * saving size for EA
     JSR     TAB
     JSR     EA_MAIN
     BRA     BUFFER_LOOP
@@ -199,6 +200,7 @@ LSD_MEM:
     JSR     DIRECTION
     MOVE.B  W, (A2)+
     ADD.W   #3, BYTE_COUNTER
+    MOVE.B  #1, D6
     JSR     TAB
     JSR     EA_MAIN
     BRA     BUFFER_LOOP
@@ -219,6 +221,7 @@ ROD_MEM:
     JSR     DIRECTION
     MOVE.B  W, (A2)+
     ADD.W   #3, BYTE_COUNTER
+    MOVE.B  #1, D6              * setting size for EA
     JSR     TAB
     JSR     EA_MAIN
     BRA     BUFFER_LOOP
@@ -315,10 +318,12 @@ BCLR_SIZE:
 
 BCLR_PRINT_LONG:
     JSR     ADD_LONG
+    MOVE.B  #2, D6      * saving size for EA
     RTS
 
 BCLR_PRINT_BYTE:
     JSR     ADD_BYTE
+    MOVE.B  #0, D6      * saving size for EA
     RTS
 
 
@@ -341,21 +346,19 @@ BRA:
 
 BRA_SIZE:
     MOVE.L  D3,D2
-    AND.B   #%00000000, D2  * checking for BRA size 0 = word, 1 = long
+    AND.B   #%11111111, D2  * checking for BRA size 0 = word, 1 = long
     CMP.B   #%00000000, D2
     BEQ     BRA_WORD
-    BNE     BRA_LONG
+    BNE     BRA_BYTE
 
 BRA_WORD:
     JSR     ADD_WORD
-    JSR     TAB
-    JSR    EA_MAIN     *for 16 bit displacemnt
+    JSR     EA_MAIN     *for 16 bit displacemnt
     BRA     BUFFER_LOOP
 
-BRA_LONG:
-    JSR     ADD_LONG
-    JSR     TAB
-    JSR    EA_MAIN     *for 32 bit displacemnt
+BRA_BYTE:
+    JSR     ADD_BYTE
+    JSR     EA_MAIN     *for 8 bit displacemnt
     BRA     BUFFER_LOOP
 
 CMPI:
@@ -364,9 +367,10 @@ CMPI:
     MOVE.B  P, (A2)+
     MOVE.B  I, (A2)+
     MOVE.B  DOT, (A2)+
-    ADD.W   #5, BYTE_COUNTER
+    ADD.W   #6, BYTE_COUNTER
     JSR     ADD_SIZE
-    JSR    EA_MAIN
+    JSR     EA_MAIN
+    MOVE.B  COMMA, (A2)+
     *JSR    EA for special EA
     BRA     BUFFER_LOOP
 
@@ -375,9 +379,10 @@ CMP:
     MOVE.B  M, (A2)+
     MOVE.B  P, (A2)+
     MOVE.B  DOT, (A2)+
-    ADD.W   #4, BYTE_COUNTER
+    ADD.W   #5, BYTE_COUNTER
     JSR     ADD_SIZE
-    JSR    EA_MAIN
+    JSR     EA_MAIN
+    MOVE.B  COMMA, (A2)+
     JSR     MOVE_DEST_DN
 
 EOR:
@@ -389,7 +394,7 @@ EOR:
     JSR     MOVE_DEST_DN_RTS    *actually grabbing the source here, but it lives in the same place as source for most
     MOVE.B  COMMA, (A2)+
     JSR     EA_MAIN
-        ADD.W   #5, BYTE_COUNTER
+    ADD.W   #5, BYTE_COUNTER
     BRA     BUFFER_LOOP
 
 MOVEM:
@@ -400,7 +405,9 @@ MOVEM:
     MOVE.B  M, (A2)+
     MOVE.B  DOT, (A2)+
     ADD.W   #6, BYTE_COUNTER
-    BRA     MOVEM_SIZE
+    JSR     MOVEM_SIZE
+    *JSR    SPECIAL
+    BRA     BUFFER_LOOP
 
 MOVEM_SIZE:
     MOVE.L  D3,D2
@@ -411,18 +418,16 @@ MOVEM_SIZE:
     BNE     MOVEM_LONG
 
 MOVEM_WORD:
-    JSR     ADD_WORD
-    JSR     TAB
+    JSR    ADD_WORD
+    MOVE.B  #1, D6      * saving size for EA
     JSR    EA_MAIN
-    BRA     BUFFER_LOOP
+    RTS
 
 MOVEM_LONG:
-    JSR     ADD_LONG
-    JSR     TAB
+    JSR    ADD_LONG
+    MOVE.B  #2, D6      * saving size for EA
     JSR    EA_MAIN
-    BRA     BUFFER_LOOP
-
-
+    RTS
 
 NEG:
     MOVE.B  N, (A2)+
@@ -431,8 +436,7 @@ NEG:
     MOVE.B  DOT, (A2)+
     ADD.W   #4, BYTE_COUNTER
     JSR     ADD_SIZE
-    JSR     TAB
-    JSR    EA_MAIN
+    JSR     EA_MAIN
     BRA     BUFFER_LOOP
 
 ORI:
@@ -440,18 +444,19 @@ ORI:
     MOVE.B  R, (A2)+
     MOVE.B  I, (A2)+
     MOVE.B  DOT, (A2)+
-    ADD.W   #4, BYTE_COUNTER
+    ADD.W   #5, BYTE_COUNTER
     JSR     ADD_SIZE
-    JSR     TAB
-    *MOVE.L  #$4, INCREMENT     * this line needs to be implemented in EA to know by how much to increment
-    JSR    EA_MAIN
+    *JSR    SPECIAL
+    MOVE.B  COMMA, (A2)+
+    JSR     EA_MAIN
     BRA     BUFFER_LOOP
 
 OR:
     MOVE.B  O, (A2)+
     MOVE.B  R, (A2)+
-    ADD.W   #2, BYTE_COUNTER
-    JSR     TAB
+    MOVE.B  DOT, (A2)+
+    ADD.W   #3, BYTE_COUNTER
+    JSR     ADD_SIZE
     MOVE.L  D3,D2
     ROL.W   #8,D2               * rotate left 8 bits to get the direction
     AND.B   #%00000001, D2      * bitmask to see direction
@@ -459,13 +464,17 @@ OR:
     BEQ     OR_DEST_DN
     BNE     OR_DEST_EA
 OR_DEST_DN:                     * <EA> OR DN direction
-    JSR    EA_MAIN
+    JSR     EA_MAIN
+    MOVE.B  COMMA, (A2)+
+    ADD.W   #1, BYTE_COUNTER
     JSR     MOVE_DEST_DN_RTS
     BRA     BUFFER_LOOP
 
 OR_DEST_EA:                      * DN OR <EA> direction
     JSR     MOVE_DEST_DN_RTS
-    JSR    EA_MAIN
+    MOVE.B  COMMA, (A2)+
+    ADD.W   #1, BYTE_COUNTER
+    JSR     EA_MAIN
     BRA     BUFFER_LOOP
 
 
@@ -476,8 +485,9 @@ DIVS:
     MOVE.B  V, (A2)+
     MOVE.B  S, (A2)+
     JSR     TAB
-    ADD.W   #4, BYTE_COUNTER
-    JSR    EA_MAIN
+    ADD.W   #5, BYTE_COUNTER
+    JSR     EA_MAIN
+    MOVE.B  COMMA, (A2)+
     BRA     MOVE_DEST_DN
 
 LEA_MODE:
@@ -485,9 +495,11 @@ LEA_MODE:
     MOVE.B  E, (A2)+
     MOVE.B  A, (A2)+
     JSR     TAB
-    ADD.W   #3, BYTE_COUNTER
-    *JSR     GET_EA
-    BRA     MOVE_DEST_AN_010
+    ADD.W   #4, BYTE_COUNTER
+    JSR     EA_MAIN
+    MOVE.B  COMMA, (A2)+
+    JSR     MOVE_DEST_AN_RTS
+    BRA     BUFFER_LOOP
 
 MULS:
     MOVE.B  M, (A2)+
@@ -497,7 +509,8 @@ MULS:
     JSR         TAB
     ADD.W      #4, BYTE_COUNTER
     JSR     EA_MAIN
-    BRA     MOVE_DEST_DN
+    JSR     MOVE_DEST_DN_RTS
+    BRA     BUFFER_LOOP
 
 
 SUB:
@@ -513,6 +526,7 @@ SUB:
     CMP.B   #%00000000, D2
     BEQ     ADD_DEST_DN      * <EA>, DN -> DN
     BNE     ADD_DEST_EA      * DN, <EA> -> <EA>
+    * will branch to buffer loop after one of two lines above
 
 SUBQ:
     MOVE.B  S, (A2)+
@@ -520,13 +534,13 @@ SUBQ:
     MOVE.B  B, (A2)+
     MOVE.B  Q, (A2)+
     MOVE.B  DOT, (A2)+
-    ADD.W      #5, BYTE_COUNTER
+    ADD.W   #5, BYTE_COUNTER
     JSR     ADD_SIZE        *ADD_SIZE also works for SUBQ size
     MOVE.L  D3, D2      * reset address contents to before bitmask
     ROL.W   #7,D2
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
     CMP.B   #%00000000, D2
-    BEQ     POUND_8
+    BEQ     POUND_8         * if zero, that means value is 8
     BNE     NORMAL_SUBQ
 POUND_8:
     MOVE.W  #8, D2
@@ -544,7 +558,7 @@ ADD:
      MOVE.W  D3, D2      * reset address contents to before bitmask
      ROL.W   #8, D2     * now checking the destination mode set by rotating left by 10
      ROL.W   #2, D2
-     AND.B   #%00000011, D2  * bitmask to see 3 bits for mode
+     AND.B   #%00000011, D2  * bitmask to see 2 bits for mode
      CMP.B   #%00000011, D2      * move Dn
      BEQ     ADDA
      BNE     ADD_NORMAL
@@ -563,14 +577,19 @@ ADD_NORMAL:
     CMP.B   #%00000000, D2
     BEQ     ADD_DEST_DN      * <EA>, DN -> DN
     BNE     ADD_DEST_EA      * DN, <EA> -> <EA>
+    * will branch to buffer loop after one of two lines above
 
 ADD_DEST_DN:
-    JSR    EA_MAIN
-    JSR    MOVE_DEST_DN_RTS
-    BRA    BUFFER_LOOP
+    JSR     EA_MAIN
+    MOVE.B  COMMA, (A2)+
+    ADD.w   #1, BYTE_COUNTER
+    JSR     MOVE_DEST_DN_RTS
+    BRA     BUFFER_LOOP
 
 ADD_DEST_EA:
     JSR    MOVE_DEST_DN_RTS
+    MOVE.B  COMMA, (A2)+
+    ADD.w   #1, BYTE_COUNTER
     JSR    EA_MAIN
     BRA    BUFFER_LOOP
 
@@ -588,16 +607,23 @@ ADDA:
     CMP.B   #%00000000, D2      * 0 is word, 1 is long
     BEQ     ADDA_WORD
     BNE     ADDA_LONG
+    * will branch to buffer loop after one of two lines above
 
 ADDA_WORD:
     JSR     ADD_WORD
     JSR     EA_MAIN
+    MOVE.B  #1, D6          * saving size for EA
+    MOVE.B  COMMA, (A2)+
+    ADD.w   #1, BYTE_COUNTER
     JSR     MOVE_DEST_AN_RTS
     BRA     BUFFER_LOOP
 
 ADDA_LONG:
     JSR     ADD_LONG
     JSR     EA_MAIN
+    MOVE.B  #2, D6          * saving size for EA
+    MOVE.B  COMMA, (A2)+
+    ADD.w   #1, BYTE_COUNTER
     JSR     MOVE_DEST_AN_RTS
     BRA     BUFFER_LOOP
 
@@ -618,6 +644,7 @@ ADD_SIZE:
 
 ADD_BYTE:
     MOVE.B  B, (A2)+
+    MOVE.B  #0, D6      * saving size for EA
     JSR         TAB
     ADD.W      #1, BYTE_COUNTER
     RTS
@@ -625,6 +652,7 @@ ADD_BYTE:
 
 ADD_WORD:
     MOVE.B  W, (A2)+
+    MOVE.B  #1, D6      * saving size for EA
     JSR         TAB
     ADD.W      #1, BYTE_COUNTER
     RTS
@@ -632,6 +660,7 @@ ADD_WORD:
 
 ADD_LONG:
     MOVE.B  L, (A2)+
+    MOVE.B  #2, D6      * saving size for EA
     JSR         TAB
     ADD.W      #1, BYTE_COUNTER
     RTS
