@@ -6,7 +6,7 @@
 *-----------------------------------------------------------
     ORG    $1000
 
-START_ADDRESS   EQU     $00001054       * hard coded start address
+START_ADDRESS   EQU     $000010A4       * hard coded start address
 END_ADDRESS     EQU     $000010D8      * hard coded end address
 INCREMENT       EQU     $8
 LINE_COUNTER    EQU     $2000
@@ -58,7 +58,7 @@ TESTING_CODES:
     MOVEA.W (A2), A6
     MOVE.B  -(A3),D4
     MOVE.B  (A5)+,(A6)
-    ADD.W   D3, $1020
+    ADD.B   D3, $CB2F
     JSR     TEST_LABEL
     BRA     TEST_LABEL
     CMPI.W  #44, (A1)
@@ -70,15 +70,15 @@ TESTING_CODES:
     SUB.L     D2, D5
     ORI.L     #23, D3
     ADD.L       D3, D5
-    DIVS      #20,D2
-    MULS      #20,D2                    * LINE FOR TESTING
+    DIVS      (A2),D2
+    MULS      #15,D5                    * LINE FOR TESTING
     LEA       C, A1
     MOVE.L   (A6)+,(A3)+
     MOVE.B   D4,D5
     ADD.B   #15, D3
     ADD.W   #15, D3
     ADD.L   #15,D3
-    ADD.L   #47474, D3
+    ADD.L   #203, D3
     SUBQ.B  #1, D3
     BCLR.B  #32, (A3)
     ASR.W   (A3)
@@ -97,6 +97,10 @@ TEST_LABEL:
  INCLUDE "demo_test.X68"
 
     END    START        ; last line of source
+
+
+
+
 
 
 
