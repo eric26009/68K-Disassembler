@@ -6,7 +6,7 @@
 *-----------------------------------------------------------
     ORG    $1000
 
-START_ADDRESS   EQU     $0000106E       * hard coded start address
+START_ADDRESS   EQU     $00001056       * hard coded start address
 END_ADDRESS     EQU     $000010DE      * hard coded end address
 INCREMENT       EQU     $20
 LINE_COUNTER    EQU     $2000
@@ -48,12 +48,31 @@ COMPLETED:
 ***** THESE LINES BELOW ARE FOR TESTING ONLY *****
 TESTING_CODES:
     NOP
-    BCC     TEST_LABEL
-    BCS     TEST_LABEL
-    BGE     TEST_LABEL
-    BLT     TEST_LABEL
-    BVC     TEST_LABEL
-    BEQ     TEST_LABEL
+TEST1:
+*    RTS
+*    BCC     TEST_LABEL
+*    BCS     TEST_LABEL
+*    BGE     TEST_LABEL
+*    BLT     TEST_LABEL
+*    BVC     TEST_LABEL
+*    BEQ     TEST_LABEL
+*    CMP.W   D3, D1
+*    CMP.L   D3, D7
+*    CMPI.B   #15, (A3)
+*    EOR.B      D5, (A2)
+    EOR       D2,$2022
+    BCLR    D5, $1200
+*    ROR     D3, D5
+*    ROR     #4, D4
+*    ROL     $1022
+*    ROR     $39299999
+*    LSR     D3, D5
+*    LSL     #4, D4
+*    LSR     $1022
+*    LSL     $39299999
+
+
+
     MOVE.L  D2, D3
     MOVEA.W (A2), A6
     MOVE.B  -(A3),D4
@@ -100,6 +119,7 @@ TEST_LABEL:
  INCLUDE "demo_test.X68"
 
     END    START        ; last line of source
+
 
 
 

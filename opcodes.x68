@@ -34,7 +34,7 @@ FIRST4BITS:
     MOVE.W  A4,D6      * D6 holds current address to HEX conversion
     MOVE.W  D2,D3       * save a copy of of contents in D3
 
-    CMP.L   #$4E75FFFF, D2      * RTS code
+    CMP.W   #$4E75, D2      * RTS code
     BEQ     OP_RTS
 
     CMP.W   #$4E71, D2      * NOP code
@@ -225,9 +225,28 @@ BEQ:
     BRA     BCC_CODES_FINISH
 
 BCC_CODES_FINISH:
-    JSR     BRA_SIZE
-    JSR     EA_MAIN     * needs to be special EA
+    JSR     SIZE_BCC
+    CMP.B   #0, D6
+    BEQ     BCC_BYTE
+    CMP.B   #1, D6
+    BEQ     BCC_WORD
+    BRA     UNKNOWN
+
+SIZE_BCC:
+    MOVE.L  D3,D2
+    AND.B   #%11111111, D2  * checking for BRA size 0 = word, 1 = long
+    CMP.B   #%00000000, D2
+    BEQ     ADD_WORD
+    BNE     ADD_BYTE
+
+BCC_BYTE:
+    JSR     EA_Absolute_Byte
     BRA     BUFFER_LOOP
+
+BCC_WORD:
+    JSR     EA_Absolute_WORD
+    BRA     BUFFER_LOOP
+
 
 ASD_REG:
     MOVE.B  A, (A2)+            * appending letters
@@ -355,7 +374,7 @@ BCLR_FROM_IMMEDIATE_DATA:
     MOVE.B  DOT, (A2)+
     JSR     BCLR_SIZE
     ADD.W   #6, BYTE_COUNTER
-    JSR     EA_MAIN             * this will be a special case
+    JSR     EA_Immediate            * this will be a special case
     MOVE.B  COMMA, (A2)+
     JSR     EA_MAIN                 * destination EA is normal
     BRA     BUFFER_LOOP
@@ -418,14 +437,16 @@ BRA_SIZE:
     BEQ     BRA_WORD
     BNE     BRA_BYTE
 
+
 BRA_WORD:
     JSR     ADD_WORD
-    JSR     EA_MAIN     *for 16 bit displacemnt
+    JSR     EA_Absolute_WORD
     RTS
+
 
 BRA_BYTE:
     JSR     ADD_BYTE
-    JSR     EA_MAIN     *for 8 bit displacemnt
+    JSR     EA_Absolute_Byte
     RTS
 
 CMPI:
@@ -436,9 +457,9 @@ CMPI:
     MOVE.B  DOT, (A2)+
     ADD.W   #6, BYTE_COUNTER
     JSR     ADD_SIZE
-    JSR     EA_MAIN
+    JSR     EA_Immediate      * special EA
     MOVE.B  COMMA, (A2)+
-    JSR    EA_MAIN          * special EA
+    JSR    EA_MAIN
     BRA     BUFFER_LOOP
 
 CMP:
@@ -749,9 +770,8 @@ OP_RTS:
 
 MOVE:
     MOVE.W  D3, D2      * reset address contents to before bitmask
-    ROL.W   #8, D2     * now checking the destination mode set by rotating left by 10
-    ROL.W   #2, D2
-    AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+    ROR.W   #6, D2     * now checking the destination mode set by rotating left by 10
+    AND.B   #%00000001, D2  * bitmask to see 3 bits for mode
     CMP.B   #%00000000, D2      * move Dn
     BEQ     MOVE_DN
     CMP.B   #%00000001, D2      * move An
@@ -817,34 +837,11 @@ LONG:
 
 
 MOVE_SOURCE:
-    ; MOVE.W  D3, D2      * reset address contents to before bitmask
-    ; ROL.W   #8, D2      * rotate to the left by 4 to see first 4 bits
-    ; ROL.W   #5, D2
-    ; AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-    ; CMP.B   #%00000000, D2      * move.b
-    ; BEQ     MOVE_SOURCE_DN
-    ; CMP.B   #%00000001, D2
-    ; BEQ     MOVE_SOURCE_AN
-    ; CMP.B   #%00000010, D2
-    ; BEQ     MOVE_SOURCE_AN_010
-    ; CMP.B   #%00000011, D2
-    ; BEQ     MOVE_SOURCE_AN_011
     JSR     EA_MAIN
     MOVE.B  COMMA, (A2)+
     ADD.W   #1, BYTE_COUNTER
     BRA     MOVE_DEST
 
-
-; MOVE_SOURCE_DN:
-;     MOVE.W  D3, D2      * reset address contents to before bitmask
-;     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
-;     ADD.B   #$30, D2
-;     MOVE.B  D, (A2)+
-;     MOVE.B  D2, (A2)+
-;     MOVE.B  COMMA, (A2)+
-;     ADD.W      #3, BYTE_COUNTER
-;     BRA     MOVE_DEST
-;
 MOVE_SOURCE_DN_RTS:
     MOVE.W  D3, D2      * reset address contents to before bitmask
     AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
@@ -853,42 +850,6 @@ MOVE_SOURCE_DN_RTS:
     MOVE.B  D2, (A2)+
     ADD.W      #2, BYTE_COUNTER
     RTS
-;
-; MOVE_SOURCE_AN:
-;     MOVE.W  D3, D2      * reset address contents to before bitmask
-;     AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
-;     ADD.B   #$30, D2
-;     MOVE.B  A, (A2)+
-;     MOVE.B  D2, (A2)+
-;     MOVE.B  COMMA, (A2)+
-;     ADD.W      #3, BYTE_COUNTER
-;     BRA     MOVE_DEST
-;
-; MOVE_SOURCE_AN_010:
-;     MOVE.W  D3, D2      * reset address contents to before bitmask
-;     AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
-;     ADD.B   #$30, D2
-;     MOVE.B  OPEN_PARA, (A2)+
-;     MOVE.B  A, (A2)+
-;     MOVE.B  D2, (A2)+
-;     MOVE.B  CLOSE_PARA, (A2)+
-;     MOVE.B  COMMA, (A2)+
-;     ADD.W      #5, BYTE_COUNTER
-;     BRA     MOVE_DEST
-;
-; MOVE_SOURCE_AN_011:
-;     MOVE.W  D3, D2      * reset address contents to before bitmask
-;     AND.B   #%00000111, D2  * bitmask to see 3 bits for vale
-;     ADD.B   #$30, D2
-;     MOVE.B  OPEN_PARA, (A2)+
-;     MOVE.B  A, (A2)+
-;     MOVE.B  D2, (A2)+
-;     MOVE.B  CLOSE_PARA, (A2)+
-;     MOVE.B  PLUS, (A2)+
-;     MOVE.B  COMMA, (A2)+
-;     ADD.W      #6, BYTE_COUNTER
-;     BRA     MOVE_DEST
-
 
 
 MOVE_DEST:

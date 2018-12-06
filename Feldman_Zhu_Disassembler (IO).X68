@@ -19,8 +19,8 @@ START:
 *------------------Ask User for Starting Address--------------------
 input_begin			  LEA		U_START_ADDRESS,A1		            *Ask user for starting address question
 					  MOVE.B	#14,D0
-					  TRAP		#15						            * Execute the trap task above to display  
-						
+					  TRAP		#15						            * Execute the trap task above to display
+
 					  LEA		AddrStart_Aski,A2			* Subroutine reads address location to store address.
 					  JSR		User_Inpt                   * Gettting user input
 
@@ -29,7 +29,7 @@ input_begin			  LEA		U_START_ADDRESS,A1		            *Ask user for starting addr
 					  CLR.W		D3
 					  CLR.W		D4
 					  MOVE.B	#$30,(A0)+				* Pushing 2 bytes to zero
-					  MOVE.B	#$30,(A0)				
+					  MOVE.B	#$30,(A0)
 					  LEA		AddrStart_Aski,A0
 
 *----------------This will convert the valid start address from ASCII to HEX---------
@@ -42,15 +42,15 @@ Chck_Str_Inpt		  LSL.L		#4,D4
 					  BLE		Aski_UC			        * Branch to Uppercase
 					  CMP.B		#$66,(A0)				* Range a-f?
 					  BLE		Aski_LC          * Branch to Lowercase
-						
-						
+
+
 *------------------Ask User for INPUT--------------------
 User_Inpt   		 MOVEA.W	A2,A1
 					 MOVE.B		#2,D0
 					 TRAP		#15
 					 CMPI.B		#8,D1					* Is Address Entered Length = 8?
 					 BEQ.W		Valid_Inpt				* Good Input
-						
+
 					 LEA		CHECK_FOR_8BITS,A1			* Throw error, user input not long.
 					 MOVE.B		#13,D0
 					 TRAP		#15
@@ -64,12 +64,12 @@ Valid_Inpt:			 RTS                                 * Return with good input.
 
 
 
-wrong_Inpts			 MOVE.B		#$24,D1                 * Hex for '$' 
-					 MOVE.B		#6,D0                   
+wrong_Inpts			 MOVE.B		#$24,D1                 * Hex for '$'
+					 MOVE.B		#6,D0
 					 TRAP		#15                     * Displays '$'
 
-					 LEA		AddrStart_Aski,A1         * Address is not valid so we 
-					 MOVE.B		#14,D0                  * print out address entered and 
+					 LEA		AddrStart_Aski,A1         * Address is not valid so we
+					 MOVE.B		#14,D0                  * print out address entered and
 					 TRAP		#15                     * ask user to re-enter address.
 					 LEA		Wrong_Addr_MSG,A1
 					 MOVE.B		#13,D0
@@ -83,7 +83,7 @@ Aski_nValue    		 CMP.B		#$30,(A0)+				* Number < 0?
 
 Aski_UC     		 CMP.B		#$41,(A0)+				* Letter < A?
 					 BLT		wrong_Inpts
-					 SUB.B	 	#$37,D3					
+					 SUB.B	 	#$37,D3
 					 BRA		change_aski         * Continue on valid
 
 Aski_LC     		 CMP.B	 	#$61,(A0)+				* Letter < a?
@@ -130,7 +130,7 @@ Chck_end_Inpt		 LSL.L		#4,D4
 wrong_inptsEnd		 LEA		AddressEnd_Aski,A1           * Hex for '$'
 					 MOVE.B		#14,D0
 					 TRAP		#15                     * Displays '$'
-						
+
 					 LEA		Wrong_Addr_MSG,A1             * If address is not valid
 					 MOVE.B		#13,D0                  * ask for new ending
 					 TRAP		#15                     * ending address.
@@ -140,7 +140,7 @@ Aski_nValue_end		 CMP.B		#$30,(A0)+				* Number < 0?
 					 BLT		wrong_inptsEnd          * Not valid, ask for new address.
 					 SUB.B		#$30,D3
 					 BRA		Change_Aski_End        * Continue on valid
-					 
+
 Aski_UC_End			 CMP.B		#$41,(A0)+				* Letter < A?
 					 BLT		wrong_inptsEnd
 					 SUB.B		#$37,D3
@@ -152,20 +152,20 @@ Aski_LC_End			 CMP.B		#$61,(A0)+				* Letter < a?
 					 BRA		Change_Aski_End        * Continue on valid
 
 Change_Aski_End		 OR.L		D3,D4					* Masking first 4 bits in D3
-					 CMP.B 		D1,D2					
+					 CMP.B 		D1,D2
 					 BEQ		User_EndA_Done
 					 BRA		Chck_end_Inpt			* Loop if not done.
 
 User_EndA_Done		 MOVE.L	    D4,RealHex_AddrE			* Save HEX converted address.
                      LEA        RealHex_AddrE,A5
-						
+
 *-----------------Different Starting/Ending Address Condition Check -----
 
 					 CMP.L		RealHex_AddrS,D4		* Is starting address > ending address?
 					 BHI		NextAddrChk				* Branch if starting address < ending address.
-						
+
 					 LEA		startBeforeEnd_AddrChk,A1	* Throw error msg if invalid range
-					 MOVE.B		#14,D0					
+					 MOVE.B		#14,D0
 					 TRAP		#15                     * Display error msg
 
 					 BRA		input_begin				* Get starting address again.
@@ -176,11 +176,11 @@ NextAddrChk
 					 CMP.L		D0,A0					* Check if starting address is past our program.
 					 BCS		Good_Valid_Addr		    * Valid starting address.
 					 LEA		OutOfBound_ERR_MSG,A1	* Throw error if within our program.
-					 MOVE.B		#13,D0					
+					 MOVE.B		#13,D0
 					 TRAP		#15                     * Display error msg.
 					 BRA		input_begin				* Get starting address again.
-						
-Good_Valid_Addr		MOVEA.L		RealHex_AddrE,A5			* We can now place ending address in A6 
+
+Good_Valid_Addr		MOVEA.L		RealHex_AddrE,A5			* We can now place ending address in A6
                                                             * and begin disassembling.
 
 
@@ -211,7 +211,7 @@ U_START_ADDRESS                 DC.B       'Enter a Starting Address: $',CR,LF,0
 U_END_ADDRESS                   DC.B       'Enter an Ending Address: $',0
 
 AddrStart_Aski                  DS.B       82
-AddressEnd_Aski                 DS.B       82   
+AddressEnd_Aski                 DS.B       82
 RealHex_AddrS                   DS.L       1
 RealHex_AddrE                   DS.L       1
 
@@ -219,7 +219,7 @@ RealHex_AddrE                   DS.L       1
 CHECK_FOR_8BITS                DC.B     'Sorry! Input Address must be a Byte long (8 Bits)! Try Again:',0
 startBeforeEnd_AddrChk	       DC.B		'Your ending address needs to be greater than your starting address. Try again!',CR,LF,0
 OutOfBound_ERR_MSG             DC.B    	'Out of bound! The code has to be within the program!',CR,LF,0
-Wrong_Addr_MSG                 DC.B     'This is not a valid address, try again',0   
+Wrong_Addr_MSG                 DC.B     'This is not a valid address, try again',0
 
 
                      END    START        ; last line of source

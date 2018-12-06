@@ -22,7 +22,7 @@
 *------------------------------------------------------------------
 
 *Check for valid and convert frmo ASCII to HEX
-EA_COUNT    EQU     $400
+*EA_COUNT    EQU     $400
 
 EA_MAIN
                     MOVE.L      D3,D4               *Takes in the 16 bit instruction from D3
@@ -31,7 +31,6 @@ EA_MAIN
                     AND.B       #%00000111,D5       *Take the last 3 bits into Register in D5
                     AND.B       #%00111000,D4       *Take the first 3 bits into Mode in D4
                     ROR.B       #3,D4               *Rotate to correct position
-
                     *TODOS:
                     *Case to handle Absolute/Immediate at D7
                     *Special Cases to handle MOVEM and COMPI, MOVE
@@ -156,7 +155,7 @@ EA_Absolute_Immediate
                     BEQ         EA_Immediate
 
 *This is the EA for absolute addressing WORD
-EA_Absolute_WORD
+EA_Absolute_WORD:
                     MOVE.B      MONEY,(A2)+
                     ADD.W       #1,BYTE_COUNTER
 
@@ -165,22 +164,36 @@ EA_Absolute_WORD
                     MOVE.W      (A4),D2
                     JSR         Show_FFFF
 
-                    MOVE.B      #4, $400                *hardcoded counter in $400 (4 hex values for word)
+                    MOVE.B      #4, D4                *hardcoded counter in $400 (4 hex values for word)
                     JSR         Display_Address
                     ADD.W       #4,BYTE_COUNTER
 
-                    MOVE.L      #$4,INCREMENT
+                    MOVE.L      #$2,INCREMENT
+                    RTS
+
+EA_Absolute_Byte:
+                    MOVE.B      MONEY,(A2)+
+                    ADD.W       #1,BYTE_COUNTER
+
+                    MOVE.L  D3,D2
+                    AND.B   #%11111111, D2  * checking for BRA size 0 = word, 1 = long
+
+                    MOVE.B      #4, D4                *hardcoded counter in $400 (4 hex values for word)
+                    JSR         Display_Address
+                    ADD.W       #2,BYTE_COUNTER
+
+                    MOVE.L      #$2,INCREMENT
                     RTS
 
 *This is the EA for absolute addressing LONG
-EA_Absolute_LONG
+EA_Absolute_LONG:
                     MOVE.B      MONEY,(A2)+
                     ADD.W       #1,BYTE_COUNTER
 
                     CLR.L        D2
                     MOVE.W      (A4)+,D2
                     MOVE.L      (A4),D2
-                    MOVE.B      #8,$400                 *hardcoded counter in $400 (8 hex values for long)
+                    MOVE.B      #8,D4                 *hardcoded counter in $400 (8 hex values for long)
                     JSR         Display_Address_Long
                     ADD.W       #8,BYTE_COUNTER
 
@@ -188,7 +201,7 @@ EA_Absolute_LONG
                     RTS
 
 *This is the EA for Immediate
-EA_Immediate
+EA_Immediate:
                     MOVE.B      POUND,(A2)+     *displays the # sign
                     MOVE.B      MONEY,(A2)+     *displays the $ sign
                     ADD.W       #2,BYTE_COUNTER
@@ -213,7 +226,7 @@ Immediate_Word:
                     CLR.L       D2                      *clear D2 to show next word data
                     MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
                     MOVE.W      (A4),D2
-                    MOVE.B      #4, $400
+                    MOVE.B      #4, D4
                     MOVE.L      #$4,INCREMENT
                     ADD.W       #4,BYTE_COUNTER
                     JSR         Display_Address
@@ -223,7 +236,7 @@ Immediate_Byte:
                     CLR.L       D2                      *clear D2 to show next word data
                     MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
                     MOVE.W      (A4),D2
-                    MOVE.B      #4, $400
+                    MOVE.B      #4, D4
                     MOVE.L      #$4,INCREMENT
                     ADD.W       #4,BYTE_COUNTER
                     JSR         Display_Address
@@ -234,7 +247,7 @@ Immediate_Long:
                     MOVE.W      (A4)+,D2
                     MOVE.L      (A4),D2
 
-                    MOVE.B      #8, $400
+                    MOVE.B      #8, D4
 
                     MOVE.L      #$6,INCREMENT
                     ADD.W       #8,BYTE_COUNTER
@@ -245,7 +258,7 @@ Immediate_Long:
 
 *Display hex. Hex stored in D2 and number of rotation in memory $400
 *This is a loop that will display the individual value one by one
-Display_Address
+Display_Address:
                     ROL.W       #4,D2           *Rotate the first hex number to the back so we can read
                     MOVE.B      D2,D1           *D1 to store the byte data
                     ANDI.B      #$0F,D1         *AND the byte data so we can only see the first one
@@ -257,8 +270,8 @@ Display_Address
                     BLT         Show_Number     *If yes jump to display (0-9)
                     MOVE.B      D1,(A2)+        *Add the character in stack to display later
 
-                    SUB.B       #1,$400
-                    CMPI.B      #0,$400        *Check if rotation done
+                    SUB.B       #1, D4
+                    CMPI.B      #0, D4        *Check if rotation done
                     BNE         Display_Address *call itself again-loop
 
                     RTS
@@ -274,8 +287,8 @@ Display_Address_Long
 
                     MOVE.B      D1,(A2)+        *Add the character in stack to display later
 
-                    SUB.B       #1,$400
-                    CMPI.B      #0,$400         *Check if rotation done
+                    SUB.B       #1,D4
+                    CMPI.B      #0,D4         *Check if rotation done
                     BNE         Display_Address_Long *call itself again-loop
 
                     RTS
