@@ -6,18 +6,29 @@
 *-----------------------------------------------------------
     ORG    $1000
 
-START_ADDRESS   EQU     $00009000       * hard coded start address
-END_ADDRESS     EQU     $0000cccc      * hard coded end address
 INCREMENT       EQU     $20
 LINE_COUNTER    EQU     $2000
-
+BUFF_POINT      EQU     $3000   * where the string buffer lives
+BYTE_COUNTER    EQU     $30       * counter for the number of bytes the string has
+STRING_STORE    EQU     $4000   * where the beginning of the temp string storage lives
 
 
 START:
     JSR     START_IO
+    CLR.L   D0
+    CLR.L   D1
+    CLR.L   D2
+    CLR.L   D3
+    CLR.L   D4
+    CLR.L   D5
+    
+    MOVEA.L #$00000000,A0
+    MOVEA.L #$00000000,A1
+    MOVEA.L #$00000000,A2
+    MOVEA.L #$00000000,A3
+    MOVEA.L #$00000000,A6
+    
     MOVE.L  #$2, INCREMENT
-    ; LEA     START_ADDRESS, A4       * loading start address into A4
-    ; LEA     END_ADDRESS, A5         * load ing end address into A5
     LEA     LINE_COUNTER, A6         * load ing end address into A5
     MOVE.L  #0, (A6)                 * initalize the line counter to 0
 
@@ -47,106 +58,359 @@ COMPLETED:
 
 *****
 ***** THESE LINES BELOW ARE FOR TESTING ONLY *****
-TESTING_CODES:
+NOP
+    RTS
     NOP
-TEST1:
-*    RTS
- *  BCC     TEST_LABEL
-*    BCS     TEST_LABEL
-*    BGE     TEST_LABEL
-*    BLT     TEST_LABEL
-*    BVC     TEST_LABEL
-*    BEQ     TEST_LABEL
-   * CMP.W   D3, D1
-   * CMP.L   D3, D7
-*    CMPI.B   #15, (A3)
-    EOR.B      D5, (A2)
-    EOR       D2,$2022
-    BCLR    D5, $1200
-    NEG     (A3)
-    NEG     $2311
-*    OR      (A2), D3
-*    LEA     $2000, A3
-*    OR      D3, (A2)
-*    ORI.L   #30, (A2)
-*    MULS      $2922,D7
-*    DIVS      $2921, D5
-*    SUB         $2321, D5
-*    SUB         D2, (A2)
-*    SUBQ.B        #2, D3
-*    SUBQ         #7, (A2)
-**    ADD           (A2), D6
-*     ADD            D5, $2311
-*     ADDA           (A5), A4
-*     ADDA           $2311, A2
-    * MOVE.B     #15, (A2)
-*     MOVEA.L     (A3), A2
-   *  MOVE.W     #9, D4
-*     MOVEA.W    D3, A3
-*     MOVEA.L    #2, A6
-*    ADD.L       D3, D5
-*    DIVS      (A2),D2
-*    MULS      #15,D5
-*    DIVS      #8, D5
-*    ROR     D3, D5
-*    ROR     #4, D4
-*    ROL     $1022
-*    ROR     $39299999
-*    LSR     D3, D5
-*    LSL     #4, D4
-*    LSR     $1022
-*    LSL     $39299999
+    RTS
+    LEA     (A0),A0
+    LEA     (A5),A0
+    LEA     (A7),A0
+    LEA     (A0),A7
+    LEA     (A5),A7
+    LEA     (A7),A7
+    CLR.B     D0
+    CLR.B     D7
+    CLR.W     D0
+    CLR.W     D7
+    CLR.L     D0
+    CLR.L     D7
+    CLR.B     (A0)
+    CLR.B     (A7)
+    CLR.W     (A0)
+    CLR.W     (A7)
+    CLR.L     (A0)
+    CLR.L     (A7)
+    CLR.B     (A0)+
+    CLR.B     (A7)+
+    CLR.W     (A0)+
+    CLR.W     (A7)+
+    CLR.L     (A0)+
+    CLR.L     (A7)+
+    CLR.B     -(A0)
+    CLR.B     -(A7)
+    CLR.W     -(A0)
+    CLR.W     -(A7)
+    CLR.L     -(A0)
+    CLR.L     -(A7)
+    MOVE.B    D0,D1
+    MOVE.B    D0,(A0)
+    MOVE.B    D0,(A0)+
+    MOVE.B    D0,-(A0)
+    MOVE.B    (A0),D0
+    MOVE.B    (A0),(A1)
+    MOVE.B    (A0),(A1)+
+    MOVE.B    (A0),-(A1)
+    MOVE.B    (A0)+,D0
+    MOVE.B    (A0)+,(A1)
+    MOVE.B    (A0)+,(A1)+
+    MOVE.B    (A0)+,-(A1)
+    MOVE.B    -(A0),D0
+    MOVE.B    -(A0),(A1)
+    MOVE.B    -(A0),(A1)+
+    MOVE.B    -(A0),-(A1)
+    MOVE.W    D0,D1
+    MOVE.W    D0,(A0)
+    MOVE.W    D0,(A0)+
+    MOVE.W    D0,-(A0)
+    MOVE.W    A0,D0
+    MOVE.W    A0,(A1)
+    MOVE.W    A0,(A1)+
+    MOVE.W    A0,-(A1)
+    MOVE.W    (A0),D0
+    MOVE.W    (A0),(A1)
+    MOVE.W    (A0),(A1)+
+    MOVE.W    (A0),-(A1)
+    MOVE.W    (A0)+,D0
+    MOVE.W    (A0)+,(A1)
+    MOVE.W    (A0)+,(A1)+
+    MOVE.W    (A0)+,-(A1)
+    MOVE.W    -(A0),D0
+    MOVE.W    -(A0),(A1)
+    MOVE.W    -(A0),(A1)+
+    MOVE.W    -(A0),-(A1)
+    MOVE.L    D0,D1
+    MOVE.L    D0,(A0)
+    MOVE.L    D0,(A0)+
+    MOVE.L    D0,-(A0)
+    MOVE.L    A0,D0
+    MOVE.L    A0,(A1)
+    MOVE.L    A0,(A1)+
+    MOVE.L    A0,-(A1)
+    MOVE.L    (A0),D0
+    MOVE.L    (A0),(A1)
+    MOVE.L    (A0),(A1)+
+    MOVE.L    (A0),-(A1)
+    MOVE.L    (A0)+,D0
+    MOVE.L    (A0)+,(A1)
+    MOVE.L    (A0)+,(A1)+
+    MOVE.L    (A0)+,-(A1)
+    MOVE.L    -(A0),D0
+    MOVE.L    -(A0),(A1)
+    MOVE.L    -(A0),(A1)+
+    MOVE.L    -(A0),-(A1)
+    MOVEM.W   A1-A7,-(A1)
+    MOVEM.L   D1-D7,-(A1)
+    MOVEM.W   A1/D7,-(A1)
+    MOVEM.L   A1/D7,-(A1)
+    MOVEM.W   A1-A7,(A1)
+    MOVEM.L   D1-D7,(A1)
+    MOVEM.W   A1/D7,(A1)
+    MOVEM.L   A1/D7,(A1)
+    MOVEM.W   (A1)+,A1-A7
+    MOVEM.L   (A1)+,D1-D7
+    MOVEM.W   (A1)+,A1/D7
+    MOVEM.L   (A1)+,A1/D7
+    MOVEM.W   (A1),A1-A7
+    MOVEM.L   (A1),D1-D7
+    MOVEM.W   (A1),A1/D7
+    MOVEM.L   (A1),A1/D7
+    MOVEA.W    D0,A0
+    MOVEA.W    A0,A0
+    MOVEA.W    (A0),A0
+    MOVEA.W    (A0)+,A0
+    MOVEA.W    -(A0),A0
+    MOVEA.L    D0,A0
+    MOVEA.L    A0,A0
+    MOVEA.L    (A0),A0
+    MOVEA.L    (A0)+,A0
+    MOVEA.L    -(A0),A0  
+    ADD.B     D1,D2
+    ADD.B     D1,(A1)
+    ADD.B     D1,(A1)+
+    ADD.B     D1,-(A1)
+    ADD.B     (A1),D1
+    ADD.B     (A1)+,D1
+    ADD.B     -(A1),D1
+    ADD.W     D1,D2
+    ADD.W     D1,(A1)
+    ADD.W     D1,(A1)+
+    ADD.W     D1,-(A1)
+    ADD.W     (A1),D1
+    ADD.W     (A1)+,D1
+    ADD.W     -(A1),D1
+    ADD.L     D1,D2
+    ADD.L     D1,(A1)
+    ADD.L     D1,(A1)+
+    ADD.L     D1,-(A1)
+    ADD.L     (A1),D1
+    ADD.L     (A1)+,D1
+    ADD.L     -(A1),D1
+    SUB.B     D1,D2
+    SUB.B     D1,(A1)
+    SUB.B     D1,(A1)+
+    SUB.B     D1,-(A1)
+    SUB.B     (A1),D1
+    SUB.B     (A1)+,D1
+    SUB.B     -(A1),D1
+    SUB.W     D1,D2
+    SUB.W     D1,A1
+    SUB.W     D1,(A1)
+    SUB.W     D1,(A1)+
+    SUB.W     D1,-(A1)
+    SUB.W     A1,D1
+    SUB.W     (A1),D1
+    SUB.W     (A1)+,D1
+    SUB.W     -(A1),D1
+    SUB.L     D1,D2
+    SUB.L     D1,A1
+    SUB.L     D1,(A1)
+    SUB.L     D1,(A1)+
+    SUB.L     D1,-(A1)
+    SUB.L     A1,D1
+    SUB.L     (A1),D1
+    SUB.L     (A1)+,D1
+    SUB.L     -(A1),D1    
+    MULS.W    D0,D1
+    MULS.W    (A0),D1
+    MULS.W    -(A0),D1
+    MULS.W    (A0)+,D1
+    DIVU.W    D0,D1
+    DIVU.W    (A0),D1
+    DIVU.W    -(A0),D1
+    DIVU.W    (A0)+,D1
+    AND.B     D1,D2
+    AND.B     D1,(A1)
+    AND.B     D1,(A1)+
+    AND.B     D1,-(A1)
+    AND.B     (A1),D1
+    AND.B     (A1)+,D1
+    AND.B     -(A1),D1
+    AND.W     D1,D2
+    AND.W     D1,(A1)
+    AND.W     D1,(A1)+
+  OR.B     D1,D2
+    OR.B     D1,(A1)
+    OR.B     D1,(A1)+
+    OR.B     D1,-(A1)
+    OR.B     (A1),D1
+    OR.B     (A1)+,D1
+    OR.B     -(A1),D1
+    OR.W     D1,D2
+    OR.W     D1,(A1)
+    OR.W     D1,(A1)+
+    OR.W     D1,-(A1)
+    OR.W     (A1),D1
+    OR.W     (A1)+,D1
+    OR.W     -(A1),D1
+    OR.L     D1,D2
+    OR.L     D1,(A1)
+    OR.L     D1,(A1)+
+    OR.L     D1,-(A1)
+    OR.L     (A1),D1
+    OR.L     (A1)+,D1
+    OR.L     -(A1),D1
+    LSL.B     D1,D2
+    LSL.W     D1,D2
+    LSL.W     (A1)
+    LSL.W     (A1)+
+    LSL.W     -(A1)
+    LSL.L     D1,D2
+    LSR.B     D1,D2
+    LSR.W     D1,D2
+    LSR.W     (A1)
+    LSR.W     (A1)+
+    LSR.W     -(A1)
+    LSR.L     D1,D2    
+    ASR.B     D1,D2
+    ASR.W     D1,D2
+    ASR.W     (A1)
+    ASR.W     (A1)+
+    ASR.W     -(A1)
+    ASR.L     D1,D2
+    ASL.B     D1,D2
+    ASL.W     D1,D2
+    ASL.W     (A1)
+    ASL.W     (A1)+
+    ASL.W     -(A1)
+    ASL.L     D1,D2
+    ROL.B     D1,D2
+    ROL.W     D1,D2
+    ROL.W     (A1)
+    ROL.W     (A1)+
+    ROL.W     -(A1)
+    ROL.L     D1,D2
+    ROR.B     D1,D2
+    ROR.W     D1,D2
+    ROR.W     (A1)
+    ROR.W     (A1)+
+    ROR.W     -(A1)
+    ROR.L     D1,D2    
+    CMP.B    D0,D1
+    CMP.B    (A0),D1
+    CMP.B    -(A0),D1
+    CMP.B    (A0)+,D1
+    CMP.W    D0,D1
+    CMP.W    A0,D1
+    CMP.W    (A0),D1
+    CMP.W    -(A0),D1
+    CMP.W    (A0)+,D1
+    CMP.L    D0,D1
+    CMP.L    A0,D1
+    CMP.L    (A0),D1
+    CMP.L    -(A0),D1
+    CMP.L    (A0)+,D1
+    BCC.B     label1
+    BCC.B     label2
+    BGT.B     label1
+    BGT.B     label2
+    BLE.B     label1
+    BLE.B     label2
+    BCC.W     label1
+    BCC.W     label2
+    BCC.W     label3
+    BGT.W     label1
+    BGT.W     label2
+    BGT.W     label3
+    BLE.W     label1
+    BLE.W     label2
+    BLE.W     label3
+    JSR       (A0)
+    JSR       $1234
+    JSR       $12345678
+    JSR       label1
+    JSR       label2
+    JSR       label3
+    NOP
+    RTS
+label1
+    NOP
+    RTS
+    LEA       $12,A0
+    LEA       $1234,A0
+    LEA       $12345678,A0
+    CLR.B     $12
+    CLR.B     $1234
+    CLR.B     $12345678
+label2
+    CLR.W     $12
+    CLR.W     $1234
+    CLR.W     $12345678
+    CLR.L     $12
+    CLR.L     $1234
+    CLR.L     $12345678
+    MOVEQ     #$0,D0
+    MOVEQ     #$12,D0
+    MOVEQ     #$FF,D0
+    ADDI.B    #$12,D1
+    ADDI.B    #$12,(A0)
+    ADDI.B    #$12,(A0)+
+    ADDI.B    #$12,-(A0)
+    ADDI.B    #$12,$1234
+label3
+
+    ADDQ      #$1,D0
+    ADDQ      #$3,D0
+    ADDQ      #$8,D0
+    MOVE.B    $12,D1
+    MOVE.B    $12,(A0)
+    MOVE.B    $12,(A0)+
+    MOVE.B    $12,-(A0)
+    MOVE.B    $1234,D0
+    MOVE.B    $1234,(A1)
+    MOVE.B    $1234,(A1)+
+    MOVE.B    $1234,-(A1)
+    MOVE.B    $12345678,D0
+
+    MOVE.B    #$12,D0
+    MOVE.B    #$12,(A1)
+    MOVE.B    #$12,(A1)+
+    MOVE.B    #$12,-(A1)
+    MOVE.W    $12,D1
+    MOVE.W    $12,(A0)
+    MOVE.W    $12,(A0)+
+    MOVE.W    $12,-(A0)
+    MOVE.W    $1234,D0
+    MOVE.W    $1234,(A1)
+    MOVE.W    $1234,(A1)+
+    MOVE.W    $1234,-(A1)
+    MOVE.W    $12345678,D0
+
+    MOVE.W    #$1234,D0
+    MOVE.W    #$1234,(A1)
+    MOVE.W    #$1234,(A1)+
+    MOVE.W    #$1234,-(A1)
+    MOVE.L    $12,D1
+    MOVE.L    $12,(A0)
+    MOVE.L    $12,(A0)+
+    MOVE.L    $12,-(A0)
+    MOVE.L    $1234,D0
+    MOVE.L    $1234,(A1)
+
+    ADD.B     D1,$12
+    ADD.B     D1,$1234
 
 
-*
-*    MOVE.L  D2, D3
-*    MOVEA.W (A2), A6
-*    MOVE.B  -(A3),D4
-*    MOVE.B  (A5)+,(A6)
-*    ADD.B   D3, $CB2F
-*    JSR     TEST_LABEL
-*    BRA     TEST_LABEL
-*    CMPI.W  #44, (A1)
-*    CMP.L   #23, D7
-*    ADDA.L  D2, A3
-*    EOR.B     D2, (A4)
-*    MOVEM.W D0-D7/A0-A6, (A2)
-*    NEG.B       D3
-*    SUB.L     D2, D5
-*    ORI.B     #3, D3
-*    MULS      #15,D7
-*    ADD.L       D3, D5
-*    DIVS      (A2),D2
-*    MULS      #15,D5
-*    DIVS      #8, D5
-*                  * LINE FOR TESTING
-*    LEA       C, A1
-*    MOVE.L   (A6)+,(A3)+
-*    MOVE.B   D4,D5
-*    ADD.B   #15, D3
-*    ADD.W   #15, D3
-*    ADD.L   #15,D3
-*    ADD.L   #15, D3
-*    SUBQ.B  #1, D3
-*    BCLR.B  #32, (A3)
-*    ASR.W   (A3)
-*    LSR.B   D2, D5
-*    LSR.L   #7, D1
-*    LSL.B   #3, D3
-*    LSL.W   D2, D4
-*    LSL.W   (A5)+
-TEST_LABEL:
 
-    SIMHALT             ; halt simulator
+
 
 * Put variables and constants here
- INCLUDE "/Users/Eric/Google Drive/Fall 2018/422/68k_git/68K-Disassembler/IO.X68"
- INCLUDE "opcodes.x68"
- INCLUDE "EA.x68"
- INCLUDE "demo_test.X68"
+    INCLUDE "opcodes.x68"
+    INCLUDE "EA.x68"
+    INCLUDE "IO.x68"
 
 
     END    START        ; last line of source
+
 
 
 

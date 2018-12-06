@@ -4,28 +4,23 @@
 * Date       :
 * Description:  Opcodes, string buffer, DC table, hex conversion
 *-----------------------------------------------------------
-    *ORG    $1000
-
-BUFF_POINT      EQU     $3000   * where the string buffer lives
-BYTE_COUNTER    EQU     $30       * counter for the number of bytes the string has
-STRING_STORE    EQU     $4000   * where the beginning of the temp string storage lives
 
 
 OPCODE_BEGIN:
-    LEA        BUFF_POINT,A1        * pointer to string buffer
-    LEA        STRING_STORE, A2     * A2 stores the pointer to end of string
-    LEA        STRING_STORE, A3     * A3 stores the pointer to start of string
-    MOVE.W     #0, BYTE_COUNTER     * starting byte counter with 0
-    CLR.L       D0
-    CLR.L       D1
-    CLR.L       D2
-    CLR.L       D3
-    CLR.L       D4
-    CLR.L       D5
-    CLR.L       (A0)
-    CLR.L       (A1)
-    CLR.L       (A2)
-    CLR.L       (A3)
+        LEA        BUFF_POINT,A1        * pointer to string buffer
+        LEA        STRING_STORE, A2     * A2 stores the pointer to end of string
+        LEA        STRING_STORE, A3     * A3 stores the pointer to start of string
+        MOVE.W     #0, BYTE_COUNTER     * starting byte counter with 0
+        CLR.L       D0
+        CLR.L       D1
+        CLR.L       D2
+        CLR.L       D3
+        CLR.L       D4
+        CLR.L       D5
+        CLR.L       (A0)
+        CLR.L       (A1)
+        CLR.L       (A2)
+        CLR.L       (A3)
 
 
     MOVE.B      #0, D5                * RESETTING HEX CONVERTER COUNTER
@@ -1035,7 +1030,7 @@ TAB:
 
 
 
-    SIMHALT             ; halt simulator
+
 
 
 * Put variables and constants here
@@ -1088,6 +1083,8 @@ MONEY       DC.B '$',0
 POUND       DC.B '#',0
 
     *END    START        ; last line of source
+
+
 
 
 
