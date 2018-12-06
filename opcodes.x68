@@ -383,13 +383,13 @@ BCLR_SIZE:
     BNE     BCLR_PRINT_BYTE
 
 BCLR_PRINT_LONG:
-    JSR     ADD_LONG
     MOVE.B  #2, D6      * saving size for EA
+    JSR     ADD_LONG
     RTS
 
 BCLR_PRINT_BYTE:
-    JSR     ADD_BYTE
     MOVE.B  #0, D6      * saving size for EA
+    JSR     ADD_BYTE
     RTS
 
 
@@ -513,7 +513,7 @@ ORI:
     MOVE.B  DOT, (A2)+
     ADD.W   #5, BYTE_COUNTER
     JSR     ADD_SIZE
-    JSR    EA_MAIN          * special EA
+    JSR     EA_Immediate          * special EA
     MOVE.B  COMMA, (A2)+
     JSR     EA_MAIN
     BRA     BUFFER_LOOP
@@ -682,8 +682,8 @@ ADDA:
 
 ADDA_WORD:
     JSR     ADD_WORD
-    JSR     EA_MAIN
     MOVE.B  #1, D6          * saving size for EA
+    JSR     EA_MAIN
     MOVE.B  COMMA, (A2)+
     ADD.w   #1, BYTE_COUNTER
     JSR     MOVE_DEST_AN_RTS
@@ -691,8 +691,8 @@ ADDA_WORD:
 
 ADDA_LONG:
     JSR     ADD_LONG
-    JSR     EA_MAIN
     MOVE.B  #2, D6          * saving size for EA
+    JSR     EA_MAIN
     MOVE.B  COMMA, (A2)+
     ADD.w   #1, BYTE_COUNTER
     JSR     MOVE_DEST_AN_RTS

@@ -6,8 +6,8 @@
 *-----------------------------------------------------------
     ORG    $1000
 
-START_ADDRESS   EQU     $000010A4       * hard coded start address
-END_ADDRESS     EQU     $000010D8      * hard coded end address
+START_ADDRESS   EQU     $0000106E       * hard coded start address
+END_ADDRESS     EQU     $000010DE      * hard coded end address
 INCREMENT       EQU     $20
 LINE_COUNTER    EQU     $2000
 
@@ -68,17 +68,20 @@ TESTING_CODES:
     MOVEM.W D0-D7/A0-A6, (A2)
     NEG.B       D3
     SUB.L     D2, D5
-    ORI.L     #23, D3
+    ORI.B     #3, D3
+    MULS      #15,D7
     ADD.L       D3, D5
     DIVS      (A2),D2
-    MULS      #15,D5                    * LINE FOR TESTING
+    MULS      #15,D5
+    DIVS      #8, D5
+                  * LINE FOR TESTING
     LEA       C, A1
     MOVE.L   (A6)+,(A3)+
     MOVE.B   D4,D5
     ADD.B   #15, D3
     ADD.W   #15, D3
     ADD.L   #15,D3
-    ADD.L   #203, D3
+    ADD.L   #15, D3
     SUBQ.B  #1, D3
     BCLR.B  #32, (A3)
     ASR.W   (A3)
@@ -97,6 +100,11 @@ TEST_LABEL:
  INCLUDE "demo_test.X68"
 
     END    START        ; last line of source
+
+
+
+
+
 
 
 

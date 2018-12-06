@@ -22,7 +22,7 @@
 *------------------------------------------------------------------
 
 *Check for valid and convert frmo ASCII to HEX
-EA_COUNT    EQU     $200
+EA_COUNT    EQU     $400
 
 EA_MAIN
                     MOVE.L      D3,D4               *Takes in the 16 bit instruction from D3
@@ -165,8 +165,7 @@ EA_Absolute_WORD
                     MOVE.W      (A4),D2
                     JSR         Show_FFFF
 
-                    ; CLR.L       EA_COUNT
-                    MOVE.B      #4, EA_COUNT                *hardcoded counter in $400 (4 hex values for word)
+                    MOVE.B      #4, $400                *hardcoded counter in $400 (4 hex values for word)
                     JSR         Display_Address
                     ADD.W       #4,BYTE_COUNTER
 
@@ -181,11 +180,11 @@ EA_Absolute_LONG
                     CLR.L        D2
                     MOVE.W      (A4)+,D2
                     MOVE.L      (A4),D2
-                    MOVE.B      #8,EA_COUNT                 *hardcoded counter in $400 (8 hex values for long)
+                    MOVE.B      #8,$400                 *hardcoded counter in $400 (8 hex values for long)
                     JSR         Display_Address_Long
                     ADD.W       #8,BYTE_COUNTER
 
-                    MOVE.L      #$6,INCREMENT
+                    MOVE.L      #$4,INCREMENT
                     RTS
 
 *This is the EA for Immediate
@@ -195,31 +194,51 @@ EA_Immediate
                     ADD.W       #2,BYTE_COUNTER
 
                     JSR         Immediate_Size
-
-
                     RTS
 
-Immediate_Size
+
+*This will check the immediate size
+Immediate_Size:
+                    CMPI.B      #0,D6
+                    BEQ         Immediate_Byte
+                    CMPI.B      #1,D6
+                    BEQ         Immediate_Word
                     CMPI.B      #2,D6
                     BEQ         Immediate_Long
 
+                    BRA         UNKNOWN
+
+*-----------------If not long, just continue to do immediate word----------------------
+Immediate_Word:
                     CLR.L       D2                      *clear D2 to show next word data
                     MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
                     MOVE.W      (A4),D2
-                    MOVE.B      #4,EA_COUNT
+                    MOVE.B      #4, $400
                     MOVE.L      #$4,INCREMENT
                     ADD.W       #4,BYTE_COUNTER
                     JSR         Display_Address
-
                     RTS
 
-Immediate_Long
+Immediate_Byte:
+                    CLR.L       D2                      *clear D2 to show next word data
+                    MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
+                    MOVE.W      (A4),D2
+                    MOVE.B      #4, $400
+                    MOVE.L      #$4,INCREMENT
+                    ADD.W       #4,BYTE_COUNTER
+                    JSR         Display_Address
+                    RTS
+
+Immediate_Long:
                     CLR.L        D2
                     MOVE.W      (A4)+,D2
                     MOVE.L      (A4),D2
-                    MOVE.B      #8,EA_COUNT
+
+                    MOVE.B      #8, $400
+
                     MOVE.L      #$6,INCREMENT
                     ADD.W       #8,BYTE_COUNTER
+
                     JSR         Display_Address_Long
 
                     RTS
@@ -238,9 +257,10 @@ Display_Address
                     BLT         Show_Number     *If yes jump to display (0-9)
                     MOVE.B      D1,(A2)+        *Add the character in stack to display later
 
-                    SUB.B       #1,EA_COUNT
-                    CMPI.B      #0,EA_COUNT        *Check if rotation done
+                    SUB.B       #1,$400
+                    CMPI.B      #0,$400        *Check if rotation done
                     BNE         Display_Address *call itself again-loop
+
                     RTS
 
 *Same as above but for LONG
@@ -254,8 +274,8 @@ Display_Address_Long
 
                     MOVE.B      D1,(A2)+        *Add the character in stack to display later
 
-                    SUB.B       #1,EA_COUNT
-                    CMPI.B      #0,EA_COUNT         *Check if rotation done
+                    SUB.B       #1,$400
+                    CMPI.B      #0,$400         *Check if rotation done
                     BNE         Display_Address_Long *call itself again-loop
 
                     RTS
@@ -285,16 +305,6 @@ PRINT_FFFF:
                     RTS
 
     SIMHALT             ; halt simulator
-
-
-
-
-
-
-
-
-
-
 
 
 
