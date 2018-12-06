@@ -16,6 +16,17 @@ OPCODE_BEGIN:
     LEA        STRING_STORE, A2     * A2 stores the pointer to end of string
     LEA        STRING_STORE, A3     * A3 stores the pointer to start of string
     MOVE.W     #0, BYTE_COUNTER     * starting byte counter with 0
+    CLR.L       D0
+    CLR.L       D1
+    CLR.L       D2
+    CLR.L       D3
+    CLR.L       D4
+    CLR.L       D5
+    CLR.L       (A0)
+    CLR.L       (A1)
+    CLR.L       (A2)
+    CLR.L       (A3)
+
 
     MOVE.B      #0, D5                * RESETTING HEX CONVERTER COUNTER
     MOVE.L      A4,D6                 * moving current address into D6
