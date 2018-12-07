@@ -25,8 +25,3 @@ ea.x86
 	- D6 stores the size for immediate value (0=Byte, 1=Word, 2=Long).
 	- D4 stores 3 bits for the mode.
 	- D5 stores 3 bits for the register.
-
-
-Notes:
-
-	- MULS #value sometimes does not always work correctly 
