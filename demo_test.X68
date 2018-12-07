@@ -1,16 +1,4 @@
-*****************************
-*
-* demo_test.X68
-*
-* Created 03/08/2017
-*
-* Test program for CSS 422 Disassembler Project Demo
-*
-*****************************
 
-*start		EQU	$00009000	* ORG and END address
-
-* ORG the program so that it straddles the address boundary $00007FFF to $00008000
 
 		ORG	$4000
 
@@ -183,7 +171,6 @@ test_BRA:
     SUB.B     (A1)+,D1
     SUB.B     -(A1),D1
     SUB.W     D1,D2
-    SUB.W     D1,A1
     SUB.W     D1,(A1)
     SUB.W     D1,(A1)+
     SUB.W     D1,-(A1)
@@ -192,7 +179,6 @@ test_BRA:
     SUB.W     (A1)+,D1
     SUB.W     -(A1),D1
     SUB.L     D1,D2
-    SUB.L     D1,A1
     SUB.L     D1,(A1)
     SUB.L     D1,(A1)+
     SUB.L     D1,-(A1)
@@ -237,7 +223,7 @@ test_BRA:
 	NEG.W     $9000
 	NEG.L     $9000FFFF
 	ORI.B     #1,D2
-        ORI.W     #6,(A1)
+    ORI.W     #6,(A1)
 	ORI.W     #8, $9000
 	ORI.L     #8, $9000FFFF
 	ORI.L     #1,(A1)
@@ -325,7 +311,6 @@ test_BRA:
     JSR       label3
     NOP
     RTS
-
     MOVE.B    $12,D1
     MOVE.B    $12,(A0)
     MOVE.B    $12,(A0)+
@@ -374,37 +359,12 @@ test_BRA:
     MOVE.L    #$12345678,(A1)
     MOVE.L    #$12345678,(A1)+
     MOVE.L    #$12345678,-(A1)
-    ; MOVEM.W   A1-A7,$12
-    ; MOVEM.L   D1-D7,$12
-    ; MOVEM.W   A1/D7,$12
-    ; MOVEM.L   A1/D7,$12
-    ; MOVEM.W   A1-A7,$1234
-    ; MOVEM.L   D1-D7,$1234
-    ; MOVEM.W   A1/D7,$1234
-    ; MOVEM.L   A1/D7,$1234
-    ; MOVEM.W   A1-A7,$12345678
-    ; MOVEM.L   D1-D7,$12345678
-    ; MOVEM.W   A1/D7,$12345678
-    ; MOVEM.L   A1/D7,$12345678
-    ; MOVEM.W   $12,A1-A7
-    ; MOVEM.L   $12,D1-D7
-    ; MOVEM.W   $12,A1/D7
-    ; MOVEM.L   $12,A1/D7
-    ; MOVEM.W   $1234,A1-A7
-    ; MOVEM.L   $1234,D1-D7
-    ; MOVEM.W   $1234,A1/D7
-    ; MOVEM.L   $1234,A1/D7
-    ; MOVEM.W   $12345678,A1-A7
-    ; MOVEM.L   $12345678,D1-D7
-    ; MOVEM.W   $12345678,A1/D7
-    ; MOVEM.L   $12345678,A1/D7
     ADD.B     D1,$12
     ADD.B     D1,$1234
     ADD.B     D1,$12345678
     ADD.B     $12,D1
     ADD.B     $1234,D1
     ADD.B     $12345678,D1
-
     ADD.W     D1,$12
     ADD.W     D1,$1234
     ADD.W     D1,$12345678
@@ -441,14 +401,12 @@ test_BRA:
     SUB.W     $12,D1
     SUB.W     $1234,D1
     SUB.W     $12345678,D1
-    SUB.W     #$1234,D1
     SUB.L     D1,$12
     SUB.L     D1,$1234
     SUB.L     D1,$12345678
     SUB.L     $12,D1
     SUB.L     $1234,D1
     SUB.L     $12345678,D1
-    SUB.L     #$12345678,D1
     MULS.W    $12,D1
     MULS.W    $1234,D1
     MULS.W    $12345678,D1
@@ -512,13 +470,12 @@ label4    CMP.B     $12,D1
     ADDA      D1,A1
     BTST      #1,D1
 
-* Put program code here
 
-    SIMHALT             ; halt simulator
+    SIMHALT
 
-* Put variables and constants here
 
-    END    START        ; last line of source
+
+    END    START
 
 
 
