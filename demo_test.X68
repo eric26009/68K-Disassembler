@@ -12,7 +12,7 @@
 
 * ORG the program so that it straddles the address boundary $00007FFF to $00008000
 
-		ORG	$9000
+		ORG	$4000
 
 NOP
     RTS
@@ -24,30 +24,30 @@ NOP
     LEA     (A0),A7
     LEA     (A5),A7
     LEA     (A7),A7
-    CLR.B     D0
-    CLR.B     D7
-    CLR.W     D0
-    CLR.W     D7
-    CLR.L     D0
-    CLR.L     D7
-    CLR.B     (A0)
-    CLR.B     (A7)
-    CLR.W     (A0)
-    CLR.W     (A7)
-    CLR.L     (A0)
-    CLR.L     (A7)
-    CLR.B     (A0)+
-    CLR.B     (A7)+
-    CLR.W     (A0)+
-    CLR.W     (A7)+
-    CLR.L     (A0)+
-    CLR.L     (A7)+
-    CLR.B     -(A0)
-    CLR.B     -(A7)
-    CLR.W     -(A0)
-    CLR.W     -(A7)
-    CLR.L     -(A0)
-    CLR.L     -(A7)
+*    CLR.B     D0
+*    CLR.B     D7
+*    CLR.W     D0
+*    CLR.W     D7
+*    CLR.L     D0
+*    CLR.L     D7
+*    CLR.B     (A0)
+*    CLR.B     (A7)
+*    CLR.W     (A0)
+*    CLR.W     (A7)
+*    CLR.L     (A0)
+*    CLR.L     (A7)
+*    CLR.B     (A0)+
+*    CLR.B     (A7)+
+*    CLR.W     (A0)+
+*    CLR.W     (A7)+
+*    CLR.L     (A0)+
+*    CLR.L     (A7)+
+*    CLR.B     -(A0)
+*    CLR.B     -(A7)
+*    CLR.W     -(A0)
+*    CLR.W     -(A7)
+*    CLR.L     -(A0)
+*    CLR.L     -(A7)
     MOVE.B    D0,D1
     MOVE.B    D0,(A0)
     MOVE.B    D0,(A0)+
@@ -104,22 +104,22 @@ NOP
     MOVE.L    -(A0),(A1)
     MOVE.L    -(A0),(A1)+
     MOVE.L    -(A0),-(A1)
-    MOVEM.W   A1-A7,-(A1)
-    MOVEM.L   D1-D7,-(A1)
-    MOVEM.W   A1/D7,-(A1)
-    MOVEM.L   A1/D7,-(A1)
-    MOVEM.W   A1-A7,(A1)
-    MOVEM.L   D1-D7,(A1)
-    MOVEM.W   A1/D7,(A1)
-    MOVEM.L   A1/D7,(A1)
-    MOVEM.W   (A1)+,A1-A7
-    MOVEM.L   (A1)+,D1-D7
-    MOVEM.W   (A1)+,A1/D7
-    MOVEM.L   (A1)+,A1/D7
-    MOVEM.W   (A1),A1-A7
-    MOVEM.L   (A1),D1-D7
-    MOVEM.W   (A1),A1/D7
-    MOVEM.L   (A1),A1/D7
+*    MOVEM.W   A1-A7,-(A1)
+*    MOVEM.L   D1-D7,-(A1)
+*    MOVEM.W   A1/D7,-(A1)
+*    MOVEM.L   A1/D7,-(A1)
+*    MOVEM.W   A1-A7,(A1)
+*    MOVEM.L   D1-D7,(A1)
+*    MOVEM.W   A1/D7,(A1)
+*    MOVEM.L   A1/D7,(A1)
+*    MOVEM.W   (A1)+,A1-A7
+*    MOVEM.L   (A1)+,D1-D7
+*    MOVEM.W   (A1)+,A1/D7
+*    MOVEM.L   (A1)+,A1/D7
+*    MOVEM.W   (A1),A1-A7
+*    MOVEM.L   (A1),D1-D7
+*    MOVEM.W   (A1),A1/D7
+*    MOVEM.L   (A1),A1/D7
     MOVEA.W    D0,A0
     MOVEA.W    A0,A0
     MOVEA.W    (A0),A0
@@ -188,10 +188,10 @@ NOP
     MULS.W    (A0),D1
     MULS.W    -(A0),D1
     MULS.W    (A0)+,D1
-    DIVU.W    D0,D1
-    DIVU.W    (A0),D1
-    DIVU.W    -(A0),D1
-    DIVU.W    (A0)+,D1
+*    DIVU.W    D0,D1
+*    DIVU.W    (A0),D1
+*    DIVU.W    -(A0),D1
+*    DIVU.W    (A0)+,D1
     AND.B     D1,D2
     AND.B     D1,(A1)
     AND.B     D1,(A1)+
@@ -562,6 +562,7 @@ label4    CMP.B     $12,D1
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

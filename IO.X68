@@ -5,35 +5,46 @@
 * Description: This disassembler program takes the assembly language that was assembled
 *              and decode them so that a user can understand.
 *-----------------------------------------------------------
-                     ; ORG        $1000
 
-
-; START:
+*--------------------------------------------------------------------
 START_IO:
+*-------------Program Starts with Introduction and Instruction-------
+*--------------------------------------------------------------------
 
-*------------------Program Starts with Instruction------------------
                       LEA        INTRO_MSG,A1            *Load and display the intro message
                       MOVE.B     #14,D0
-                      TRAP       #15
+                      TRAP       #15                     *Execute the trap task above to display
+                      
+                      LEA       AddressInstruction,A1    *Load and display address range
+                      MOVE.B    #14,D0
+                      TRAP      #15                      *Execute the trap task above to display
 
+*--------------------------------------------------------------------
+input_begin:			  
 *------------------Ask User for Starting Address--------------------
-input_begin			  LEA		U_START_ADDRESS,A1		            *Ask user for starting address question
+*--------------------------------------------------------------------
+
+                      LEA		U_START_ADDRESS,A1		 *Asking user for an starting address instruction
 					  MOVE.B	#14,D0
-					  TRAP		#15						            * Execute the trap task above to display
+					  TRAP		#15						 *Execute the trap task above to display
 
-					  LEA		AddrStart_Aski,A2			* Subroutine reads address location to store address.
-					  JSR		User_Inpt                   * Gettting user input
+					  LEA		AddrStart_Aski,A2		 *Loads the asking address start into Address regiser A2
+					  JSR		User_Inpt                *JumpSubRoutine to userInput
 
-					  LEA		AddrStart_Aski,A0
-					  CLR.W		D2                      * Clearing D2-D4
+					  LEA		AddrStart_Aski,A0       *Load the address start into A2
+                      CLR.W		D2                      * Clearing D2-D4
 					  CLR.W		D3
 					  CLR.W		D4
-					  MOVE.B	#$30,(A0)+				* Pushing 2 bytes to zero
+					  MOVE.B	#$30,(A0)+				*Pushing 2 bytes to zero
 					  MOVE.B	#$30,(A0)
 					  LEA		AddrStart_Aski,A0
 
-*----------------This will convert the valid start address from ASCII to HEX---------
-Chck_Str_Inpt		  LSL.L		#4,D4
+*----------------------------------------------------------------------
+Chck_Str_Inpt:	
+*-------This will convert the valid start address from ASCII to HEX----
+*----------------------------------------------------------------------	 
+
+                      LSL.L		#4,D4
 					  ADDI		#1,D2
 					  MOVE.B	(A0),D3					* Moves ASCII to D3
 					  CMP.B		#$39,(A0)				* Range 0-9?
@@ -60,7 +71,6 @@ User_Inpt   		 MOVEA.W	A2,A1
 					 BRA		User_Inpt           * Redo, get input again.
 
 Valid_Inpt:			 RTS                                 * Return with good input.
-
 
 
 
@@ -97,8 +107,7 @@ change_aski			 OR.L		D3,D4					* Masking first 4 bits in D3
 					 BRA		Chck_Str_Inpt           * Loop if not done.
 
 User_StartA_Done	 MOVE.L		D4,RealHex_AddrS         * Save HEX converted address.
-                     *LEA        RealHex_Addrs,A4
-                     MOVEA.L		RealHex_Addrs,A4
+                     MOVEA.L	RealHex_Addrs,A4
 
 *---------------- Getting Ending Address -------------------
 User_Inpt_End   	 LEA		U_END_ADDRESS,A1			* Load Question
@@ -158,7 +167,8 @@ Change_Aski_End		 OR.L		D3,D4					* Masking first 4 bits in D3
 					 BRA		Chck_end_Inpt			* Loop if not done.
 
 User_EndA_Done		 MOVE.L	    D4,RealHex_AddrE			* Save HEX converted address.
-                     *LEA        RealHex_AddrE,A5
+                     LEA        RealHex_AddrE,A5
+
 
 *-----------------Different Starting/Ending Address Condition Check -----
 
@@ -183,7 +193,7 @@ NextAddrChk
 
 Good_Valid_Addr		MOVEA.L		RealHex_AddrE,A5			* We can now place ending address in A6
                                                             * and begin disassembling.
-
+                                                            
                     RTS                                      * go back to main
 
 
@@ -200,15 +210,16 @@ Good_Valid_Addr		MOVEA.L		RealHex_AddrE,A5			* We can now place ending address i
 CR					 EQU        $0D				        * ASCII code for Carriage return
 LF					 EQU		$0A				        * ASCII code for Line Feed
 
-
 *------------------Intro Message-------------------------------------
 INTRO_MSG                       DC.B       'We are the Inverse Assembler Team!',CR,LF
                                 DC.B       'We can take the assembled machine code and convert it into readable human code',CR,LF
                                 DC.B       'To do so, we just need you to give us a Starting Address and Ending Address',CR,LF
                                 DC.B       'The addresses are in Hexidecimal only and we can take up to a byte address',CR,LF
-                                DC.B       'Lets try it shall we?',CR,LF,CR,LF,0
+                                DC.B       'Lets try it shall we?',CR,LF,0
+                                
+AddressInstruction              DC.B       'Please enter an address between 00004000 to FFFFFFFF',CR,LF,0
 *------------------Start and End Address Message-----------------------
-U_START_ADDRESS                 DC.B       'Enter a Starting Address: $',CR,LF,0
+U_START_ADDRESS                 DC.B       CR,LF,'Enter a Starting Address: $',0
 U_END_ADDRESS                   DC.B       'Enter an Ending Address: $',0
 
 AddrStart_Aski                  DS.B       82
@@ -217,13 +228,11 @@ RealHex_AddrS                   DS.L       1
 RealHex_AddrE                   DS.L       1
 
 *------------------Tells user that their input is off------------------
-CHECK_FOR_8BITS                DC.B     'Sorry! Input Address must be a Byte long (8 Bits)! Try Again:',0
+CHECK_FOR_8BITS                DC.B     CR,LF,'Sorry! Input Address must be a Byte long (8 Bits)! Try Again:',CR,LF,0
 startBeforeEnd_AddrChk	       DC.B		'Your ending address needs to be greater than your starting address. Try again!',CR,LF,0
 OutOfBound_ERR_MSG             DC.B    	'Out of bound! The code has to be within the program!',CR,LF,0
-Wrong_Addr_MSG                 DC.B     'This is not a valid address, try again',0
+Wrong_Addr_MSG                 DC.B     'This is not a valid address, try again',CR,LF,0
 
-
-                     ; END    START        ; last line of source
 
 
 
