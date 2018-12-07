@@ -57,12 +57,11 @@ Chck_Str_Inpt:
 					  CMP.B		#$39,(A0)				* Compare the number for range check
 					  * Branch on less than or equal to check aski number
 					  BLE		Aski_nValue				
+                      CMP.B		#$66,(A0)               * Branch on less than or equal to uppercase
+					  BLE		Aski_LC                 * Compare for upper case a through fcheck Range		        
 					  CMP.B		#$46,(A0)				* Compare for upper case A through Fcheck Range
-					  * Branch on less than or equal to lowercase
-					  BLE		Aski_LC  
-					  * Branch on less than or equal to uppercase
-					  BLE		Aski_UC			        
-					  CMP.B		#$66,(A0)				* Compare for upper case a through fcheck Range
+                      BLE		Aski_UC	                * Branch on less than or equal to lowercase
+					  				                    
                
 
 *---------------------------------------------------------------------
@@ -359,6 +358,8 @@ startBeforeEnd_AddrChk	       DC.B		'Your ending address needs to be greater tha
 RANGE_ERROR_MSG                DC.B     'Please enter the address between 00004000 to FFFFFFFF',CR,LF,0
 OutOfBound_ERR_MSG             DC.B    	'Out of bound! Your address has to be after our code!',CR,LF,0
 Wrong_Addr_MSG                 DC.B     'That is NOT a valid address! try again',CR,LF,0
+
+
 
 
 

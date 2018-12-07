@@ -1,9 +1,8 @@
-*-----------------------------------------------------------
-* Title      :
-* Written by :
-* Date       :
-* Description:  Opcodes, string buffer, DC table, hex conversion
-*-----------------------------------------------------------
+*-------------------------------------------------------------
+* Description:  This is the opcodes file that wll decode all the
+*               instructions, sizes, string buffer, hex conversion
+*               It will also call the EA file for specific instructions
+*-------------------------------------------------------------
 
 
 OPCODE_BEGIN:
@@ -11,6 +10,8 @@ OPCODE_BEGIN:
         LEA        STRING_STORE, A2     * A2 stores the pointer to end of string
         LEA        STRING_STORE, A3     * A3 stores the pointer to start of string
         MOVE.W     #0, BYTE_COUNTER     * starting byte counter with 0
+        
+*-------Clearing all the data for every opcode to avoid mixing it------
         CLR.L       D0
         CLR.L       D1
         CLR.L       D2
@@ -22,15 +23,14 @@ OPCODE_BEGIN:
         CLR.L       (A2)
         CLR.L       (A3)
 
-
-    MOVE.B      #0, D5                * RESETTING HEX CONVERTER COUNTER
-    MOVE.L      A4,D6                 * moving current address into D6
-    MOVE.L      D6,D7                 * making a copy of D6 into D7
-    MOVE.L      #$2, INCREMENT         * resetting the increment counter back to $2, EA may change it.
-    MOVE.B      MONEY, (A2)+         * adding a MONEY SYMBOL to the beginning
-    ADD.W       #1, BYTE_COUNTER      * increment byte counter
-    JSR         HEX_CHAR
-    JSR         TAB         * printing tab after HEX address is printed to screen
+        MOVE.B      #0, D5                * RESETTING HEX CONVERTER COUNTER
+        MOVE.L      A4,D6                 * moving current address into D6
+        MOVE.L      D6,D7                 * making a copy of D6 into D7
+        MOVE.L      #$2, INCREMENT         * resetting the increment counter back to $2, EA may change it.
+        MOVE.B      MONEY, (A2)+         * adding a MONEY SYMBOL to the beginning
+        ADD.W       #1, BYTE_COUNTER      * increment byte counter
+        JSR         HEX_CHAR
+        JSR         TAB         * printing tab after HEX address is printed to screen
 
 
 
@@ -1057,64 +1057,6 @@ TAB:
     MOVE.B  SPACE, (A2)+
     ADD.W      #5, BYTE_COUNTER
     RTS
-
-
-
-
-
-
-* Put variables and constants here
-_0          DC.B '0',0
-_1          DC.B '1',0
-_2          DC.B '2',0
-_3          DC.B '3',0
-_4          DC.B '4',0
-_5          DC.B '5',0
-_6          DC.B '6',0
-_7          DC.B '7',0
-_8          DC.B '8',0
-_9          DC.B '9',0
-A           DC.B 'A',0
-B           DC.B 'B',0
-C           DC.B 'C',0
-D           DC.B 'D',0
-E           DC.B 'E',0
-F           DC.B 'F',0
-G           DC.B 'G',0
-H           DC.B 'H',0
-I           DC.B 'I',0
-J           DC.B 'J',0
-K           DC.B 'K',0
-L           DC.B 'L',0
-M           DC.B 'M',0
-N           DC.B 'N',0
-O           DC.B 'O',0
-P           DC.B 'P',0
-Q           DC.B 'Q',0
-R           DC.B 'R',0
-S           DC.B 'S',0
-T           DC.B 'T',0
-U           DC.B 'U',0
-V           DC.B 'V',0
-W           DC.B 'W',0
-X           DC.B 'X',0
-Y           DC.B 'Y',0
-Z           DC.B 'Z',0
-OPEN_PARA   DC.B '(',0
-CLOSE_PARA  DC.B ')',0
-DOT         DC.B '.',0
-PLUS        DC.B '+',0
-MINUS       DC.B '-',0
-FINISHED    DC.L 'FINISHED',0
-SPACE       DC.B ' ',0
-QUESTION    DC.B '?',0
-COMMA       DC.B ',',0
-MONEY       DC.B '$',0
-POUND       DC.B '#',0
-
-    *END    START        ; last line of source
-
-
 
 
 
