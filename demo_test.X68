@@ -24,30 +24,26 @@ NOP
     LEA     (A0),A7
     LEA     (A5),A7
     LEA     (A7),A7
-*    CLR.B     D0
-*    CLR.B     D7
-*    CLR.W     D0
-*    CLR.W     D7
-*    CLR.L     D0
-*    CLR.L     D7
-*    CLR.B     (A0)
-*    CLR.B     (A7)
-*    CLR.W     (A0)
-*    CLR.W     (A7)
-*    CLR.L     (A0)
-*    CLR.L     (A7)
-*    CLR.B     (A0)+
-*    CLR.B     (A7)+
-*    CLR.W     (A0)+
-*    CLR.W     (A7)+
-*    CLR.L     (A0)+
-*    CLR.L     (A7)+
-*    CLR.B     -(A0)
-*    CLR.B     -(A7)
-*    CLR.W     -(A0)
-*    CLR.W     -(A7)
-*    CLR.L     -(A0)
-*    CLR.L     -(A7)
+	BRA       test_BRA
+test_BRA:
+	CMPI.B    #2,D1
+	CMPI.W    #5,(A2)
+	CMPI.W    #7,(A2)+
+	CMPI.W    #8,$1234
+    BCLR.L	  D0, D3
+	BCLR.B    D1, (A2)
+	BCLR.B    D1, -(A2)
+	BCLR.B    D1, $12341234
+	BCLR.L	  #1, D3
+	BCLR.B    #4, (A2)
+	BCLR.B    #8, -(A2)
+	BCLR.B    #32, $1234
+	EOR.B     D0, D1
+	EOR.W     D0, (A2)
+	EOR.B     D1, (A1)+
+	EOR.B     D1, -(A2)
+	EOR.W	  D1, $1234
+	EOR.L     D1, $12341234
     MOVE.B    D0,D1
     MOVE.B    D0,(A0)
     MOVE.B    D0,(A0)+
@@ -104,22 +100,22 @@ NOP
     MOVE.L    -(A0),(A1)
     MOVE.L    -(A0),(A1)+
     MOVE.L    -(A0),-(A1)
-*    MOVEM.W   A1-A7,-(A1)
-*    MOVEM.L   D1-D7,-(A1)
-*    MOVEM.W   A1/D7,-(A1)
-*    MOVEM.L   A1/D7,-(A1)
-*    MOVEM.W   A1-A7,(A1)
-*    MOVEM.L   D1-D7,(A1)
-*    MOVEM.W   A1/D7,(A1)
-*    MOVEM.L   A1/D7,(A1)
-*    MOVEM.W   (A1)+,A1-A7
-*    MOVEM.L   (A1)+,D1-D7
-*    MOVEM.W   (A1)+,A1/D7
-*    MOVEM.L   (A1)+,A1/D7
-*    MOVEM.W   (A1),A1-A7
-*    MOVEM.L   (A1),D1-D7
-*    MOVEM.W   (A1),A1/D7
-*    MOVEM.L   (A1),A1/D7
+    MOVEM.W   A1-A7,-(A1)
+    MOVEM.L   D1-D7,-(A1)
+    MOVEM.W   A1/D7,-(A1)
+    MOVEM.L   A1/D7,-(A1)
+    MOVEM.W   A1-A7,(A1)
+    MOVEM.L   D1-D7,(A1)
+    MOVEM.W   A1/D7,(A1)
+    MOVEM.L   A1/D7,(A1)
+    MOVEM.W   (A1)+,A1-A7
+    MOVEM.L   (A1)+,D1-D7
+    MOVEM.W   (A1)+,A1/D7
+    MOVEM.L   (A1)+,A1/D7
+    MOVEM.W   (A1),A1-A7
+    MOVEM.L   (A1),D1-D7
+    MOVEM.W   (A1),A1/D7
+    MOVEM.L   (A1),A1/D7
     MOVEA.W    D0,A0
     MOVEA.W    A0,A0
     MOVEA.W    (A0),A0
@@ -159,6 +155,26 @@ NOP
     ADDA.L        (A1),A2
     ADDA.L        (A1)+,A2
     ADDA.L        -(A1),A2
+	SUBQ.B 	  #1, D1
+	SUBQ.B 	  #2, (A1)
+	SUBQ.B 	  #3, (A1)+
+	SUBQ.B 	  #4, -(A1)
+	SUBQ.W 	  #1, D1
+	SUBQ.W 	  #2, (A1)
+	SUBQ.W 	  #3, (A1)+
+	SUBQ.W 	  #4, -(A1)
+	SUBQ.L 	  #1, D1
+	SUBQ.L 	  #2, (A1)
+	SUBQ.L 	  #3, (A1)+
+	SUBQ.L 	  #4, -(A1)
+	SUBQ.L 	  #1, A2
+	SUB.B     D1,D2
+    SUB.B     D1,(A1)
+    SUB.B     D1,(A1)+
+    SUB.B     D1,-(A1)
+    SUB.B     (A1),D1
+    SUB.B     (A1)+,D1
+    SUB.B     -(A1),D1
     SUB.B     D1,D2
     SUB.B     D1,(A1)
     SUB.B     D1,(A1)+
@@ -188,10 +204,11 @@ NOP
     MULS.W    (A0),D1
     MULS.W    -(A0),D1
     MULS.W    (A0)+,D1
-*    DIVU.W    D0,D1
-*    DIVU.W    (A0),D1
-*    DIVU.W    -(A0),D1
-*    DIVU.W    (A0)+,D1
+    DIVS.W    D0,D1
+
+    DIVS.W    (A0),D1
+    DIVS.W    -(A0),D1
+    DIVS.W    (A0)+,D1
     AND.B     D1,D2
     AND.B     D1,(A1)
     AND.B     D1,(A1)+
@@ -213,6 +230,17 @@ NOP
     AND.L     (A1),D1
     AND.L     (A1)+,D1
     AND.L     -(A1),D1
+	NEG.B     D5
+	NEG.B     (A6)
+	NEG.B     (A6)+
+	NEG.W     -(A6)
+	NEG.W     $9000
+	NEG.L     $9000FFFF
+	ORI.B     #1,D2
+        ORI.W     #6,(A1)
+	ORI.W     #8, $9000
+	ORI.L     #8, $9000FFFF
+	ORI.L     #1,(A1)
     OR.B     D1,D2
     OR.B     D1,(A1)
     OR.B     D1,(A1)+
@@ -284,21 +312,11 @@ NOP
     CMP.L    (A0),D1
     CMP.L    -(A0),D1
     CMP.L    (A0)+,D1
-    BCC.B     label1
-    BCC.B     label2
-    BGT.B     label1
-    BGT.B     label2
-    BLE.B     label1
-    BLE.B     label2
-    BCC.W     label1
-    BCC.W     label2
-    BCC.W     label3
-    BGT.W     label1
-    BGT.W     label2
-    BGT.W     label3
-    BLE.W     label1
-    BLE.W     label2
-    BLE.W     label3
+    BCC.L     label1
+    BCC.L     label2
+    BCC.L     label1
+    BCC.L     label2
+    BCC.L     label3
     JSR       (A0)
     JSR       $1234
     JSR       $12345678
@@ -307,47 +325,7 @@ NOP
     JSR       label3
     NOP
     RTS
-label1
-    NOP
-    RTS
-    LEA       $12,A0
-    LEA       $1234,A0
-    LEA       $12345678,A0
-    CLR.B     $12
-    CLR.B     $1234
-    CLR.B     $12345678
-label2
-    CLR.W     $12
-    CLR.W     $1234
-    CLR.W     $12345678
-    CLR.L     $12
-    CLR.L     $1234
-    CLR.L     $12345678
-    MOVEQ     #$0,D0
-    MOVEQ     #$12,D0
-    MOVEQ     #$FF,D0
-    ADDI.B    #$12,D1
-    ADDI.B    #$12,(A0)
-    ADDI.B    #$12,(A0)+
-    ADDI.B    #$12,-(A0)
-    ADDI.B    #$12,$1234
-label3
-    ADDI.B    #$12,$12345678
-    ADDI.W    #$1234,D1
-    ADDI.W    #$1234,(A0)
-    ADDI.W    #$1234,(A0)+
-    ADDI.W    #$1234,-(A0)
-    ADDI.W    #$1234,$1234
-    ADDI.W    #$1234,$12345678
-    ADDI.L    #$12345678,D1
-    ADDI.L    #$12345678,(A0)
-    ADDI.L    #$12345678,(A0)+
-    ADDI.L    #$12345678,-(A0)
-    ADDI.L    #$12345678,$1234
-    ADDI.L    #$12345678,$12345678
-    ADDQ      #$1,D0
-    ADDQ      #$3,D0
-    ADDQ      #$8,D0
+
     MOVE.B    $12,D1
     MOVE.B    $12,(A0)
     MOVE.B    $12,(A0)+
@@ -396,59 +374,60 @@ label3
     MOVE.L    #$12345678,(A1)
     MOVE.L    #$12345678,(A1)+
     MOVE.L    #$12345678,-(A1)
-    MOVEM.W   A1-A7,$12
-    MOVEM.L   D1-D7,$12
-    MOVEM.W   A1/D7,$12
-    MOVEM.L   A1/D7,$12
-    MOVEM.W   A1-A7,$1234
-    MOVEM.L   D1-D7,$1234
-    MOVEM.W   A1/D7,$1234
-    MOVEM.L   A1/D7,$1234
-    MOVEM.W   A1-A7,$12345678
-    MOVEM.L   D1-D7,$12345678
-    MOVEM.W   A1/D7,$12345678
-    MOVEM.L   A1/D7,$12345678
-    MOVEM.W   $12,A1-A7
-    MOVEM.L   $12,D1-D7
-    MOVEM.W   $12,A1/D7
-    MOVEM.L   $12,A1/D7
-    MOVEM.W   $1234,A1-A7
-    MOVEM.L   $1234,D1-D7
-    MOVEM.W   $1234,A1/D7
-    MOVEM.L   $1234,A1/D7
-    MOVEM.W   $12345678,A1-A7
-    MOVEM.L   $12345678,D1-D7
-    MOVEM.W   $12345678,A1/D7
-    MOVEM.L   $12345678,A1/D7
+    ; MOVEM.W   A1-A7,$12
+    ; MOVEM.L   D1-D7,$12
+    ; MOVEM.W   A1/D7,$12
+    ; MOVEM.L   A1/D7,$12
+    ; MOVEM.W   A1-A7,$1234
+    ; MOVEM.L   D1-D7,$1234
+    ; MOVEM.W   A1/D7,$1234
+    ; MOVEM.L   A1/D7,$1234
+    ; MOVEM.W   A1-A7,$12345678
+    ; MOVEM.L   D1-D7,$12345678
+    ; MOVEM.W   A1/D7,$12345678
+    ; MOVEM.L   A1/D7,$12345678
+    ; MOVEM.W   $12,A1-A7
+    ; MOVEM.L   $12,D1-D7
+    ; MOVEM.W   $12,A1/D7
+    ; MOVEM.L   $12,A1/D7
+    ; MOVEM.W   $1234,A1-A7
+    ; MOVEM.L   $1234,D1-D7
+    ; MOVEM.W   $1234,A1/D7
+    ; MOVEM.L   $1234,A1/D7
+    ; MOVEM.W   $12345678,A1-A7
+    ; MOVEM.L   $12345678,D1-D7
+    ; MOVEM.W   $12345678,A1/D7
+    ; MOVEM.L   $12345678,A1/D7
     ADD.B     D1,$12
     ADD.B     D1,$1234
     ADD.B     D1,$12345678
     ADD.B     $12,D1
     ADD.B     $1234,D1
     ADD.B     $12345678,D1
-    ADD.B     #$12,D1
+
     ADD.W     D1,$12
     ADD.W     D1,$1234
     ADD.W     D1,$12345678
     ADD.W     $12,D1
     ADD.W     $1234,D1
     ADD.W     $12345678,D1
-    ADD.W     #$1234,D1
     ADD.L     D1,$12
     ADD.L     D1,$1234
     ADD.L     D1,$12345678
     ADD.L     $12,D1
     ADD.L     $1234,D1
     ADD.L     $12345678,D1
-    ADD.L     #$12345678,D1
     ADDA.W    $12,A2
     ADDA.W    $1234,A2
     ADDA.W    $12345678,A2
-    ADDA.W    #$1234,A2
     ADDA.L    $12,A2
     ADDA.L    $1234,A2
     ADDA.L    $12345678,A2
     ADDA.L    #$12345678,A2
+	SUBQ.W 	  #1, $9321
+	SUBQ.L 	  #2, $43215678
+	SUBQ.W 	  #7, $9342
+	SUBQ.L 	  #8, $493299AA
     SUB.B     D1,$12
     SUB.B     D1,$1234
     SUB.B     D1,$12345678
@@ -474,31 +453,10 @@ label3
     MULS.W    $1234,D1
     MULS.W    $12345678,D1
     MULS.W    #$1234,D1
-    DIVU.W    $12,D1
-    DIVU.W    $1234,D1
-    DIVU.W    $12345678,D1
-    DIVU.W    #$1234,D1
-    AND.B     D1,$12
-    AND.B     D1,$1234
-    AND.B     D1,$12345678
-    AND.B     $12,D1
-    AND.B     $1234,D1
-    AND.B     $12345678,D1
-    AND.B     #$12,D1
-    AND.W     D1,$12
-    AND.W     D1,$1234
-    AND.W     D1,$12345678
-    AND.W     $12,D1
-    AND.W     $1234,D1
-    AND.W     $12345678,D1
-    AND.W     #$1234,D1
-    AND.L     D1,$12
-    AND.L     D1,$1234
-    AND.L     D1,$12345678
-    AND.L     $12,D1
-    AND.L     $1234,D1
-    AND.L     $12345678,D1
-    AND.L     #$12345678,D1
+    DIVS.W    $12,D1
+    DIVS.W    $1234,D1
+    DIVS.W    $12345678,D1
+    DIVS.W    #$1234,D1
     LSL.B     #$1,D2
     LSL.W     #$2,D2
     LSL.L     #$3,D2
@@ -524,6 +482,9 @@ label3
     ROR.W     $12
     ROR.W     $1234
     ROR.W     $12345678
+label1
+label2
+label3
 label4    CMP.B     $12,D1
     CMP.B     $1234,D1
     CMP.B     $12345678,D1
@@ -537,17 +498,13 @@ label4    CMP.B     $12,D1
     CMP.L     $12345678,D1
     CMP.L     #$12345678,D1
     BCC.B     label4
-    BGT.B     label4
-    BLE.B     label4
     BCC.W     label1
     BCC.W     label2
     BCC.W     label3
-    BGT.W     label1
-    BGT.W     label2
-    BGT.W     label3
-    BLE.W     label1
-    BLE.W     label2
-    BLE.W     label3
+	BCS.W     label3
+	BGE.W     label3
+	BLT.W     label3
+	BVC.L     label3
     JSR       label1
     JSR       label2
     JSR       label3
@@ -562,6 +519,14 @@ label4    CMP.B     $12,D1
 * Put variables and constants here
 
     END    START        ; last line of source
+
+
+
+
+
+
+
+
 
 
 

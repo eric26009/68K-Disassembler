@@ -95,12 +95,19 @@ FIRST4BITS:
     CMP.W   #%1110000000011000, D2
     BEQ     ROD_REG
 
+    MOVE.L  D3,D2
+    AND.W   #%1111000111000000, D2  * MULS mode
+    CMP.W   #%1100000111000000, D2
+    BEQ     MULS
+
     MOVE.L  D3,D2       * ORI mode
     ROL.W   #8,D2
     AND.B   #%11111111, D2
     CMP.B   #%00000000, D2
     BEQ     ORI
 
+
+CONTINUE_DECODING:
     MOVE.L  D3,D2       * EOR mode
     ROL.W   #8,D2
     AND.B   #%11110001, D2
@@ -151,8 +158,6 @@ FIRST4BITS:
     BEQ     ADD
     CMP.B   #%00001001, D2      * SUB
     BEQ     SUB
-    CMP.B   #%00001100, D2      * MULS
-    BEQ     MULS
     CMP.B   #%00001000, D2      * OR
     BEQ     OR
     CMP.B   #%00000101, D2      * SUBQ
@@ -380,7 +385,7 @@ BCLR_FROM_IMMEDIATE_DATA:
     MOVE.B  DOT, (A2)+
     JSR     BCLR_SIZE
     ADD.W   #6, BYTE_COUNTER
-    JSR     EA_Immediate            * this will be a special case
+    JSR     Immediate_Word            * this will be a special case
     MOVE.B  COMMA, (A2)+
     JSR     EA_MAIN                 * destination EA is normal
     BRA     BUFFER_LOOP
@@ -500,7 +505,30 @@ MOVEM:
     MOVE.B  DOT, (A2)+
     ADD.W   #6, BYTE_COUNTER
     JSR     MOVEM_SIZE
-    JSR    EA_MAIN          * special EA
+    MOVE.L  D3,D2
+    AND.W   #%0000010000000000, D2  * checking for MOVEM size 0 = word, 1 = long
+    CMP.W   #%0000000000000000, D2
+    BEQ     MOVEM_TO_EA
+    BNE     MOVEM_FROM_EA
+
+MOVEM_TO_EA:
+    MOVE.B  L, (A2)+
+    MOVE.B  I, (A2)+
+    MOVE.B  S, (A2)+
+    MOVE.B  T, (A2)+
+    MOVE.B  COMMA, (A2)+
+    ADD.W   #5, BYTE_COUNTER
+    JSR     EA_Absolute_WORD
+    BRA     BUFFER_LOOP
+
+MOVEM_FROM_EA:
+    JSR     EA_Absolute_WORD
+    MOVE.B  COMMA, (A2)+
+    MOVE.B  L, (A2)+
+    MOVE.B  I, (A2)+
+    MOVE.B  S, (A2)+
+    MOVE.B  T, (A2)+
+    ADD.W   #5, BYTE_COUNTER
     BRA     BUFFER_LOOP
 
 MOVEM_SIZE:
@@ -514,13 +542,11 @@ MOVEM_SIZE:
 MOVEM_WORD:
     JSR    ADD_WORD
     MOVE.B  #1, D6      * saving size for EA
-    JSR    EA_MAIN
     RTS
 
 MOVEM_LONG:
     JSR    ADD_LONG
     MOVE.B  #2, D6      * saving size for EA
-    JSR    EA_MAIN
     RTS
 
 NEG:

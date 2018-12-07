@@ -162,7 +162,6 @@ EA_Absolute_WORD:
                     CLR.L       D2                      *clear D2 to show next word data
                     MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
                     MOVE.W      (A4),D2
-                    JSR         Show_FFFF
 
                     MOVE.B      #4, D4                *hardcoded counter in $400 (4 hex values for word)
                     JSR         Display_Address
@@ -227,7 +226,7 @@ Immediate_Word:
                     MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
                     MOVE.W      (A4),D2
                     MOVE.B      #4, D4
-                    MOVE.L      #$4,INCREMENT
+                    MOVE.L      #$2,INCREMENT
                     ADD.W       #4,BYTE_COUNTER
                     JSR         Display_Address
                     RTS
@@ -237,7 +236,7 @@ Immediate_Byte:
                     MOVE.W      (A4)+,D2                *Add value to stack and Increment pointer
                     MOVE.W      (A4),D2
                     MOVE.B      #4, D4
-                    MOVE.L      #$4,INCREMENT
+                    MOVE.L      #$2,INCREMENT
                     ADD.W       #4,BYTE_COUNTER
                     JSR         Display_Address
                     RTS
@@ -249,7 +248,7 @@ Immediate_Long:
 
                     MOVE.B      #8, D4
 
-                    MOVE.L      #$6,INCREMENT
+                    MOVE.L      #$4,INCREMENT
                     ADD.W       #8,BYTE_COUNTER
 
                     JSR         Display_Address_Long
@@ -304,18 +303,6 @@ Show_Number
                     ADD.B       #48,D1
                     RTS
 
-Show_FFFF
-                    CMPI.L      #$8000,D2
-                    BGE         PRINT_FFFF
-                    RTS
-
-PRINT_FFFF:
-                    MOVE.B      F,(A2)+
-                    MOVE.B      F,(A2)+
-                    MOVE.B      F,(A2)+
-                    MOVE.B      F,(A2)+
-                    ADD.W       #4, BYTE_COUNTER
-                    RTS
 
     SIMHALT             ; halt simulator
 
