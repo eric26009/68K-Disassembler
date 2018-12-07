@@ -12,7 +12,7 @@ BUFF_POINT      EQU     $3250   * where the string buffer lives
 BYTE_COUNTER    EQU     $3040   * counter for the number of bytes the string has
 STRING_STORE    EQU     $3500   * where the beginning of the temp string storage lives
 
-    
+
 START:
     JSR     START_IO
     CLR.L   D0
@@ -21,13 +21,13 @@ START:
     CLR.L   D3
     CLR.L   D4
     CLR.L   D5
-    
+
     MOVEA.L #$00000000,A0
     MOVEA.L #$00000000,A1
     MOVEA.L #$00000000,A2
     MOVEA.L #$00000000,A3
     MOVEA.L #$00000000,A6
-    
+
     MOVE.L  #$2, INCREMENT
     LEA     LINE_COUNTER, A6         * load ing end address into A5
     MOVE.L  #0, (A6)                 * initalize the line counter to 0
@@ -41,6 +41,7 @@ MAIN:
     BNE     OPCODE_BEGIN            * not done yet, so fetch next opcode
 
 PAUSE:
+    MOVE.L  #$0, INCREMENT          * fixes the next line to increment correctly
     MOVE.B  #5, D0
     TRAP    #15
     MOVE.L  #0, (A6)
