@@ -506,7 +506,7 @@ MOVEM:
     ADD.W   #6, BYTE_COUNTER
     JSR     MOVEM_SIZE
     MOVE.L  D3,D2
-    AND.W   #%0000010000000000, D2  * checking for MOVEM size 0 = word, 1 = long
+    AND.W   #%0000010000000000, D2  * checking for MOVEM direction
     CMP.W   #%0000000000000000, D2
     BEQ     MOVEM_TO_EA
     BNE     MOVEM_FROM_EA
@@ -517,18 +517,24 @@ MOVEM_TO_EA:
     MOVE.B  S, (A2)+
     MOVE.B  T, (A2)+
     MOVE.B  COMMA, (A2)+
-    ADD.W   #5, BYTE_COUNTER
-    JSR     EA_Absolute_WORD
+    ADD.W   #7, BYTE_COUNTER
+    MOVE.B  E, (A2)+
+    MOVE.B  A, (A2)+
+    *JSR     EA_Absolute_WORD
+    MOVE.L  #$4,INCREMENT
     BRA     BUFFER_LOOP
 
 MOVEM_FROM_EA:
-    JSR     EA_Absolute_WORD
+    *JSR     EA_Absolute_WORD
+    MOVE.B  E, (A2)+
+    MOVE.B  A, (A2)+
     MOVE.B  COMMA, (A2)+
     MOVE.B  L, (A2)+
     MOVE.B  I, (A2)+
     MOVE.B  S, (A2)+
     MOVE.B  T, (A2)+
-    ADD.W   #5, BYTE_COUNTER
+    ADD.W   #7, BYTE_COUNTER
+    MOVE.L  #$4,INCREMENT
     BRA     BUFFER_LOOP
 
 MOVEM_SIZE:
