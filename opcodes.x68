@@ -777,12 +777,10 @@ OP_RTS:
 MOVE:
     MOVE.W  D3, D2      * reset address contents to before bitmask
     ROR.W   #6, D2     * now checking the destination mode set by rotating left by 10
-    AND.B   #%00000001, D2  * bitmask to see 3 bits for mode
-    CMP.B   #%00000000, D2      * move Dn
-    BEQ     MOVE_DN
-    CMP.B   #%00000001, D2      * move An
-    BGE     MOVE_AN
-    BRA     UNKNOWN
+    AND.B   #%00000111, D2  * bitmask to see 3 bits for mode
+    CMP.B   #%00000001, D2      * move Dn
+    BEQ     MOVE_AN
+    BRA     MOVE_DN
 
 *desination mode is register
 MOVE_DN:

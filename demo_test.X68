@@ -129,7 +129,7 @@ NOP
     MOVEA.L    A0,A0
     MOVEA.L    (A0),A0
     MOVEA.L    (A0)+,A0
-    MOVEA.L    -(A0),A0  
+    MOVEA.L    -(A0),A0
     ADD.B     D1,D2
     ADD.B     D1,(A1)
     ADD.B     D1,(A1)+
@@ -183,7 +183,7 @@ NOP
     SUB.L     A1,D1
     SUB.L     (A1),D1
     SUB.L     (A1)+,D1
-    SUB.L     -(A1),D1    
+    SUB.L     -(A1),D1
     MULS.W    D0,D1
     MULS.W    (A0),D1
     MULS.W    -(A0),D1
@@ -245,7 +245,7 @@ NOP
     LSR.W     (A1)
     LSR.W     (A1)+
     LSR.W     -(A1)
-    LSR.L     D1,D2    
+    LSR.L     D1,D2
     ASR.B     D1,D2
     ASR.W     D1,D2
     ASR.W     (A1)
@@ -269,7 +269,7 @@ NOP
     ROR.W     (A1)
     ROR.W     (A1)+
     ROR.W     -(A1)
-    ROR.L     D1,D2    
+    ROR.L     D1,D2
     CMP.B    D0,D1
     CMP.B    (A0),D1
     CMP.B    -(A0),D1
