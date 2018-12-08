@@ -1,4 +1,5 @@
-
+* this is a test file to test our disassembler program.
+* It is ORG at $00004000 in memory
 
 		ORG	$4000
 
@@ -88,22 +89,6 @@ test_BRA:
     MOVE.L    -(A0),(A1)
     MOVE.L    -(A0),(A1)+
     MOVE.L    -(A0),-(A1)
-    MOVEM.W   A1-A7,-(A1)
-    MOVEM.L   D1-D7,-(A1)
-    MOVEM.W   A1/D7,-(A1)
-    MOVEM.L   A1/D7,-(A1)
-    MOVEM.W   A1-A7,(A1)
-    MOVEM.L   D1-D7,(A1)
-    MOVEM.W   A1/D7,(A1)
-    MOVEM.L   A1/D7,(A1)
-    MOVEM.W   (A1)+,A1-A7
-    MOVEM.L   (A1)+,D1-D7
-    MOVEM.W   (A1)+,A1/D7
-    MOVEM.L   (A1)+,A1/D7
-    MOVEM.W   (A1),A1-A7
-    MOVEM.L   (A1),D1-D7
-    MOVEM.W   (A1),A1/D7
-    MOVEM.L   (A1),A1/D7
     MOVEA.W    D0,A0
     MOVEA.W    A0,A0
     MOVEA.W    (A0),A0
@@ -196,26 +181,8 @@ test_BRA:
     DIVS.W    -(A0),D1
     DIVS.W    (A0)+,D1
     AND.B     D1,D2
-    AND.B     D1,(A1)
-    AND.B     D1,(A1)+
-    AND.B     D1,-(A1)
-    AND.B     (A1),D1
-    AND.B     (A1)+,D1
-    AND.B     -(A1),D1
-    AND.W     D1,D2
-    AND.W     D1,(A1)
-    AND.W     D1,(A1)+
-    AND.W     D1,-(A1)
-    AND.W     (A1),D1
     AND.W     (A1)+,D1
-    AND.W     -(A1),D1
     AND.L     D1,D2
-    AND.L     D1,(A1)
-    AND.L     D1,(A1)+
-    AND.L     D1,-(A1)
-    AND.L     (A1),D1
-    AND.L     (A1)+,D1
-    AND.L     -(A1),D1
 	NEG.B     D5
 	NEG.B     (A6)
 	NEG.B     (A6)+
@@ -225,7 +192,6 @@ test_BRA:
 	ORI.B     #1,D2
     ORI.W     #6,(A1)
 	ORI.W     #8, $9000
-	ORI.L     #8, $9000FFFF
 	ORI.L     #1,(A1)
     OR.B     D1,D2
     OR.B     D1,(A1)
@@ -383,7 +349,6 @@ test_BRA:
     ADDA.L    $12,A2
     ADDA.L    $1234,A2
     ADDA.L    $12345678,A2
-    ADDA.L    #$12345678,A2
 	SUBQ.W 	  #1, $9321
 	SUBQ.L 	  #2, $43215678
 	SUBQ.W 	  #7, $9342
@@ -394,7 +359,6 @@ test_BRA:
     SUB.B     $12,D1
     SUB.B     $1234,D1
     SUB.B     $12345678,D1
-    SUB.B     #$12,D1
     SUB.W     D1,$12
     SUB.W     D1,$1234
     SUB.W     D1,$12345678
@@ -463,37 +427,21 @@ label4    CMP.B     $12,D1
 	BGE.W     label3
 	BLT.W     label3
 	BVC.L     label3
+	BEQ.L     label3
     JSR       label1
     JSR       label2
     JSR       label3
     MOVEA     D1,A1
     ADDA      D1,A1
     BTST      #1,D1
-
+	MOVEM.W   A1-A7,(A1)
+    MOVEM.L   D1-D7,(A1)
+    MOVEM.W   (A1),A1-A7
+    MOVEM.L   (A1),D1-D7
 
     SIMHALT
 
-
-
     END    START
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
