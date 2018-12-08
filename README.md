@@ -1,9 +1,67 @@
 Final Project for CSS 422
 
+By: Eric Feldman and Zealous Zhu
 
-Definitions
+Supported Opcodes
 ___________________________________________________
 
+	- MOVE, MOVEA
+	- ADD, ADDA
+	- SUB, SUBQ
+	- MULS, DIVS
+	- LEA
+	- OR, ORI
+	- NEG
+	- EOR
+	- LSR, LSL
+	- ASR, ASL
+	- ROL, ROR
+	- BCLR
+	- CMP, CMPI
+	- BCC, BCS, BGE, BLT, BVC, BEQ
+	- BRA, JSR, RTS
+	- NOP
+
+	* MOVEM will print MOVEM and correct size
+      but EA will print "LIST, EA" or "EA, LIST", not actual contents
+
+
+Supported effective addressing modes
+___________________________________________________
+
+	- Data Register Direct:  Dn
+	- Address Register Direct:  An
+	- Address Register Indirect:  (An)
+	- Address Register Indirect with Post incrementing:  (A0)+
+	- Address Register Indirect with Pre decrementing:  -(SP)
+	- Immediate Data:  #
+	- Absolute Long Address:  (xxx).L
+	- Absolute Word Address:  (xxx).W
+
+
+To run
+___________________________________________________
+
+1. Open Easy68k and open up "Feldman_Zhu_Disassembler.x68" file.
+2. Execute program and follow prompts provided by the opening screen.
+3. The disassembler lives between 00001000 to 00003FFF.
+4. There is a test file loaded at 00004000, that may be run.
+
+
+
+Files
+___________________________________________________
+
+Feldman_Zhu_Disassembler.x68
+
+	Where all the .x68 files are included and run from. It includes all the
+	defined constants and equates. It is also responsible for looping through
+	memory and pausing and continuing when the user presses enter.
+
+	- A4 - stores starting/current address that is being decoded.
+	- A5 - stores ending address of memory that needs to be decoded.
+	- A6 - LINE_COUNTER, stores the number of lines printed so far.
+	- INCREMENT, stores the increment to next memory location.
 
 opcodes.x68
 
@@ -19,16 +77,6 @@ opcodes.x68
 	- D6 stores the size for immediate value (0=Byte, 1=Word, 2=Long).
 	- BYTE_COUNTER, stores number of bytes to be printed out.
 
-Feldman_Zhu_Disassembler.x68
-
-	Where all the .x68 files are included and run from. It includes all the
-	defined constants and equates. It is also responsible for looping through
-	memory and pausing and continuing when the user presses enter.
-
-	- A4 - stores starting/current address that is being decoded.
-	- A5 - stores ending address of memory that needs to be decoded.
-	- A6 - LINE_COUNTER, stores the number of lines printed so far.
-	- INCREMENT, stores the increment to next memory location.
 
 ea.x68
 
