@@ -88,3 +88,13 @@ IO.x68
 	Prompts the user to enter a long address between (00004000 - FFFFFFFF).
 	Checks to make sure a valid address is entered within the bounds, and with
 	correct letters/ and or numbers.
+
+
+Notes
+___________________________________________________
+
+	If an unknown opcode is passed, the program will print DATA followed by the
+	hex instruction that was unknown. The increment is for the next memory
+	location is set to $2, since we no longer know where exactly the next
+	instruction lives. Therefore, after DATA, one or few bogus lines may be
+	printed.
