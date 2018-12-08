@@ -123,7 +123,7 @@ POUND       DC.B '#',0
     INCLUDE "opcodes.x68"
     INCLUDE "EA.x68"
     INCLUDE "IO.x68"
-    INCLUDE "demo_test.x68"
+    INCLUDE "test_file.x68"
 
 
     END    START        ; last line of source
