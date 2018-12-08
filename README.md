@@ -42,10 +42,10 @@ ___________________________________________________
 To run
 ___________________________________________________
 
-1. Open Easy68k and open up "Feldman_Zhu_Disassembler.x68" file.
-2. Execute program and follow prompts provided by the opening screen.
-3. The disassembler lives between 00001000 to 00003FFF.
-4. There is a test file loaded at 00004000, that may be run.
+	1. Open Easy68k and open up "Feldman_Zhu_Disassembler.x68" file.
+	2. Execute program and follow prompts provided by the opening screen.
+	3. The disassembler lives between 00001000 to 00003FFF.
+	4. There is a test file loaded at 00004000, that may be run.
 
 
 Files
