@@ -68,7 +68,6 @@ opcodes.x68
 	hex conversion, buffering the string for printing, determining correct sizes
 	and printing once finished with a line.
 
-
 	- A1 - BUFF_POINT, defining where A1 is in memory, used for printing.
 	- A2 - STRING_STORE, stores pointer to the end of the string buffer.
 	- A3 - STRING_STORE, stores pointer to the start of the string buffer.
