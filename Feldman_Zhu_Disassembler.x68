@@ -41,7 +41,7 @@ START:
 MAIN:
     CMP.L   A5,A4                   * comparing start/end addresses
     BGE.L   COMPLETED               * greater than or equal means done
-    CMP.L   #25, (A6)
+    CMP.L   #31, (A6)
     BEQ     PAUSE
     CMP.L   A4,A5
     BNE     OPCODE_BEGIN            * not done yet, so fetch next opcode
@@ -59,7 +59,7 @@ NEXT_ADDRESS:
     ADD.L   INCREMENT, A4           * incrementing address here by INCREMNET amount, needs to be changed
     ADD.L   #1, (A6)                * adding 1 to the line counter
     BRA     MAIN                    * go back to check addresses in MAIN
-    
+
 *------------Once we reach the end of decoding, finished messaage------------
 COMPLETED:
     LEA FINISHED, A1                * load finished message
